@@ -391,7 +391,9 @@ function update(time, delta) {
 
     activeTraps.forEach(trap => {
         const distance = Math.abs(trap.x - player.x);
-        if (distance <= 200 && distance < minDistance) {
+        // Only consider traps that are in front of or at the player's x position
+        // and within the disarm range.
+        if (trap.x >= player.x && distance <= 200 && distance < minDistance) {
             minDistance = distance;
             nearestActiveTrapInRange = trap;
         }
