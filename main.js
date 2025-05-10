@@ -8,6 +8,7 @@ export const GAME_HEIGHT = 320;
 export const displayedGroundHeight = 20;
 export const gameSpeed = 250;
 export const obstacleSpawnDelay = 1750; // This will be used for the combined spawner
+export const MAX_LEVELS = 5;
 
 const UI_SIZE = 64;
 const BORDER_W = 2;
@@ -77,6 +78,7 @@ function preload() {
     this.load.audio('footstep_b', 'res/snd/footstep_grass_004.ogg');
     this.load.audio('jump',        'res/snd/cartoon-jump-6462.mp3');
     this.load.audio('level_up',    'res/snd/next-level.mp3');
+    this.load.audio('game_win',    'res/snd/game-win.mp3');
 }
 
 function create() {
@@ -107,20 +109,23 @@ function create() {
         delay   : 20000,
         loop    : true,
         callback: () => {
-            level += 1;
-            this.sound.play('level_up', { volume: 1 });
-            levelText.setText('Level: ' + level);
+            if (level < MAX_LEVELS) {
+                level += 1;
+                this.sound.play('level_up', { volume: 1 });
+                levelText.setText('Level: ' + level);
+                currentSpeedScale = 1 + (level - 1) * 0.2;
+            } else if (level === MAX_LEVELS) {
+                // This is the transition from MAX_LEVELS to MAX_LEVELS + 1
+                level += 1; // Increment to MAX_LEVELS + 1 to trigger booth logic
+                this.sound.play('game_win', { volume: 0.7 });
+                // Do not update levelText to "Level: 6"
+                // currentSpeedScale remains at MAX_LEVELS rate
 
-            /* Increase game speed scale for parallax & object velocity computations */
-            currentSpeedScale = 1 + (level - 1) * 0.2;
-            // Keep physics world timeScale at 1.0; velocities are set explicitly each frame.
-
-            /* After finishing level 5, spawn the voting booth and stop the timer */
-            if (level === 6) {
                 levelTimer.remove(false);
                 if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
                 spawnVotingBoothPending = true;   // defer booth until screen clear
             }
+            // No action if level is already > MAX_LEVELS (should not happen if timer is removed)
         }
     });
 
