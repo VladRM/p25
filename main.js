@@ -125,6 +125,28 @@ function create() {
         // Border also starts with 0.5 alpha for the disabled state
         border.setAlpha(0.5);
 
+        /* ------------------------------------------------------------
+         * Make the entire button (border area) interactive so clicks
+         * inside the disabled button never reach the global pointer
+         * handler that triggers the player jump.
+         * ---------------------------------------------------------- */
+        border.setInteractive(
+            new Phaser.Geom.Rectangle(
+                xRight - BORDER_TOTAL,
+                startY,
+                BORDER_TOTAL,
+                BORDER_TOTAL
+            ),
+            Phaser.Geom.Rectangle.Contains
+        );
+
+        border.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();                // Block jump
+            if (scene.currentTargetableTrap) {
+                scene.deactivateNearestTrap();      // Only act if enabled
+            }
+        });
+
         // Icon's pointerdown handler
         icon.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation(); // Always stop propagation to prevent jump
