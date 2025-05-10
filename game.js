@@ -36,7 +36,6 @@ let obstacleTimer; // Timer for spawning obstacles
 const gameSpeed = 250; // Speed at which obstacles move left (pixels per second)
 const obstacleSpawnDelay = 1750; // Time in milliseconds between obstacle spawns
 const playerJumpVelocity = -821; // Negative Y velocity for jump (increased for faster, higher jump)
-const combinedHillsTextureKey = 'combinedHillsTexture'; // Key for the dynamically generated hills texture
 
 // Define 5 obstacle colors
 const obstacleColors = [
@@ -78,39 +77,17 @@ function create() {
     cloudsTileSprite.tilePositionY = 90; // Keep fluffy clouds visible
 
     // Layer 2: Combined Hills Layer (alternating textures)
-    const hillPattern = ['background_color_hills', 'background_color_hills', 'background_color_trees'];
-    const subTextureWidth = 256; // Width of individual hill/tree subtextures
-    const subTextureHeight = 256; // Height of individual hill/tree subtextures
-    const patternWidth = hillPattern.length * subTextureWidth;
-
-    // Create a RenderTexture to draw the pattern onto
-    const rt = this.add.renderTexture(0, 0, patternWidth, subTextureHeight).setVisible(false);
-    rt.clear(); // Explicitly clear the RenderTexture before drawing
-    let currentX = 0;
-    hillPattern.forEach(frameName => {
-        rt.draw('backgrounds_spritesheet', frameName, currentX, 0);
-        currentX += subTextureWidth;
-    });
-
-    // Save the RenderTexture's content to the texture manager
-    rt.saveTexture(combinedHillsTextureKey);
-
-    // Check if the texture was successfully created and is valid
-    if (!this.textures.exists(combinedHillsTextureKey) || (this.textures.get(combinedHillsTextureKey) && this.textures.get(combinedHillsTextureKey).key === '__MISSING')) {
-        console.error(`CRITICAL: Failed to create or save the texture: ${combinedHillsTextureKey}. Hills will not be displayed or may appear incorrect.`);
-    }
-    
-    rt.destroy(); // Destroy the RenderTexture object as it's no longer needed
-
-    // Create the TileSprite using the new combined texture
+    // Hills layer (single texture - dynamic textures cannot be used with TileSprite)
+    const subTextureHeight = 256; // Height of the individual hill texture frame
     hillsTileSprite = this.add.tileSprite(
         config.width / 2,
-        (config.height - 20) - (subTextureHeight / 2) + 40, // Y: center of sprite, consistent with previous single hills layer
+        (config.height - 20) - (subTextureHeight / 2) + 40,
         config.width,
-        subTextureHeight, // Height of the TileSprite
-        combinedHillsTextureKey
+        subTextureHeight,
+        'backgrounds_spritesheet',
+        'background_color_hills'
     );
-    hillsTileSprite.tilePositionY = 120; // Adjust to show features (trees/hills, not just sky part of texture)
+    hillsTileSprite.tilePositionY = 120; // Adjust to show features (hills, not just sky part of texture)
 
     // Order of creation: cloudsTileSprite -> hillsTileSprite -> groundTileSprite -> player.
 
