@@ -6,7 +6,7 @@ import { ObstacleSpawner } from './obstacleSpawner.js';
 /*  Global constants                                                  */
 /* ------------------------------------------------------------------ */
 export const GAME_WIDTH           = 800;
-export const GAME_HEIGHT          = 400;
+export const GAME_HEIGHT          = 320; // Reduced from 400
 export const displayedGroundHeight = 20;
 export const gameSpeed            = 250;   // px / s
 export const obstacleSpawnDelay   = 1750;  // ms
