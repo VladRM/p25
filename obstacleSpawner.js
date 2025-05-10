@@ -1,12 +1,11 @@
 import Enemy from './enemy.js';
-import { gameSpeed } from './main.js';
+// gameSpeed is not directly used in this file anymore for enemy velocity, it's handled in Enemy.js
+// import { gameSpeed } from './main.js';
 
-const obstacleColors = [
-    0xFF0000, // Red
-    0xFFA500, // Orange
-    0xFFFF00, // Yellow
-    0x008000, // Green
-    0x800080  // Purple
+const ENEMY_TYPES = [
+    { type: 'barnacle', baseFrame: 'barnacle_attack_a' },
+    { type: 'slime',    baseFrame: 'slime_spike_walk_a' },
+    { type: 'worm',     baseFrame: 'worm_ring_move_a' }
 ];
 
 export class ObstacleSpawner {
@@ -33,28 +32,37 @@ export class ObstacleSpawner {
 
     spawnObstacle () {
         console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}, spawnDelay: ${this.spawnDelay}`);
-        const h = Phaser.Math.Between(20, 70);
-        const w = Phaser.Math.Between(20, 40);
-        const col = Phaser.Utils.Array.GetRandom(obstacleColors);
+        
+        const enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
+        const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
 
-        let yPos = this.groundTopY - h / 2;
+        // Create a temporary sprite to get its dimensions for positioning
+        // This sprite is not added to the scene or group yet.
+        const tempSprite = this.scene.make.sprite({ key: textureKey, frame: enemyTypeData.baseFrame }, false);
+        // Apply the same scale as the actual enemy to get accurate dimensions for positioning
+        tempSprite.setScale(0.7); // Must match the scale in Enemy.js constructor
+        const spriteHeight = tempSprite.displayHeight;
+        const spriteWidth = tempSprite.displayWidth; 
+        tempSprite.destroy(); // Clean up temporary sprite
+
+        let yPos = this.groundTopY - spriteHeight / 2; // Position based on sprite's center
         if (typeof this.groundTopY !== 'number' || isNaN(this.groundTopY)) {
             console.warn(`[ObstacleSpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for obstacle.`);
-            // Default Y position calculation, assuming ground is 20px from bottom of game area and using game config height
-            yPos = this.scene.sys.game.config.height - 20 - h / 2;
+            yPos = this.scene.sys.game.config.height - 20 - spriteHeight / 2; // Default based on game height
         }
 
         const enemy = new Enemy(
             this.scene,
-            this.scene.sys.game.config.width + w, // Initial X position
+            this.scene.sys.game.config.width + spriteWidth, // Initial X position (off-screen to the right)
             yPos,
-            w, h, col // Pass w, h for Enemy's dimensions
+            textureKey,
+            enemyTypeData.baseFrame,
+            enemyTypeData.type // Pass the enemy type for animation handling
         );
-        this.group.add(enemy);    // Adds to group, which should enable physics body on enemy
-        enemy.initializePhysics(); // Now that body exists (from being added to physics group), set its properties
+        this.group.add(enemy);
+        enemy.initializePhysics();
 
-        // Log parent container status and body info after all setup
-        console.log(`[ObstacleSpawner] Enemy added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`);
+        console.log(`[ObstacleSpawner] Enemy ${enemyTypeData.type} added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`);
         if (enemy.body) {
              console.log(`[ObstacleSpawner] Enemy body in group: pos=(${enemy.body.x.toFixed(2)}, ${enemy.body.y.toFixed(2)}), size=(${enemy.body.width}x${enemy.body.height}), velX=${enemy.body.velocity.x}`);
         } else {
