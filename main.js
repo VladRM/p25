@@ -56,9 +56,7 @@ function preload() {
     this.load.image('player_walk1', 'res/img/player/player_walk1.png');
     this.load.image('player_walk2', 'res/img/player/player_walk2.png');
 
-    this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
-    this.load.image('icon_compass', 'res/img/player/compass.png');
-    this.load.image('icon_brain', 'res/img/player/brain.png');
+    this.load.image('icon_lantern', 'res/img/player/lantern.png');
 }
 
 function create() {
@@ -88,7 +86,7 @@ function create() {
     const startX = GAME_WIDTH - UI_PAD;
     const startY = UI_PAD;
 
-    const addUIButton = (xRight, texture, logMsg, powerType) => {
+    const addUIButton = (xRight, texture, logMsg) => {
         const border = scene.add.graphics().setScrollFactor(0).setInteractive();
         border.fillStyle(0x000000, 0.35);
         border.fillRoundedRect(
@@ -117,22 +115,18 @@ function create() {
             .on('pointerdown', (pointer, localX, localY, event) => {
                 event?.stopPropagation();
                 // console.log('[UI] ' + logMsg); // Removed log as per previous request, can be re-added if needed
-                scene.deactivateNearestTrap(powerType);
+                scene.deactivateNearestTrap();
             });
 
         return { border, btn };
     };
 
-    // Flashlight (icon_flashlight) deactivates 'darkweb' traps (yellow)
-    const { border: borderFlash, btn: btnFlash } = addUIButton(startX, 'icon_flashlight', 'Flash-light power activated', 'darkweb');
-    // Compass (icon_compass) deactivates 'obedience' traps (blue)
-    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (BORDER_TOTAL + UI_PAD), 'icon_compass', 'Compass power activated', 'obedience');
-    // Brain (icon_brain) deactivates 'populist' traps (pink)
-    const { border: borderBrain, btn: btnBrain } = addUIButton(startX - 2 * (BORDER_TOTAL + UI_PAD), 'icon_brain', 'Brain power activated', 'populist');
+    // Single button to disarm any trap
+    const { border: borderLantern, btn: btnLantern } = addUIButton(startX, 'icon_lantern', 'Lantern power activated');
 
     this.uiButtons = [
-        btnFlash, btnCompass, btnBrain,
-        borderFlash, borderCompass, borderBrain
+        btnLantern,
+        borderLantern
     ];
     this.children.bringToTop(this.uiButtons);
 
@@ -162,14 +156,12 @@ function create() {
         loop: true
     });
 
-    scene.deactivateNearestTrap = (powerType) => {
-        if (!powerType) return; // Safety check
+    scene.deactivateNearestTrap = () => {
+        const activeTraps = trapsGroup.getChildren().filter(t => t.getData('active'));
+        if (!activeTraps.length) return;
 
-        const relevantTraps = trapsGroup.getChildren().filter(t => t.getData('active') && t.getData('trapType') === powerType);
-        if (!relevantTraps.length) return;
-
-        // Find the nearest among the relevant traps
-        const nearest = relevantTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
+        // Find the nearest among all active traps
+        const nearest = activeTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
         
         if (nearest && Math.abs(nearest.x - player.x) <= 200) {
             nearest.setFillStyle(0x888888); // Change color
