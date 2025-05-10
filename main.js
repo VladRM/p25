@@ -116,14 +116,13 @@ function create() {
             'icon_brain' // Placeholder texture, will be hidden
         )
             .setOrigin(0.5)
-            .setDisplaySize(UI_SIZE, UI_SIZE)
+            .setDisplaySize(UI_SIZE, UI_SIZE) // Defines hit area
             .setScrollFactor(0)
-            .setVisible(true) // Icon is always visible
-            .setTexture('icon_brain') // Start with placeholder icon
-            .setAlpha(0.5) // Start with 0.5 alpha for disabled state
-            .setInteractive(); // Interactive to catch clicks and prevent jump, cursor managed in update
+            .setVisible(false) // Start invisible
+            // Alpha is managed by update logic, default is 1.
+            .setInteractive(); // Interactive to catch clicks even when invisible
 
-        // Border also starts with 0.5 alpha
+        // Border also starts with 0.5 alpha for the disabled state
         border.setAlpha(0.5);
 
         // Icon's pointerdown handler
@@ -196,24 +195,24 @@ function create() {
             score += 10;
             scoreText.setText('Score: ' + score);
 
-            // Reset button state immediately after deactivation to "disabled"
+            // Reset button state immediately after deactivation to "disabled": no icon, semi-transparent border.
             scene.currentTargetableTrap = null;
             if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setTexture('icon_brain').setAlpha(0.5);
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
             }
             if (scene.disarmButtonBorder) {
                 scene.disarmButtonBorder.setAlpha(0.5);
             }
         } else {
             // If the target became invalid (e.g., destroyed, already deactivated, or no longer in scene)
-            // ensure the button is reset to "disabled" state.
+            // ensure the button is reset to "disabled" state: no icon, semi-transparent border.
             if (scene.currentTargetableTrap) { // It was set, but now fails the validity check
                 scene.currentTargetableTrap = null; // Clear the potentially stale reference
             }
             if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setTexture('icon_brain').setAlpha(0.5);
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
             }
             if (scene.disarmButtonBorder) {
                 scene.disarmButtonBorder.setAlpha(0.5);
@@ -270,26 +269,26 @@ function update(time, delta) {
         }
 
         if (iconKey && scene.disarmButtonIcon) {
-            scene.disarmButtonIcon.setTexture(iconKey).setAlpha(1);
+            scene.disarmButtonIcon.setTexture(iconKey).setVisible(true).setAlpha(1);
             scene.disarmButtonIcon.setInteractive({ useHandCursor: true });
             if (scene.disarmButtonBorder) scene.disarmButtonBorder.setAlpha(1);
         } else {
             // Fallback or if iconKey isn't determined (e.g. unknown trapType)
             // This case implies nearestActiveTrapInRange was true, but iconKey failed.
-            // Treat as "disabled" state.
+            // Treat as "disabled" state: no icon, semi-transparent border.
             if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setTexture('icon_brain').setAlpha(0.5);
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
             }
             if (scene.disarmButtonBorder) scene.disarmButtonBorder.setAlpha(0.5);
             scene.currentTargetableTrap = null; // Ensure no trap is targeted
         }
     } else {
-        // No trap in range, set to "disabled" state
+        // No trap in range, set to "disabled" state: no icon, semi-transparent border.
         scene.currentTargetableTrap = null;
         if (scene.disarmButtonIcon) {
-            scene.disarmButtonIcon.setTexture('icon_brain').setAlpha(0.5);
-            scene.disarmButtonIcon.setInteractive(); // No hand cursor
+            scene.disarmButtonIcon.setVisible(false);
+            scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
         }
         if (scene.disarmButtonBorder) {
             scene.disarmButtonBorder.setAlpha(0.5);
