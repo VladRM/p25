@@ -209,7 +209,7 @@ function update(time, delta) {
         }
         
         // Log obstacle position and velocity in update loop
-        // console.log(`Update: Obstacle ${index} - x: ${obstacle.x}, vx: ${obstacle.body.velocity.x}, vy: ${obstacle.body.velocity.y}, moves: ${obstacle.body.moves}`);
+        console.log(`Update: Obstacle ${index} - x: ${obstacle.x}, vx: ${obstacle.body.velocity.x}, vy: ${obstacle.body.velocity.y}, moves: ${obstacle.body.moves}`);
 
 
         // Remove obstacles that go off-screen to the left
