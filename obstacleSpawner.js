@@ -37,7 +37,12 @@ export class ObstacleSpawner {
         const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
 
         const baseScale = 0.7;
-        const chosenScale = Phaser.Math.RND.pick([baseScale, baseScale * 1.5]);
+        let chosenScale;
+        if (Phaser.Math.Between(0, 1) === 0) { // Randomly pick one of the two scales
+            chosenScale = baseScale;
+        } else {
+            chosenScale = baseScale * 1.5;
+        }
 
         // Create a temporary sprite to get its dimensions for positioning
         // This sprite is not added to the scene or group yet.
