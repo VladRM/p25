@@ -62,28 +62,26 @@ function create() {
     score = 0;
     gameOver = false;
 
-    // Sky Background
-    // The 'background_clouds' sprite is 256x256. We'll tile it.
+    // Sky Background - using a solid sky color from the spritesheet
     skyTileSprite = this.add.tileSprite(
         config.width / 2,
         config.height / 2,
         config.width,
         config.height,
         'backgrounds_spritesheet',
-        'background_clouds'
+        'background_solid_sky' // Using a plain sky texture for the rearmost layer
     );
-    // Ensure sky is behind everything else by setting a low depth, or by adding it first.
-    // Since we are adding it before other elements like ground and player, it will naturally be in the background.
+    // Ensure sky is behind everything else.
 
-    // Clouds Layer (in front of sky, behind hills)
-    // Also uses 'background_clouds' but will scroll at a different speed for parallax.
+    // Clouds Layer (in front of solid sky, behind hills)
+    // This uses 'background_clouds' and will scroll for parallax.
     cloudsTileSprite = this.add.tileSprite(
         config.width / 2,
         config.height / 2, // Centered, covers full height
         config.width,
         config.height,
         'backgrounds_spritesheet',
-        'background_clouds'
+        'background_clouds' // This is the animated/detailed cloud layer
     );
 
     // Green Hills Background
