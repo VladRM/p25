@@ -252,10 +252,6 @@ function update(time, delta) {
         cloudsTileSprite.tilePositionX += (gameSpeed / 5) * (delta / 1000); 
     }
 
-    // Layer 2: Hills/Trees parallax
-    if (hillsTileSprite) {
-        hillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000);
-    }
 
     // Scroll the ground texture
     if (groundTileSprite) {
