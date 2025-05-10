@@ -58,9 +58,9 @@ function preload () {
     this.load.image('player_walk2', 'res/img/player/player_walk2.png');
 
     // --- UI-icons (super-powers) ---
-    this.load.image('icon_flashlight', 'res/img/ui/flashlight.png');
-    this.load.image('icon_compass'  , 'res/img/ui/compass.png');
-    this.load.image('icon_brain'    , 'res/img/ui/brain.png');
+    this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
+    this.load.image('icon_compass'  , 'res/img/player/compass.png');
+    this.load.image('icon_brain'    , 'res/img/player/brain.png');
 }
 
 function create () {
@@ -89,27 +89,40 @@ function create () {
         fontSize : '24px', fill : '#000000'
     }).setOrigin(0.5).setVisible(false);
 
-    /* ---------- Super-power buttons (top-right) ---------- */
-    const UI_PAD   = 10;
-    const UI_SCALE = 0.8;
+    /* ---------- Super-power buttons (top-right, horizontal) ---------- */
+    const UI_PAD  = 10;   // separación entre botones/borde
+    const UI_SIZE = 64;   // lado en px (tamaño cómodo para móvil)
 
-    const btnFlash = this.add.image(GAME_WIDTH - UI_PAD, UI_PAD, 'icon_flashlight')
-        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
-        .setInteractive({ useHandCursor: true });
-    const btnCompass = this.add.image(GAME_WIDTH - UI_PAD,
-        btnFlash.y + btnFlash.displayHeight + UI_PAD, 'icon_compass')
-        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
-        .setInteractive({ useHandCursor: true });
-    const btnBrain = this.add.image(GAME_WIDTH - UI_PAD,
-        btnCompass.y + btnCompass.displayHeight + UI_PAD, 'icon_brain')
-        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
+    const startX = GAME_WIDTH - UI_PAD;      // extremo derecho
+    const startY = UI_PAD;                   // parte superior
+
+    // botón más a la derecha
+    const btnFlash = this.add.image(startX, startY, 'icon_flashlight')
+        .setOrigin(1, 0)
+        .setDisplaySize(UI_SIZE, UI_SIZE)    // tamaño fijo
+        .setScrollFactor(0)
         .setInteractive({ useHandCursor: true });
 
-    // guardar referencia para gestionar visibilidad/interacción
+    // siguiente hacia la izquierda
+    const btnCompass = this.add.image(
+        btnFlash.x - UI_SIZE - UI_PAD, startY, 'icon_compass')
+        .setOrigin(1, 0)
+        .setDisplaySize(UI_SIZE, UI_SIZE)
+        .setScrollFactor(0)
+        .setInteractive({ useHandCursor: true });
+
+    // más a la izquierda
+    const btnBrain = this.add.image(
+        btnCompass.x - UI_SIZE - UI_PAD, startY, 'icon_brain')
+        .setOrigin(1, 0)
+        .setDisplaySize(UI_SIZE, UI_SIZE)
+        .setScrollFactor(0)
+        .setInteractive({ useHandCursor: true });
+
     this.uiButtons = [btnFlash, btnCompass, btnBrain];
-    this.children.bringToTop(this.uiButtons);   // sobre HUD
+    this.children.bringToTop(this.uiButtons);
 
-    // callbacks (placeholder)
+    // callbacks placeholder
     btnFlash .on('pointerdown', () => console.log('[UI] Flash-light power activated'));
     btnCompass.on('pointerdown', () => console.log('[UI] Compass power activated'));
     btnBrain .on('pointerdown', () => console.log('[UI] Brain power activated'));
