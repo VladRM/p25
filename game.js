@@ -21,8 +21,7 @@ const config = {
 let player;
 // skyTileSprite has been removed as per new layer structure
 let cloudsTileSprite; // Single cloud layer (background_clouds)
-// distantTreesTileSprite has been removed to keep only one cloud layer
-let treesTileSprite; // Layer 2: Hills/trees (background_color_trees)
+let hillsTileSprite; // Single hills layer with combined textures
 let ground;
 let groundTileSprite; // For the visual ground tile sprite
 let obstacles;
@@ -37,6 +36,7 @@ let obstacleTimer; // Timer for spawning obstacles
 const gameSpeed = 250; // Speed at which obstacles move left (pixels per second)
 const obstacleSpawnDelay = 1750; // Time in milliseconds between obstacle spawns
 const playerJumpVelocity = -821; // Negative Y velocity for jump (increased for faster, higher jump)
+const combinedHillsTextureKey = 'combinedHillsTexture'; // Key for the dynamically generated hills texture
 
 // Define 5 obstacle colors
 const obstacleColors = [
@@ -77,19 +77,42 @@ function create() {
     );
     cloudsTileSprite.tilePositionY = 90; // Keep fluffy clouds visible
 
-    // Layer 2: Hills/Trees (background_color_trees)
-    // The 'background_color_trees' sprite is 256x256.
-    // This layer will be in front of distantTreesTileSprite.
-    // Position its bottom edge also slightly above the ground, appearing closer.
-    treesTileSprite = this.add.tileSprite(
+    // Layer 2: Combined Hills Layer (alternating textures)
+    const hillPattern = ['background_color_hills', 'background_color_hills', 'background_color_trees'];
+    const subTextureWidth = 256; // Width of individual hill/tree subtextures
+    const subTextureHeight = 256; // Height of individual hill/tree subtextures
+    const patternWidth = hillPattern.length * subTextureWidth;
+
+    // Create a RenderTexture to draw the pattern onto
+    const rt = this.add.renderTexture(0, 0, patternWidth, subTextureHeight).setVisible(false);
+    rt.clear(); // Explicitly clear the RenderTexture before drawing
+    let currentX = 0;
+    hillPattern.forEach(frameName => {
+        rt.draw('backgrounds_spritesheet', frameName, currentX, 0);
+        currentX += subTextureWidth;
+    });
+
+    // Save the RenderTexture's content to the texture manager
+    rt.saveTexture(combinedHillsTextureKey);
+
+    // Check if the texture was successfully created and is valid
+    if (!this.textures.exists(combinedHillsTextureKey) || (this.textures.get(combinedHillsTextureKey) && this.textures.get(combinedHillsTextureKey).key === '__MISSING')) {
+        console.error(`CRITICAL: Failed to create or save the texture: ${combinedHillsTextureKey}. Hills will not be displayed or may appear incorrect.`);
+    }
+    
+    rt.destroy(); // Destroy the RenderTexture object as it's no longer needed
+
+    // Create the TileSprite using the new combined texture
+    hillsTileSprite = this.add.tileSprite(
         config.width / 2,
-        (config.height - 20) - (256 / 2) + 40, // Y: center of sprite, positioned lower than distant trees
+        (config.height - 20) - (subTextureHeight / 2) + 40, // Y: center of sprite, consistent with previous single hills layer
         config.width,
-        256, // Full height of the sprite
-        'backgrounds_spritesheet',
-        'background_color_trees'
+        subTextureHeight, // Height of the TileSprite
+        combinedHillsTextureKey
     );
-    // Order of creation: cloudsTileSprite -> distantTreesTileSprite -> treesTileSprite -> groundTileSprite -> player.
+    hillsTileSprite.tilePositionY = 120; // Adjust to show features (trees/hills, not just sky part of texture)
+
+    // Order of creation: cloudsTileSprite -> hillsTileSprite -> groundTileSprite -> player.
 
     // Ground
     const actualGroundSpriteFrameHeight = 64; // Actual height of the "terrain_grass_horizontal_middle" sprite frame
@@ -225,9 +248,9 @@ function update(time, delta) {
         cloudsTileSprite.tilePositionX += (gameSpeed / 5) * (delta / 1000); 
     }
 
-    // Layer 2: Scroll trees (background_color_trees)
-    if (treesTileSprite) {
-        treesTileSprite.tilePositionX += (gameSpeed / 3) * (delta / 1000); // Adjusted for smaller parallax
+    // Layer 2: Scroll combined hills layer
+    if (hillsTileSprite) {
+        hillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000); // Speed for single prominent hills layer
     }
 
     // Scroll the ground texture
