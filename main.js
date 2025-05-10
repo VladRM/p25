@@ -11,6 +11,8 @@ export const displayedGroundHeight = 20;
 export const gameSpeed            = 250;   // px / s
 export const obstacleSpawnDelay   = 1750;  // ms
 
+const UI_SIZE  = 64;   // lado del icono (tamaño cómodo para móvil)
+const BORDER_W = 2;    // grosor del borde
 const UI_BORDER_PAD   = 6;   // relleno interior entre icono y borde
 const BORDER_RADIUS   = 8;   // esquinas redondeadas (px)
 const BORDER_TOTAL    = UI_SIZE + (BORDER_W + UI_BORDER_PAD) * 2; // ancho/alto exterior del cuadro
@@ -95,8 +97,6 @@ function create () {
 
     /* ---------- Super-power buttons (top-right, horizontal) ---------- */
     const UI_PAD   = 10;   // margen entre borde y botones
-    const UI_SIZE  = 64;   // lado del icono (tamaño cómodo para móvil)
-    const BORDER_W = 2;    // grosor del borde
 
     const startX = GAME_WIDTH - UI_PAD;
     const startY = UI_PAD;
