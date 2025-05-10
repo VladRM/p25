@@ -19,10 +19,10 @@ const config = {
 
 // Game variables
 let player;
-let skyTileSprite; // For the visual sky background
-let cloudsTileSprite; // For the new, closer cloud layer
-let greenHillsTileSprite; // For the visual green hills background
-let treesTileSprite; // For the visual trees background
+// skyTileSprite has been removed as per new layer structure
+let cloudsTileSprite; // Layer 4: Furthest clouds (background_clouds)
+let distantTreesTileSprite; // Layer 3: More distant hills/trees (background_fade_trees)
+let treesTileSprite; // Layer 2: Hills/trees (background_color_trees)
 let ground;
 let groundTileSprite; // For the visual ground tile sprite
 let obstacles;
@@ -62,56 +62,45 @@ function create() {
     score = 0;
     gameOver = false;
 
-    // Sky Background - using a solid sky color from the spritesheet
-    skyTileSprite = this.add.tileSprite(
-        config.width / 2,
-        config.height / 2,
-        config.width,
-        config.height,
-        'backgrounds_spritesheet',
-        'background_solid_sky' // Using a plain sky texture for the rearmost layer
-    );
-    // Ensure sky is behind everything else.
-
-    // Clouds Layer (in front of solid sky, behind hills)
+    // Layer 4: Furthest - Clouds (background_clouds)
     // This uses 'background_clouds' and will scroll for parallax.
     cloudsTileSprite = this.add.tileSprite(
         config.width / 2,
-        config.height / 2, // Centered, covers full height
+        config.height / 2, // Centered, covers full game height
         config.width,
-        config.height,
+        config.height, // Covers the full game height
         'backgrounds_spritesheet',
-        'background_clouds' // This is the animated/detailed cloud layer
+        'background_clouds'
     );
 
-    // Green Hills Background
-    // The 'background_color_hills' sprite is 256x256.
+    // Layer 3: More Distant Hills/Trees (background_fade_trees)
+    // The 'background_fade_trees' sprite is 256x256.
     // Position its bottom edge slightly above the ground.
     // Ground top is at config.height - 20. Sprite height is 256.
-    // Center Y = (config.height - 20) - (spriteHeight / 2) + vertical_offset_from_ground_top
-    // Let's make it sit a bit higher than the previous 'fade_hills' to ensure trees can be in front.
-    greenHillsTileSprite = this.add.tileSprite(
+    // Center Y = (config.height - 20) - (256 / 2) + offset.
+    // Offset chosen to place it visually behind Layer 2.
+    distantTreesTileSprite = this.add.tileSprite(
         config.width / 2,
-        (config.height - 20) - (256 / 2) + 30, // Adjusted Y position
+        (config.height - 20) - (256 / 2) + 10, // Y: center of sprite, positioned relative to ground
         config.width,
         256, // Full height of the sprite
         'backgrounds_spritesheet',
-        'background_color_hills'
+        'background_fade_trees'
     );
 
-    // Trees Background
+    // Layer 2: Hills/Trees (background_color_trees)
     // The 'background_color_trees' sprite is 256x256.
-    // This layer will be in front of greenHillsTileSprite.
-    // Position its bottom edge also slightly above the ground, potentially overlapping hills slightly.
+    // This layer will be in front of distantTreesTileSprite.
+    // Position its bottom edge also slightly above the ground, appearing closer.
     treesTileSprite = this.add.tileSprite(
         config.width / 2,
-        (config.height - 20) - (256 / 2) + 60, // Adjusted Y position, slightly lower than hills to appear closer or overlap
+        (config.height - 20) - (256 / 2) + 40, // Y: center of sprite, positioned lower than distant trees
         config.width,
         256, // Full height of the sprite
         'backgrounds_spritesheet',
         'background_color_trees'
     );
-    // Order of creation: sky -> greenHills -> trees -> ground -> player.
+    // Order of creation: cloudsTileSprite -> distantTreesTileSprite -> treesTileSprite -> groundTileSprite -> player.
 
     // Ground
     const actualGroundSpriteFrameHeight = 64; // Actual height of the "terrain_grass_horizontal_middle" sprite frame
@@ -242,24 +231,19 @@ function update(time, delta) {
         return; 
     }
 
-    // Scroll the sky texture (slower than ground for parallax)
-    if (skyTileSprite) {
-        skyTileSprite.tilePositionX += (gameSpeed / 4) * (delta / 1000); // Scroll at 1/4 of ground speed
-    }
-
-    // Scroll the new clouds layer (faster than sky, slower than hills)
+    // Layer 4: Scroll clouds (background_clouds) - slowest
     if (cloudsTileSprite) {
-        cloudsTileSprite.tilePositionX += (gameSpeed / 3) * (delta / 1000); // Scroll at 1/3 of ground speed
+        cloudsTileSprite.tilePositionX += (gameSpeed / 5) * (delta / 1000); 
     }
 
-    // Scroll the green hills texture (slower parallax)
-    if (greenHillsTileSprite) {
-        greenHillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000); // Scroll at 2/5 of ground speed
+    // Layer 3: Scroll distant trees (background_fade_trees)
+    if (distantTreesTileSprite) {
+        distantTreesTileSprite.tilePositionX += (gameSpeed / 3.5) * (delta / 1000);
     }
 
-    // Scroll the trees texture (medium speed parallax)
+    // Layer 2: Scroll trees (background_color_trees)
     if (treesTileSprite) {
-        treesTileSprite.tilePositionX += (gameSpeed / 1.5) * (delta / 1000); // Scroll at 2/3 of ground speed
+        treesTileSprite.tilePositionX += (gameSpeed / 2) * (delta / 1000);
     }
 
     // Scroll the ground texture
