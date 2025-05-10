@@ -129,17 +129,7 @@ function create() {
         // Icon's interactivity (setInteractive/disableInteractive) is managed in update().
 
         // Border handles the click, but only if the icon is visible (logic in handler)
-        // Starts non-interactive, enabled in update() when a trap is targetable
-        border.setInteractive({ useHandCursor: true })
-            .on('pointerdown', (pointer, localX, localY, event) => {
-                event?.stopPropagation();
-                // Only call deactivate if the icon is visible (meaning a trap is targeted)
-                if (scene.disarmButtonIcon && scene.disarmButtonIcon.visible) {
-                    scene.deactivateNearestTrap();
-                }
-            })
-            .disableInteractive(); // Start non-interactive
-
+        // Border is purely visual, no interactivity.
         return { border, icon };
     };
 
@@ -201,16 +191,20 @@ function create() {
 
             // Reset button state immediately after deactivation
             scene.currentTargetableTrap = null;
-            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+            if (scene.disarmButtonIcon) {
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.disableInteractive();
+            }
         } else {
             // If the target became invalid (e.g., destroyed, already deactivated, or no longer in scene)
             // ensure the button is reset.
             if (scene.currentTargetableTrap) { // It was set, but now fails the validity check
                 scene.currentTargetableTrap = null; // Clear the potentially stale reference
             }
-            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+            if (scene.disarmButtonIcon) {
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.disableInteractive();
+            }
         }
     };
 
@@ -265,17 +259,11 @@ function update(time, delta) {
         if (iconKey && scene.disarmButtonIcon) {
             scene.disarmButtonIcon.setTexture(iconKey).setVisible(true);
             scene.disarmButtonIcon.setInteractive({ useHandCursor: true }); // Make icon interactive
-            if (scene.disarmButtonBorder) {
-                scene.disarmButtonBorder.setInteractive({ useHandCursor: true }); // Make border interactive
-            }
         } else {
             // Fallback or if iconKey isn't determined (e.g. unknown trapType)
             if (scene.disarmButtonIcon) {
                 scene.disarmButtonIcon.setVisible(false);
                 scene.disarmButtonIcon.disableInteractive(); // Disable icon interactivity
-            }
-            if (scene.disarmButtonBorder) {
-                scene.disarmButtonBorder.disableInteractive(); // Disable border interactivity
             }
             scene.currentTargetableTrap = null;
         }
@@ -285,9 +273,6 @@ function update(time, delta) {
         if (scene.disarmButtonIcon) {
             scene.disarmButtonIcon.setVisible(false);
             scene.disarmButtonIcon.disableInteractive(); // Disable icon interactivity
-        }
-        if (scene.disarmButtonBorder) {
-            scene.disarmButtonBorder.disableInteractive(); // Disable border interactivity
         }
     }
 }
