@@ -60,6 +60,8 @@ function preload() {
     this.load.atlasXML('tiles_spritesheet', 'res/img/spritesheet-tiles-default.png', 'res/img/spritesheet-tiles-default.xml');
     // Load the atlas for backgrounds
     this.load.atlasXML('backgrounds_spritesheet', 'res/img/spritesheet-backgrounds-default.png', 'res/img/spritesheet-backgrounds-default.xml');
+    // Load the atlas for character sprites
+    this.load.atlasXML('characters_spritesheet', 'res/img/spritesheet-characters-default.png', 'res/img/spritesheet-characters-default.xml');
 }
 
 function create() {
@@ -138,12 +140,32 @@ function create() {
         HILLS_TEXTURE_KEY
     ).setOrigin(0.5, 1);    // ancorează la baza sprite-ului
 
-    // Player
-    const playerWidth = 30;
-    const playerHeight = 50;
-    player = this.add.rectangle(100, config.height - 20 - playerHeight / 2, playerWidth, playerHeight, 0x0000FF); // Blue
-    this.physics.add.existing(player);
-    player.body.setCollideWorldBounds(true);
+    // Player sprite using green astronaut frames
+    player = this.physics.add.sprite(
+        100,
+        groundTopY - 64,                       // position so feet rest on ground
+        'characters_spritesheet',
+        'character_green_walk_a'
+    ).setScale(0.8)
+     .setCollideWorldBounds(true);
+
+    // Optional: fine-tune hitbox
+    player.body.setSize(player.width * 0.6, player.height * 0.9)
+               .setOffset(player.width * 0.2, player.height * 0.1);
+
+    // Walking animation (create once)
+    if (!this.anims.exists('green_walk')) {
+        this.anims.create({
+            key: 'green_walk',
+            frames: [
+                { key: 'characters_spritesheet', frame: 'character_green_walk_a' },
+                { key: 'characters_spritesheet', frame: 'character_green_walk_b' }
+            ],
+            frameRate: 6,
+            repeat: -1
+        });
+    }
+    player.anims.play('green_walk');
 
     // Collision: Player and Ground
     this.physics.add.collider(player, ground);
@@ -297,7 +319,7 @@ function hitObstacle(playerGameObject, obstacleGameObject) {
     this.physics.pause(); 
     console.log("Game over. Physics paused.");
 
-    playerGameObject.setFillStyle(0x808080); 
+    playerGameObject.setTint(0x808080);
 
     gameOverText.setVisible(true);
     restartText.setVisible(true);
