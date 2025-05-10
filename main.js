@@ -49,6 +49,8 @@ let trapSpawner;
 let combinedSpawnerTimer; // New timer for combined spawning
 let layers;
 let trapsGroup;
+let obstaclesGroup;
+let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
 // Scene properties for the dynamic disarm button
 let disarmButtonBorder, disarmButtonIcon, currentTargetableTrap;
 
@@ -100,9 +102,9 @@ function create() {
         fontSize: '24px', fill: '#000000'
     }).setOrigin(0.5).setVisible(false);
 
-    /* 30-second level-up timer */
+    /* 20-second level-up timer */
     levelTimer = this.time.addEvent({
-        delay   : 30000,
+        delay   : 20000,
         loop    : true,
         callback: () => {
             level += 1;
@@ -116,17 +118,8 @@ function create() {
             /* After finishing level 5, spawn the voting booth and stop the timer */
             if (level === 6) {
                 levelTimer.remove(false);
-                /* Spawn a big black rectangle that moves like an obstacle */
-                votingBooth = this.add.rectangle(
-                    GAME_WIDTH + 120,              // start off-screen right
-                    layers.groundTopY,             // sit on the ground
-                    120, 180, 0x000000
-                ).setOrigin(0.5, 1);
-                this.physics.add.existing(votingBooth);
-                votingBooth.body.setAllowGravity(false);
-                votingBooth.body.setVelocityX(-gameSpeed * currentSpeedScale);
-
-                this.physics.add.overlap(player, votingBooth, winGame, null, this);
+                if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+                spawnVotingBoothPending = true;   // defer booth until screen clear
             }
         }
     });
@@ -224,7 +217,7 @@ function create() {
     // If z-ordering becomes an issue, explicitly bringToTop this.disarmButtonBorder and this.disarmButtonIcon.
     // For now, Phaser's default rendering order should suffice.
 
-    const obstaclesGroup = this.physics.add.group();
+    obstaclesGroup = this.physics.add.group();
     trapsGroup = this.physics.add.group();
 
     obstacleSpawner = new ObstacleSpawner(this, obstaclesGroup, {
@@ -304,11 +297,35 @@ function update(time, delta) {
     layers.hills.tilePositionX   += (effectiveSpeed / 2.5) * dt;
     layers.groundTile.tilePositionX +=  effectiveSpeed      * dt;
 
+    /* Keep all dynamic objects in sync with current speed */
+    if (obstacleSpawner && obstacleSpawner.group) obstacleSpawner.group.setVelocityX(-effectiveSpeed);
+    if (trapSpawner && trapSpawner.group)      trapSpawner.group.setVelocityX(-effectiveSpeed);
+    if (votingBooth && votingBooth.body)       votingBooth.body.setVelocityX(-effectiveSpeed);
+
     const gained = obstacleSpawner.update(dt, player);
     trapSpawner.update(dt, player);
     if (gained) {
         score += gained;
         scoreText.setText('Score: ' + score);
+    }
+
+    /* Spawn the voting booth once the play-field is clear */
+    if (spawnVotingBoothPending &&
+        obstaclesGroup.getChildren().length === 0 &&
+        trapsGroup.getChildren().length === 0) {
+
+        spawnVotingBoothPending = false;
+
+        votingBooth = scene.add.rectangle(
+            GAME_WIDTH + 120,
+            layers.groundTopY,
+            120, 180, 0x000000
+        ).setOrigin(0.5, 1);
+        scene.physics.add.existing(votingBooth);
+        votingBooth.body.setAllowGravity(false);
+        votingBooth.body.setVelocityX(-effectiveSpeed);
+
+        scene.physics.add.overlap(player, votingBooth, winGame, null, scene);
     }
 
     // Update logic for the dynamic disarm button
