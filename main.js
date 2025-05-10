@@ -42,6 +42,9 @@ let trapSpawner;
 let combinedSpawnerTimer; // New timer for combined spawning
 let layers;
 let trapsGroup;
+// Scene properties for the dynamic disarm button
+let disarmButtonBorder, disarmButtonIcon, currentTargetableTrap;
+
 
 new Phaser.Game(config);
 
@@ -56,7 +59,9 @@ function preload() {
     this.load.image('player_walk1', 'res/img/player/player_walk1.png');
     this.load.image('player_walk2', 'res/img/player/player_walk2.png');
 
-    this.load.image('icon_lantern', 'res/img/player/lantern.png');
+    this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
+    this.load.image('icon_compass', 'res/img/player/compass.png');
+    this.load.image('icon_brain', 'res/img/player/brain.png');
 }
 
 function create() {
@@ -86,8 +91,9 @@ function create() {
     const startX = GAME_WIDTH - UI_PAD;
     const startY = UI_PAD;
 
-    const addUIButton = (xRight, texture, logMsg) => {
-        const border = scene.add.graphics().setScrollFactor(0).setInteractive();
+    // addUIButton now creates a border and an initially invisible icon placeholder
+    const addUIButton = (xRight) => {
+        const border = scene.add.graphics().setScrollFactor(0); // Interaction managed dynamically
         border.fillStyle(0x000000, 0.35);
         border.fillRoundedRect(
             xRight - BORDER_TOTAL,
@@ -103,32 +109,49 @@ function create() {
             BORDER_RADIUS
         );
 
-        const btn = scene.add.image(
+        // Icon is created, but initially invisible. Texture and visibility managed in update().
+        const icon = scene.add.image(
             xRight - BORDER_TOTAL / 2,
             startY + BORDER_TOTAL / 2,
-            texture
+            'icon_brain' // Placeholder texture, will be hidden
         )
             .setOrigin(0.5)
             .setDisplaySize(UI_SIZE, UI_SIZE)
             .setScrollFactor(0)
-            .setInteractive({ useHandCursor: true })
+            .setVisible(false); // Start invisible
+
+        // Border handles the click, but only if the icon is visible (logic in handler)
+        // Starts non-interactive, enabled in update() when a trap is targetable
+        border.setInteractive({ useHandCursor: true })
             .on('pointerdown', (pointer, localX, localY, event) => {
                 event?.stopPropagation();
-                // console.log('[UI] ' + logMsg); // Removed log as per previous request, can be re-added if needed
-                scene.deactivateNearestTrap();
-            });
+                // Only call deactivate if the icon is visible (meaning a trap is targeted)
+                if (scene.disarmButtonIcon && scene.disarmButtonIcon.visible) {
+                    scene.deactivateNearestTrap();
+                }
+            })
+            .disableInteractive(); // Start non-interactive
 
-        return { border, btn };
+        return { border, icon };
     };
 
-    // Single button to disarm any trap
-    const { border: borderLantern, btn: btnLantern } = addUIButton(startX, 'icon_lantern', 'Lantern power activated');
+    // Create the disarm button structure
+    const buttonElements = addUIButton(startX);
+    this.disarmButtonBorder = buttonElements.border;
+    this.disarmButtonIcon = buttonElements.icon;
+    scene.disarmButtonBorder = this.disarmButtonBorder; // Make accessible via scene var if needed
+    scene.disarmButtonIcon = this.disarmButtonIcon;
+    scene.currentTargetableTrap = null;
 
-    this.uiButtons = [
-        btnLantern,
-        borderLantern
+
+    this.uiButtons = [ // For game over handling
+        this.disarmButtonBorder,
+        this.disarmButtonIcon
     ];
-    this.children.bringToTop(this.uiButtons);
+    // Ensure button is rendered on top of other elements if necessary,
+    // though individual elements are added to scene's display list.
+    // If z-ordering becomes an issue, explicitly bringToTop this.disarmButtonBorder and this.disarmButtonIcon.
+    // For now, Phaser's default rendering order should suffice.
 
     const obstaclesGroup = this.physics.add.group();
     trapsGroup = this.physics.add.group();
@@ -157,20 +180,20 @@ function create() {
     });
 
     scene.deactivateNearestTrap = () => {
-        const activeTraps = trapsGroup.getChildren().filter(t => t.getData('active'));
-        if (!activeTraps.length) return;
-
-        // Find the nearest among all active traps
-        const nearest = activeTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
-        
-        if (nearest && Math.abs(nearest.x - player.x) <= 200) {
-            nearest.setFillStyle(0x888888); // Change color
-            nearest.setData('active', false); // Mark as inactive
-            if (nearest.body) {
-                nearest.body.setVelocityX(-gameSpeed / 2); // Slow down
+        if (scene.currentTargetableTrap) {
+            const trapToDeactivate = scene.currentTargetableTrap;
+            trapToDeactivate.setFillStyle(0x888888); // Change color
+            trapToDeactivate.setData('active', false); // Mark as inactive
+            if (trapToDeactivate.body) {
+                trapToDeactivate.body.setVelocityX(-gameSpeed / 2); // Slow down
             }
             score += 10;
             scoreText.setText('Score: ' + score);
+
+            // Reset button state immediately after deactivation
+            scene.currentTargetableTrap = null;
+            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
+            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
         }
     };
 
@@ -195,6 +218,43 @@ function update(time, delta) {
     if (gained) {
         score += gained;
         scoreText.setText('Score: ' + score);
+    }
+
+    // Update logic for the dynamic disarm button
+    const activeTraps = trapsGroup.getChildren().filter(t => t.getData('active'));
+    let nearestActiveTrapInRange = null;
+    let minDistance = 201; // Max disarm distance + 1
+
+    activeTraps.forEach(trap => {
+        const distance = Math.abs(trap.x - player.x);
+        if (distance <= 200 && distance < minDistance) {
+            minDistance = distance;
+            nearestActiveTrapInRange = trap;
+        }
+    });
+
+    if (nearestActiveTrapInRange) {
+        scene.currentTargetableTrap = nearestActiveTrapInRange;
+        const trapType = nearestActiveTrapInRange.getData('trapType');
+        let iconKey = '';
+
+        if (trapType === 'populist') iconKey = 'icon_brain';
+        else if (trapType === 'obedience') iconKey = 'icon_compass';
+        else if (trapType === 'darkweb') iconKey = 'icon_flashlight';
+
+        if (iconKey && scene.disarmButtonIcon) {
+            scene.disarmButtonIcon.setTexture(iconKey).setVisible(true);
+            if (scene.disarmButtonBorder) scene.disarmButtonBorder.setInteractive({ useHandCursor: true });
+        } else {
+            // Should not happen if trap types are handled, but as a fallback:
+            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
+            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+            scene.currentTargetableTrap = null;
+        }
+    } else {
+        scene.currentTargetableTrap = null;
+        if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
+        if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
     }
 }
 
