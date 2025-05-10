@@ -88,7 +88,7 @@ function create() {
     const startX = GAME_WIDTH - UI_PAD;
     const startY = UI_PAD;
 
-    const addUIButton = (xRight, texture, logMsg) => {
+    const addUIButton = (xRight, texture, logMsg, powerType) => {
         const border = scene.add.graphics().setScrollFactor(0).setInteractive();
         border.fillStyle(0x000000, 0.35);
         border.fillRoundedRect(
@@ -116,16 +116,19 @@ function create() {
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', (pointer, localX, localY, event) => {
                 event?.stopPropagation();
-                console.log('[UI] ' + logMsg);
-                scene.deactivateNearestTrap();
+                // console.log('[UI] ' + logMsg); // Removed log as per previous request, can be re-added if needed
+                scene.deactivateNearestTrap(powerType);
             });
 
         return { border, btn };
     };
 
-    const { border: borderFlash, btn: btnFlash } = addUIButton(startX, 'icon_flashlight', 'Flash-light power activated');
-    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (BORDER_TOTAL + UI_PAD), 'icon_compass', 'Compass power activated');
-    const { border: borderBrain, btn: btnBrain } = addUIButton(startX - 2 * (BORDER_TOTAL + UI_PAD), 'icon_brain', 'Brain power activated');
+    // Flashlight (icon_flashlight) deactivates 'darkweb' traps (yellow)
+    const { border: borderFlash, btn: btnFlash } = addUIButton(startX, 'icon_flashlight', 'Flash-light power activated', 'darkweb');
+    // Compass (icon_compass) deactivates 'obedience' traps (blue)
+    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (BORDER_TOTAL + UI_PAD), 'icon_compass', 'Compass power activated', 'obedience');
+    // Brain (icon_brain) deactivates 'populist' traps (pink)
+    const { border: borderBrain, btn: btnBrain } = addUIButton(startX - 2 * (BORDER_TOTAL + UI_PAD), 'icon_brain', 'Brain power activated', 'populist');
 
     this.uiButtons = [
         btnFlash, btnCompass, btnBrain,
@@ -159,11 +162,16 @@ function create() {
         loop: true
     });
 
-    scene.deactivateNearestTrap = () => {
-        const activeTraps = trapsGroup.getChildren().filter(t => t.getData('active'));
-        if (!activeTraps.length) return;
-        const nearest = activeTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
-        if (Math.abs(nearest.x - player.x) <= 200) {
+    scene.deactivateNearestTrap = (powerType) => {
+        if (!powerType) return; // Safety check
+
+        const relevantTraps = trapsGroup.getChildren().filter(t => t.getData('active') && t.getData('trapType') === powerType);
+        if (!relevantTraps.length) return;
+
+        // Find the nearest among the relevant traps
+        const nearest = relevantTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
+        
+        if (nearest && Math.abs(nearest.x - player.x) <= 200) {
             nearest.setFillStyle(0x888888); // Change color
             nearest.setData('active', false); // Mark as inactive
             if (nearest.body) {

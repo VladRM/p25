@@ -6,9 +6,13 @@ export class TrapSpawner {
     }
 
     spawnTrap() {
-        // console.log(`[TrapSpawner] spawnTrap called. groundTopY: ${this.groundTopY}`); // Removed log
-        const COLORS = [0xff69b4, 0x1e90ff, 0xffd700]; // pink, blue, yellow
-        const color = Phaser.Utils.Array.GetRandom(COLORS);
+        const TRAP_TYPES = [
+            { name: 'populist', color: 0xff69b4 }, // Pink
+            { name: 'obedience', color: 0x1e90ff }, // Blue
+            { name: 'darkweb', color: 0xffd700 }  // Yellow (Dark Web of Lies)
+        ];
+        const selectedTrapType = Phaser.Utils.Array.GetRandom(TRAP_TYPES);
+        const color = selectedTrapType.color;
 
         const width = 120;
         const height = 40;
@@ -24,6 +28,7 @@ export class TrapSpawner {
         // Add to the group first. The group will ensure a physics body is created/enabled.
         this.group.add(trap);
         trap.setData('active', true);
+        trap.setData('trapType', selectedTrapType.name); // Store the trap type
         
         if (trap.body) {
             trap.body.setAllowGravity(false);
