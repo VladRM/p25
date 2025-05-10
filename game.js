@@ -57,16 +57,24 @@ function create() {
     gameOver = false;
 
     // Ground
-    const groundSpriteHeight = 64; // Height of the "terrain_grass_horizontal_middle" sprite
+    const actualGroundSpriteFrameHeight = 64; // Actual height of the "terrain_grass_horizontal_middle" sprite frame
+    const displayedGroundHeight = 20; // Desired visible and physical height of the ground on screen
+
     groundTileSprite = this.add.tileSprite(
         config.width / 2, // Center X of the TileSprite
-        config.height - 20 + (groundSpriteHeight / 2), // Position its center so its top aligns with y = config.height - 20
+        (config.height - 20) + (displayedGroundHeight / 2), // Position its center so its top aligns with y = config.height - 20
         config.width,
-        groundSpriteHeight, // Visual height of the TileSprite
+        displayedGroundHeight, // Set the visual height of the TileSprite on screen
         'tiles_spritesheet',
-        'terrain_grass_horizontal_middle' // Using "terrain_grass_horizontal_middle" tile
+        'terrain_grass_horizontal_middle' // Using "terrain_grass_horizontal_middle" tile (frame is 64px tall)
     );
+    // The TileSprite will use the 'terrain_grass_horizontal_middle' frame.
+    // Since displayedGroundHeight (20px) is less than actualGroundSpriteFrameHeight (64px),
+    // Phaser will clip the frame, effectively showing the top 20px of the sprite, tiled horizontally.
+
     ground = this.physics.add.existing(groundTileSprite, true); // `true` for static, makes it a physics body
+    // The physics body will now be config.width x displayedGroundHeight (20px).
+    // Its top surface will be at y = config.height - 20, consistent with the previous ground.
 
     // Player
     const playerWidth = 30;
