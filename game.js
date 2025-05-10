@@ -75,6 +75,7 @@ function create() {
         'backgrounds_spritesheet',
         'background_clouds' // Ensuring background_clouds is used
     );
+    cloudsTileSprite.tilePositionY = 90;
 
     // Layer 3: More Distant Hills/Trees (background_fade_trees)
     // The 'background_fade_trees' sprite is 256x256.
@@ -90,6 +91,7 @@ function create() {
         'backgrounds_spritesheet',
         'background_clouds'
     );
+    distantTreesTileSprite.tilePositionY = 90;
 
     // Layer 2: Hills/Trees (background_color_trees)
     // The 'background_color_trees' sprite is 256x256.
