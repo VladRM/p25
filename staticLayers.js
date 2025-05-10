@@ -43,11 +43,15 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
     }
 
     const groundTopY = height - displayedGroundHeight;
+    const HILLS_TRIM_TOP = 100;   // píxeles a ocultar por arriba
     const hills = scene.add.tileSprite(
-        width / 2, groundTopY + 60,
-        width, frameH,
+        width / 2, groundTopY + 60,     // misma posición
+        width, frameH - HILLS_TRIM_TOP, // altura visible sin los 100 px superiores
         patternTexKey
     ).setOrigin(0.5, 1);
+
+    // Oculta los 100 px superiores desplazando la textura
+    hills.tilePositionY = HILLS_TRIM_TOP;
 
     // Set depths for correct rendering order
     // Lower depth = further back, Higher depth = closer to camera
