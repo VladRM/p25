@@ -180,7 +180,8 @@ function create() {
     });
 
     scene.deactivateNearestTrap = () => {
-        if (scene.currentTargetableTrap) {
+        // Ensure the target is still valid (exists in scene and is marked as 'active' by our game logic)
+        if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
             const trapToDeactivate = scene.currentTargetableTrap;
             trapToDeactivate.setFillStyle(0x888888); // Change color
             trapToDeactivate.setData('active', false); // Mark as inactive
@@ -192,6 +193,14 @@ function create() {
 
             // Reset button state immediately after deactivation
             scene.currentTargetableTrap = null;
+            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
+            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+        } else {
+            // If the target became invalid (e.g., destroyed, already deactivated, or no longer in scene)
+            // ensure the button is reset.
+            if (scene.currentTargetableTrap) { // It was set, but now fails the validity check
+                scene.currentTargetableTrap = null; // Clear the potentially stale reference
+            }
             if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
             if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
         }
