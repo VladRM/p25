@@ -7,8 +7,7 @@ export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 320;
 export const displayedGroundHeight = 20;
 export const gameSpeed = 250;
-export const obstacleSpawnDelay = 1750;
-export const trapSpawnDelay = 3000;
+export const obstacleSpawnDelay = 1750; // This will be used for the combined spawner
 
 const UI_SIZE = 64;
 const BORDER_W = 2;
@@ -40,6 +39,7 @@ let gameOverText;
 let restartText;
 let obstacleSpawner;
 let trapSpawner;
+let combinedSpawnerTimer; // New timer for combined spawning
 let layers;
 let trapsGroup;
 
@@ -137,12 +137,24 @@ function create() {
     trapsGroup = this.physics.add.group();
 
     obstacleSpawner = new ObstacleSpawner(this, obstaclesGroup, {
-        spawnDelay: obstacleSpawnDelay,
         groundTopY: layers.groundTopY
     });
     trapSpawner = new TrapSpawner(this, trapsGroup, {
-        spawnDelay: trapSpawnDelay,
         groundTopY: layers.groundTopY
+    });
+
+    const spawnRandomly = () => {
+        if (Phaser.Math.Between(0, 1) === 0) {
+            obstacleSpawner.spawnObstacle();
+        } else {
+            trapSpawner.spawnTrap();
+        }
+    };
+
+    combinedSpawnerTimer = this.time.addEvent({
+        delay: obstacleSpawnDelay,
+        callback: spawnRandomly,
+        loop: true
     });
 
     scene.deactivateNearestTrap = () => {
@@ -194,6 +206,7 @@ function hitObstacle(playerGO, obstacleGO) {
     if (scene.uiButtons)
         scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
-    obstacleSpawner.stop();
-    trapSpawner.stop();
+    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+    // obstacleSpawner.stop(); // No longer needed as timer is external
+    // trapSpawner.stop(); // No longer needed as timer is external
 }

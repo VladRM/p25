@@ -9,25 +9,10 @@ const ENEMY_TYPES = [
 ];
 
 export class ObstacleSpawner {
-    constructor (scene, group, { spawnDelay, groundTopY }) {
+    constructor (scene, group, { groundTopY }) {
         this.scene      = scene;
         this.group      = group;
-        this.spawnDelay = spawnDelay;
         this.groundTopY = groundTopY;
-
-        this.start();
-    }
-
-    start () {
-        this.timer = this.scene.time.addEvent({
-            delay    : this.spawnDelay,
-            callback : () => this.spawnObstacle(),
-            loop     : true
-        });
-    }
-
-    stop () {
-        if (this.timer) this.timer.remove(false);
     }
 
     spawnObstacle () {
