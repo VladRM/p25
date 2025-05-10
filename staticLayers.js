@@ -7,7 +7,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
     const cloudFrame  = scene.textures.getFrame('backgrounds_spritesheet', 'background_clouds');
     const cloudHeight = cloudFrame.height;
     const clouds = scene.add.tileSprite(
-        width / 2, -100,                 // x centrado, y = -100 (sube 100 px)
+        width / 2, -90,                 // x centrado, y = -100 (sube 100 px)
         width, cloudHeight,              // height exactly the cloud frame height
         'backgrounds_spritesheet', 'background_clouds'
     ).setOrigin(0.5, 0);                // anchor to top-center
@@ -43,9 +43,9 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
     }
 
     const groundTopY = height - displayedGroundHeight;
-    const HILLS_TRIM_TOP = 100;   // píxeles a ocultar por arriba
+    const HILLS_TRIM_TOP = 40;   // píxeles a ocultar por arriba
     const hills = scene.add.tileSprite(
-        width / 2, groundTopY + 60,     // misma posición
+        width / 2, groundTopY + 40,     // misma posición
         width, frameH - HILLS_TRIM_TOP, // altura visible sin los 100 px superiores
         patternTexKey
     ).setOrigin(0.5, 1);
