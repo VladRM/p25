@@ -2,13 +2,16 @@ import { createStaticLayers } from './staticLayers.js';
 import { createPlayer, registerPlayerControls } from './player.js';
 import { ObstacleSpawner } from './obstacleSpawner.js';
 import { TrapSpawner } from './trapSpawner.js';
-
-export const GAME_WIDTH = 800;
-export const GAME_HEIGHT = 320;
-export const displayedGroundHeight = 20;
-export const gameSpeed = 250;
-export const obstacleSpawnDelay = 1750; // This will be used for the combined spawner
-export const MAX_LEVELS = 5;
+import {
+    GAME_WIDTH,
+    GAME_HEIGHT,
+    DISPLAYED_GROUND_HEIGHT,
+    GAME_SPEED,
+    OBSTACLE_SPAWN_DELAY,
+    MAX_LEVELS,
+    LEVEL_DURATION_MS,
+    ENEMY_TO_TRAP_RATIO
+} from './gameConfig.js';
 
 const UI_SIZE = 64;
 const BORDER_W = 2;
@@ -88,7 +91,7 @@ function create() {
     layers = createStaticLayers(this, {
         width: GAME_WIDTH,
         height: GAME_HEIGHT,
-        displayedGroundHeight
+        displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
     });
 
     player = createPlayer(this, layers.groundTopY);
@@ -104,9 +107,9 @@ function create() {
         fontSize: '24px', fill: '#000000'
     }).setOrigin(0.5).setVisible(false);
 
-    /* 20-second level-up timer */
+    /* Level-up timer */
     levelTimer = this.time.addEvent({
-        delay   : 20000,
+        delay   : LEVEL_DURATION_MS,
         loop    : true,
         callback: () => {
             if (level < MAX_LEVELS) {
@@ -232,7 +235,6 @@ function create() {
         groundTopY: layers.groundTopY
     });
 
-    const ENEMY_TO_TRAP_RATIO = 2; // Enemies should spawn twice as often as traps (≈66% vs 33%)
     const spawnNext = () => {
         const enemyProbability = ENEMY_TO_TRAP_RATIO / (ENEMY_TO_TRAP_RATIO + 1);
         if (Math.random() < enemyProbability) {
@@ -243,7 +245,7 @@ function create() {
     };
 
     combinedSpawnerTimer = this.time.addEvent({
-        delay: obstacleSpawnDelay,
+        delay: OBSTACLE_SPAWN_DELAY,
         callback: spawnNext,
         loop: true
     });
@@ -255,7 +257,7 @@ function create() {
             trapToDeactivate.setFillStyle(0x888888); // Change color
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
-                trapToDeactivate.body.setVelocityX(-gameSpeed * currentSpeedScale / 2); // Slow down (half of current speed)
+                trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down (half of current speed)
             }
             score += 10;
             scoreText.setText('Score: ' + score);
@@ -297,7 +299,7 @@ function update(time, delta) {
 
     const dt = delta / 1000;
 
-    const effectiveSpeed = gameSpeed * currentSpeedScale;
+    const effectiveSpeed = GAME_SPEED * currentSpeedScale;
     layers.clouds.tilePositionX  += (effectiveSpeed / 5)   * dt;
     layers.hills.tilePositionX   += (effectiveSpeed / 2.5) * dt;
     layers.groundTile.tilePositionX +=  effectiveSpeed      * dt;
