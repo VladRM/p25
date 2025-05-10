@@ -20,6 +20,7 @@ const config = {
 // Game variables
 let player;
 let skyTileSprite; // For the visual sky background
+let cloudsTileSprite; // For the new, closer cloud layer
 let greenHillsTileSprite; // For the visual green hills background
 let treesTileSprite; // For the visual trees background
 let ground;
@@ -73,6 +74,17 @@ function create() {
     );
     // Ensure sky is behind everything else by setting a low depth, or by adding it first.
     // Since we are adding it before other elements like ground and player, it will naturally be in the background.
+
+    // Clouds Layer (in front of sky, behind hills)
+    // Also uses 'background_clouds' but will scroll at a different speed for parallax.
+    cloudsTileSprite = this.add.tileSprite(
+        config.width / 2,
+        config.height / 2, // Centered, covers full height
+        config.width,
+        config.height,
+        'backgrounds_spritesheet',
+        'background_clouds'
+    );
 
     // Green Hills Background
     // The 'background_color_hills' sprite is 256x256.
@@ -235,6 +247,11 @@ function update(time, delta) {
     // Scroll the sky texture (slower than ground for parallax)
     if (skyTileSprite) {
         skyTileSprite.tilePositionX += (gameSpeed / 4) * (delta / 1000); // Scroll at 1/4 of ground speed
+    }
+
+    // Scroll the new clouds layer (faster than sky, slower than hills)
+    if (cloudsTileSprite) {
+        cloudsTileSprite.tilePositionX += (gameSpeed / 3) * (delta / 1000); // Scroll at 1/3 of ground speed
     }
 
     // Scroll the green hills texture (slower parallax)
