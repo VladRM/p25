@@ -189,14 +189,14 @@ function create() {
         groundTopY: layers.groundTopY
     });
 
-    let spawnCounter = 0; // Controls 2-to-1 enemy-to-trap ratio
+    const ENEMY_TO_TRAP_RATIO = 2; // Enemies should spawn twice as often as traps (≈66% vs 33%)
     const spawnNext = () => {
-        if (spawnCounter % 3 === 2) {       // Every third spawn is a trap
-            trapSpawner.spawnTrap();
-        } else {
+        const enemyProbability = ENEMY_TO_TRAP_RATIO / (ENEMY_TO_TRAP_RATIO + 1);
+        if (Math.random() < enemyProbability) {
             obstacleSpawner.spawnObstacle();
+        } else {
+            trapSpawner.spawnTrap();
         }
-        spawnCounter += 1;
     };
 
     combinedSpawnerTimer = this.time.addEvent({
