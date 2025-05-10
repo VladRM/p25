@@ -111,9 +111,9 @@ function create() {
             this.sound.play('level_up', { volume: 1 });
             levelText.setText('Level: ' + level);
 
-            /* Increase world time-scale by fixed 20 % steps based on base speed */
+            /* Increase game speed scale for parallax & object velocity computations */
             currentSpeedScale = 1 + (level - 1) * 0.2;
-            this.physics.world.timeScale = currentSpeedScale;
+            // Keep physics world timeScale at 1.0; velocities are set explicitly each frame.
 
             /* After finishing level 5, spawn the voting booth and stop the timer */
             if (level === 6) {
