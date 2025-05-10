@@ -20,7 +20,8 @@ const config = {
 // Game variables
 let player;
 let skyTileSprite; // For the visual sky background
-let hillsTileSprite; // For the visual hills background
+let greenHillsTileSprite; // For the visual green hills background
+let treesTileSprite; // For the visual trees background
 let ground;
 let groundTileSprite; // For the visual ground tile sprite
 let obstacles;
@@ -73,22 +74,34 @@ function create() {
     // Ensure sky is behind everything else by setting a low depth, or by adding it first.
     // Since we are adding it before other elements like ground and player, it will naturally be in the background.
 
-    // Hills Background
-    // The 'background_fade_hills' sprite is 256x256.
-    // We want to position it so its bottom aligns roughly with the top of the ground.
-    // Ground top is at config.height - 20.
-    // Hills sprite height is 256.
-    // So, its center Y should be (config.height - 20) - (256 / 2) = config.height - 20 - 128
-    hillsTileSprite = this.add.tileSprite(
+    // Green Hills Background
+    // The 'background_color_hills' sprite is 256x256.
+    // Position its bottom edge slightly above the ground.
+    // Ground top is at config.height - 20. Sprite height is 256.
+    // Center Y = (config.height - 20) - (spriteHeight / 2) + vertical_offset_from_ground_top
+    // Let's make it sit a bit higher than the previous 'fade_hills' to ensure trees can be in front.
+    greenHillsTileSprite = this.add.tileSprite(
         config.width / 2,
-        (config.height - 20) - (256 / 2) + 50, // Adjusting +50 to make it visually sit nicely above ground
+        (config.height - 20) - (256 / 2) + 30, // Adjusted Y position
         config.width,
-        256, // Use the full height of the sprite
+        256, // Full height of the sprite
         'backgrounds_spritesheet',
-        'background_fade_hills'
+        'background_color_hills'
     );
-    // Hills should be in front of the sky, but behind the ground and player.
-    // Order of creation handles this: sky -> hills -> ground -> player.
+
+    // Trees Background
+    // The 'background_color_trees' sprite is 256x256.
+    // This layer will be in front of greenHillsTileSprite.
+    // Position its bottom edge also slightly above the ground, potentially overlapping hills slightly.
+    treesTileSprite = this.add.tileSprite(
+        config.width / 2,
+        (config.height - 20) - (256 / 2) + 60, // Adjusted Y position, slightly lower than hills to appear closer or overlap
+        config.width,
+        256, // Full height of the sprite
+        'backgrounds_spritesheet',
+        'background_color_trees'
+    );
+    // Order of creation: sky -> greenHills -> trees -> ground -> player.
 
     // Ground
     const actualGroundSpriteFrameHeight = 64; // Actual height of the "terrain_grass_horizontal_middle" sprite frame
@@ -224,9 +237,14 @@ function update(time, delta) {
         skyTileSprite.tilePositionX += (gameSpeed / 4) * (delta / 1000); // Scroll at 1/4 of ground speed
     }
 
-    // Scroll the hills texture (medium speed for parallax)
-    if (hillsTileSprite) {
-        hillsTileSprite.tilePositionX += (gameSpeed / 2) * (delta / 1000); // Scroll at 1/2 of ground speed
+    // Scroll the green hills texture (slower parallax)
+    if (greenHillsTileSprite) {
+        greenHillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000); // Scroll at 2/5 of ground speed
+    }
+
+    // Scroll the trees texture (medium speed parallax)
+    if (treesTileSprite) {
+        treesTileSprite.tilePositionX += (gameSpeed / 1.5) * (delta / 1000); // Scroll at 2/3 of ground speed
     }
 
     // Scroll the ground texture
