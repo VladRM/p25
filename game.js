@@ -19,6 +19,7 @@ const config = {
 
 // Game variables
 let player;
+let skyTileSprite; // For the visual sky background
 let ground;
 let groundTileSprite; // For the visual ground tile sprite
 let obstacles;
@@ -49,12 +50,27 @@ const game = new Phaser.Game(config);
 function preload() {
     // Load the atlas for the tiles (ground, etc.)
     this.load.atlasXML('tiles_spritesheet', 'res/img/spritesheet-tiles-default.png', 'res/img/spritesheet-tiles-default.xml');
+    // Load the atlas for backgrounds
+    this.load.atlasXML('backgrounds_spritesheet', 'res/img/spritesheet-backgrounds-default.png', 'res/img/spritesheet-backgrounds-default.xml');
 }
 
 function create() {
     // Reset game state for potential restarts
     score = 0;
     gameOver = false;
+
+    // Sky Background
+    // The 'background_clouds' sprite is 256x256. We'll tile it.
+    skyTileSprite = this.add.tileSprite(
+        config.width / 2,
+        config.height / 2,
+        config.width,
+        config.height,
+        'backgrounds_spritesheet',
+        'background_clouds'
+    );
+    // Ensure sky is behind everything else by setting a low depth, or by adding it first.
+    // Since we are adding it before other elements like ground and player, it will naturally be in the background.
 
     // Ground
     const actualGroundSpriteFrameHeight = 64; // Actual height of the "terrain_grass_horizontal_middle" sprite frame
@@ -183,6 +199,11 @@ function spawnObstacle() {
 function update(time, delta) {
     if (gameOver) {
         return; 
+    }
+
+    // Scroll the sky texture (slower than ground for parallax)
+    if (skyTileSprite) {
+        skyTileSprite.tilePositionX += (gameSpeed / 4) * (delta / 1000); // Scroll at 1/4 of ground speed
     }
 
     // Scroll the ground texture
