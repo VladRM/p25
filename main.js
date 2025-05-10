@@ -177,6 +177,8 @@ function create() {
             if (nearest.body) {
                 nearest.body.setVelocityX(-gameSpeed / 2); // Slow down
             }
+            score += 10;
+            scoreText.setText('Score: ' + score);
         }
     };
 

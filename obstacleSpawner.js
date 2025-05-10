@@ -73,7 +73,7 @@ export class ObstacleSpawner {
             if (ob.getBounds().right < 0) {
                 this.group.remove(ob, true, true);
             } else if (ob.getData('isScorable') && (ob.x + ob.width / 2) < player.x) {
-                gained += 10;
+                gained += 1;
                 ob.setData('isScorable', false);
             }
         });
