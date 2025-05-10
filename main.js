@@ -120,6 +120,14 @@ function create() {
             .setScrollFactor(0)
             .setVisible(false); // Start invisible
 
+        // Icon's pointerdown handler
+        icon.on('pointerdown', (pointer, localX, localY, event) => {
+            event?.stopPropagation();
+            // If icon is clicked, it implies it's active (visible and interactive).
+            scene.deactivateNearestTrap();
+        });
+        // Icon's interactivity (setInteractive/disableInteractive) is managed in update().
+
         // Border handles the click, but only if the icon is visible (logic in handler)
         // Starts non-interactive, enabled in update() when a trap is targetable
         border.setInteractive({ useHandCursor: true })
@@ -244,26 +252,43 @@ function update(time, delta) {
 
     if (nearestActiveTrapInRange) {
         scene.currentTargetableTrap = nearestActiveTrapInRange;
-        const trapType = nearestActiveTrapInRange.getData('trapType');
+        const trapTypeData = nearestActiveTrapInRange.getData('trapType');
         let iconKey = '';
 
-        if (trapType === 'populist') iconKey = 'icon_brain';
-        else if (trapType === 'obedience') iconKey = 'icon_compass';
-        else if (trapType === 'darkweb') iconKey = 'icon_flashlight';
+        if (typeof trapTypeData === 'string') {
+            const lowerTrapType = trapTypeData.toLowerCase();
+            if (lowerTrapType === 'populist') iconKey = 'icon_brain';
+            else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
+            else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+        }
 
         if (iconKey && scene.disarmButtonIcon) {
             scene.disarmButtonIcon.setTexture(iconKey).setVisible(true);
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.setInteractive({ useHandCursor: true });
+            scene.disarmButtonIcon.setInteractive({ useHandCursor: true }); // Make icon interactive
+            if (scene.disarmButtonBorder) {
+                scene.disarmButtonBorder.setInteractive({ useHandCursor: true }); // Make border interactive
+            }
         } else {
-            // Should not happen if trap types are handled, but as a fallback:
-            if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+            // Fallback or if iconKey isn't determined (e.g. unknown trapType)
+            if (scene.disarmButtonIcon) {
+                scene.disarmButtonIcon.setVisible(false);
+                scene.disarmButtonIcon.disableInteractive(); // Disable icon interactivity
+            }
+            if (scene.disarmButtonBorder) {
+                scene.disarmButtonBorder.disableInteractive(); // Disable border interactivity
+            }
             scene.currentTargetableTrap = null;
         }
     } else {
+        // No trap in range
         scene.currentTargetableTrap = null;
-        if (scene.disarmButtonIcon) scene.disarmButtonIcon.setVisible(false);
-        if (scene.disarmButtonBorder) scene.disarmButtonBorder.disableInteractive();
+        if (scene.disarmButtonIcon) {
+            scene.disarmButtonIcon.setVisible(false);
+            scene.disarmButtonIcon.disableInteractive(); // Disable icon interactivity
+        }
+        if (scene.disarmButtonBorder) {
+            scene.disarmButtonBorder.disableInteractive(); // Disable border interactivity
+        }
     }
 }
 
