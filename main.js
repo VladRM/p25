@@ -432,8 +432,12 @@ function hitObstacle(playerGO, obstacleGO) {
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();
 
-    gameOverText.setVisible(true);
-    restartText.setVisible(true);
+    gameOverText.setVisible(true).setDepth(100); // Set a high depth
+    restartText.setVisible(true).setDepth(100); // Set a high depth
+
+    // Bring to top as well, though depth is usually sufficient
+    scene.children.bringToTop(gameOverText);
+    scene.children.bringToTop(restartText);
 
     if (scene.uiButtons)
         scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
