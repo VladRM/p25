@@ -7,9 +7,9 @@ const ENEMY_ANIMATIONS = {
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
-    constructor (scene, x, y, texture, frame, enemyType) {
+    constructor (scene, x, y, texture, frame, enemyType, scale) {
         super(scene, x, y, texture, frame);
-        console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}`);
+        console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}, scale:${scale}`);
         
         scene.add.existing(this);
 
@@ -19,7 +19,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.setVisible(true);
         this.setDepth(10);
         this.setData('isScorable', true);
-        this.setScale(0.7); // Adjust scale as needed for sprites
+        this.setScale(scale); // Use the provided scale
 
         // Play animation
         this.playAnimation();

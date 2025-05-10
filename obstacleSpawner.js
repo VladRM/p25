@@ -36,11 +36,14 @@ export class ObstacleSpawner {
         const enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
         const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
 
+        const baseScale = 0.7;
+        const chosenScale = Phaser.Math.RND.pick([baseScale, baseScale * 1.5]);
+
         // Create a temporary sprite to get its dimensions for positioning
         // This sprite is not added to the scene or group yet.
         const tempSprite = this.scene.make.sprite({ key: textureKey, frame: enemyTypeData.baseFrame }, false);
-        // Apply the same scale as the actual enemy to get accurate dimensions for positioning
-        tempSprite.setScale(0.7); // Must match the scale in Enemy.js constructor
+        // Apply the chosen scale to get accurate dimensions for positioning
+        tempSprite.setScale(chosenScale);
         const spriteHeight = tempSprite.displayHeight;
         const spriteWidth = tempSprite.displayWidth; 
         tempSprite.destroy(); // Clean up temporary sprite
@@ -57,7 +60,8 @@ export class ObstacleSpawner {
             yPos,
             textureKey,
             enemyTypeData.baseFrame,
-            enemyTypeData.type // Pass the enemy type for animation handling
+            enemyTypeData.type, // Pass the enemy type for animation handling
+            chosenScale         // Pass the chosen scale
         );
         this.group.add(enemy);
         enemy.initializePhysics();
