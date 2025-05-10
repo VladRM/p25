@@ -135,10 +135,27 @@ function create() {
 
     const obstaclesGroup = this.physics.add.group();
     trapsGroup = this.physics.add.group();
+
     obstacleSpawner = new ObstacleSpawner(this, obstaclesGroup, {
         spawnDelay: obstacleSpawnDelay,
         groundTopY: layers.groundTopY
     });
+    trapSpawner = new TrapSpawner(this, trapsGroup, {
+        spawnDelay: trapSpawnDelay,
+        groundTopY: layers.groundTopY
+    });
+
+    scene.deactivateNearestTrap = () => {
+        const activeTraps = trapsGroup.getChildren().filter(t => t.getData('active'));
+        if (!activeTraps.length) return;
+        const nearest = activeTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
+        if (Math.abs(nearest.x - player.x) <= 200) {
+            nearest.setFillStyle(0x888888);
+            nearest.setData('active', false);
+            nearest.body.enable = false;
+        }
+    };
+
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
 
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
