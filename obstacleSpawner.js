@@ -13,12 +13,16 @@ export class ObstacleSpawner {
         this.scene      = scene;
         this.group      = group;
         this.groundTopY = groundTopY;
+        this.lastEnemyType = null;  // Track last spawned enemy to avoid repeats
     }
 
     spawnObstacle () {
         // console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}`); // Removed log
         
-        const enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
+        let enemyTypeData;
+        do {
+            enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
+        } while (enemyTypeData.type === this.lastEnemyType && ENEMY_TYPES.length > 1);
         const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
 
         const baseScale = 0.7;
@@ -54,6 +58,7 @@ export class ObstacleSpawner {
             chosenScale         // Pass the chosen scale
         );
         this.group.add(enemy);
+        this.lastEnemyType = enemyTypeData.type; // Remember last enemy type
         enemy.initializePhysics();
 
         // console.log(`[ObstacleSpawner] Enemy ${enemyTypeData.type} added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`); // Removed log

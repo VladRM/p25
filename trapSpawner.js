@@ -3,6 +3,7 @@ export class TrapSpawner {
         this.scene = scene;
         this.group = group;
         this.groundTopY = groundTopY;
+        this.lastTrapType = null; // Track last spawned trap to avoid repeats
     }
 
     spawnTrap() {
@@ -11,7 +12,10 @@ export class TrapSpawner {
             { name: 'obedience', color: 0x1e90ff }, // Blue
             { name: 'darkweb', color: 0xffd700 }  // Yellow (Dark Web of Lies)
         ];
-        const selectedTrapType = Phaser.Utils.Array.GetRandom(TRAP_TYPES);
+        let selectedTrapType;
+        do {
+            selectedTrapType = Phaser.Utils.Array.GetRandom(TRAP_TYPES);
+        } while (selectedTrapType.name === this.lastTrapType && TRAP_TYPES.length > 1);
         const color = selectedTrapType.color;
 
         const width = 120;
@@ -27,6 +31,7 @@ export class TrapSpawner {
 
         // Add to the group first. The group will ensure a physics body is created/enabled.
         this.group.add(trap);
+        this.lastTrapType = selectedTrapType.name; // Remember last trap type
         trap.setData('active', true);
         trap.setData('trapType', selectedTrapType.name); // Store the trap type
         

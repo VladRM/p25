@@ -189,19 +189,19 @@ function create() {
         groundTopY: layers.groundTopY
     });
 
-    const spawnRandomly = () => {
-        const choice = Phaser.Math.Between(0, 1);
-        // console.log(`[Main] spawnRandomly choice: ${choice === 0 ? 'Obstacle' : 'Trap'}`); // Removed log
-        if (choice === 0) {
-            obstacleSpawner.spawnObstacle();
-        } else {
+    let spawnCounter = 0; // Controls 2-to-1 enemy-to-trap ratio
+    const spawnNext = () => {
+        if (spawnCounter % 3 === 2) {       // Every third spawn is a trap
             trapSpawner.spawnTrap();
+        } else {
+            obstacleSpawner.spawnObstacle();
         }
+        spawnCounter += 1;
     };
 
     combinedSpawnerTimer = this.time.addEvent({
         delay: obstacleSpawnDelay,
-        callback: spawnRandomly,
+        callback: spawnNext,
         loop: true
     });
 
