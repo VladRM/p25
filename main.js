@@ -419,20 +419,37 @@ function hitTrap(playerGO, trapGO) {
 function winGame(playerGO, boothGO) {
     if (gameOver) return;          // prevent double processing
 
-    // Win only if the player's center is at or past the booth's center
-    if (playerGO.x <= boothGO.x) {
-        gameOver = true;               // reuse existing flag to halt update loop
-        scene.physics.pause();
+    // Condition for player entering the booth
+    if (playerGO.x <= boothGO.x && !playerGO.getData('isVoting')) {
+        playerGO.setData('isVoting', true); // Flag to prevent re-triggering
+        gameOver = true; // Set gameOver early to stop other updates
 
-        const winText = scene.add.text(
-            GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
-            { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
-        ).setOrigin(0.5);
+        playerGO.setVisible(false);
+        if (playerGO.anims) playerGO.anims.stop();
+        if (playerGO.body) {
+            playerGO.body.setAcceleration(0,0);
+            playerGO.body.setVelocity(0,0);
+            playerGO.body.enable = false; // Effectively stops physics for player
+        }
+        if (boothGO.body) {
+            boothGO.body.setVelocityX(0); // Stop the booth from moving
+        }
 
-        if (scene.uiButtons)
-            scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
-        if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
-        if (levelTimer) levelTimer.remove(false);
+        // Delay for 2 seconds before showing win message
+        scene.time.delayedCall(2000, () => {
+            scene.physics.pause(); // Now pause all physics
+
+            const winText = scene.add.text(
+                GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
+                { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
+            ).setOrigin(0.5);
+
+            if (scene.uiButtons)
+                scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+
+            if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+            if (levelTimer) levelTimer.remove(false);
+        });
     }
 }
