@@ -87,6 +87,8 @@ function preload() {
 function create() {
     score = 0;
     gameOver = false;
+    level = 1; // Reset level
+    currentSpeedScale = 1; // Reset speed scale
 
     layers = createStaticLayers(this, {
         width: GAME_WIDTH,
