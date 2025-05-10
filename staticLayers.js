@@ -44,7 +44,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
 
     const groundTopY = height - displayedGroundHeight;
     const hills = scene.add.tileSprite(
-        width / 2, groundTopY,
+        width / 2, groundTopY + 60,
         width, frameH,
         patternTexKey
     ).setOrigin(0.5, 1);
