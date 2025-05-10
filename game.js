@@ -6,7 +6,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 600 }, // Gravity affecting the player
+            gravity: { y: 1200 }, // Gravity affecting the player (doubled from 600)
             debug: true // Set to true for physics debugging visuals
         }
     },
@@ -31,7 +31,7 @@ let obstacleTimer; // Timer for spawning obstacles
 
 const gameSpeed = 250; // Speed at which obstacles move left (pixels per second)
 const obstacleSpawnDelay = 1750; // Time in milliseconds between obstacle spawns
-const playerJumpVelocity = -400; // Negative Y velocity for jump
+const playerJumpVelocity = -800; // Negative Y velocity for jump (doubled from -400)
 
 // Define 5 obstacle colors
 const obstacleColors = [
