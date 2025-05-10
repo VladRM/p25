@@ -16,7 +16,8 @@ export class TrapSpawner {
         const y = this.groundTopY - height / 2;
 
         const trap = this.scene.add.rectangle(x, y, width, height, color)
-            .setOrigin(0.5);
+            .setOrigin(0.5)
+            .setDepth(9); // Set depth similar to enemies, but slightly less to be distinct if needed
 
         this.scene.physics.add.existing(trap);
         trap.body.setAllowGravity(false);
@@ -26,6 +27,13 @@ export class TrapSpawner {
 
         this.group.add(trap);
         trap.setData('active', true);
+
+        console.log(`[TrapSpawner] Trap created: x=${trap.x}, y=${trap.y}, width=${trap.width}, height=${trap.height}, color=${trap.fillColor.toString(16)}, visible=${trap.visible}, depth=${trap.depth}, active=${trap.getData('active')}`);
+        if (trap.body) {
+            console.log(`[TrapSpawner] Trap body: x=${trap.body.x}, y=${trap.body.y}, width=${trap.body.width}, height=${trap.body.height}, velocityX=${trap.body.velocity.x}`);
+        } else {
+            console.error('[TrapSpawner] Trap has no physics body after being added to group!');
+        }
     }
 
     update(dt, player) {
