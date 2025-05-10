@@ -7,7 +7,8 @@ export function createPlayer (scene, groundTopY) {
     const player = scene.physics.add.sprite(
         100, groundTopY - 64,
         'player_walk1' // Use the first frame of the new animation
-    ).setScale(0.8).setCollideWorldBounds(true);
+    ).setScale(0.8).setCollideWorldBounds(true)
+     .setData('justJumped', false);
 
     // Adjust hitbox to be smaller and better centered
     player.body.setSize(player.width * 0.5, player.height * 0.8)
