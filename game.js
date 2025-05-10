@@ -73,7 +73,7 @@ function create() {
         config.width,
         config.height, // Covers the full game height
         'backgrounds_spritesheet',
-        'background_clouds'
+        'background_clouds' // Ensuring background_clouds is used
     );
 
     // Layer 3: More Distant Hills/Trees (background_fade_trees)
