@@ -419,17 +419,20 @@ function hitTrap(playerGO, trapGO) {
 function winGame(playerGO, boothGO) {
     if (gameOver) return;          // prevent double processing
 
-    gameOver = true;               // reuse existing flag to halt update loop
-    scene.physics.pause();
+    // Win only if the player's center is at or past the booth's center
+    if (playerGO.x <= boothGO.x) {
+        gameOver = true;               // reuse existing flag to halt update loop
+        scene.physics.pause();
 
-    const winText = scene.add.text(
-        GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
-        { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
-    ).setOrigin(0.5);
+        const winText = scene.add.text(
+            GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
+            { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
+        ).setOrigin(0.5);
 
-    if (scene.uiButtons)
-        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+        if (scene.uiButtons)
+            scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
-    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
-    if (levelTimer) levelTimer.remove(false);
+        if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+        if (levelTimer) levelTimer.remove(false);
+    }
 }
