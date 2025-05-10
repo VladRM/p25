@@ -137,10 +137,9 @@ function jump() {
 }
 
 function spawnObstacle() {
-    console.log("spawnObstacle called. Game over:", gameOver);
-    if (gameOver) return; // Don't spawn if game is over
+    console.log("--- spawnObstacle called. Game over:", gameOver, "---");
+    if (gameOver) return; 
 
-    // Guard against 'this' not being the scene context (highly unlikely with callbackScope)
     if (!this.add || !this.physics) {
         console.error("spawnObstacle: 'this' context is not the scene. Aborting spawn.");
         return;
@@ -150,104 +149,99 @@ function spawnObstacle() {
     const maxObstacleHeight = 70;
     const obstacleHeight = Phaser.Math.Between(minObstacleHeight, maxObstacleHeight);
     const obstacleWidth = Phaser.Math.Between(20, 40);
-
-    // Randomly select a color for the obstacle
     const randomColor = Phaser.Utils.Array.GetRandom(obstacleColors);
 
-    // Create a visual rectangle for the obstacle
+    // 1. Create visual rectangle
     const obstacle = this.add.rectangle(
-        config.width + obstacleWidth, // Spawn off-screen to the right
-        config.height - 20 - obstacleHeight / 2, // Position on top of the ground
+        config.width + obstacleWidth, 
+        config.height - 20 - obstacleHeight / 2, 
         obstacleWidth,
         obstacleHeight,
-        randomColor // Use the randomly selected color
+        randomColor
     );
-    console.log("Obstacle visual created at x:", obstacle.x, "y:", obstacle.y);
+    console.log("1. Obstacle visual created at x:", obstacle.x, "y:", obstacle.y, ". Has body?", !!obstacle.body);
 
-    // Add physics to the obstacle visual
-    this.physics.add.existing(obstacle);
-    console.log("Obstacle physics added. Body exists:", !!obstacle.body);
+    // 2. Add to group
+    obstacles.add(obstacle);
+    console.log("2. Obstacle added to group. Has body (from group)?", !!obstacle.body, "Group size:", obstacles.getLength());
 
+    // 3. Ensure physics body is correctly initialized as dynamic
+    this.physics.add.existing(obstacle, false); // false explicitly means isStatic = false (i.e., dynamic)
+    console.log("3. Called this.physics.add.existing(obstacle, false). Body exists:", !!obstacle.body);
 
-    // Check if the physics body was successfully created on the obstacle
     if (!obstacle.body) {
-        console.error("Obstacle body NOT created. Destroying visual obstacle.");
-        obstacle.destroy();
+        console.error("CRITICAL: Obstacle body NOT created. Destroying visual obstacle.");
+        obstacle.destroy(); // Clean up visual element
+        // No need to remove from group if it was never properly added with a body,
+        // but if it was, physics group handles missing bodies gracefully.
         return;
     }
+    console.log("   Body Type - isStatic:", obstacle.body.isStatic, "isDynamic:", obstacle.body.isDynamic);
+
+    // 4. Configure the body
+    obstacle.body.setAllowGravity(false);
+    console.log("4. Set allowGravity(false). Current body.allowGravity:", obstacle.body.allowGravity);
+
+    obstacle.body.setImmovable(true);
+    console.log("5. Set immovable(true). Current body.immovable:", obstacle.body.immovable);
     
-    obstacle.body.setAllowGravity(false); // Obstacles are not affected by gravity
-    obstacle.body.setImmovable(true); // Player collides with it, it doesn't move
-    
-    // Explicitly ensure the obstacle's physics body is set to allow movement.
     obstacle.body.moves = true; 
-    console.log("Obstacle body.moves set to:", obstacle.body.moves);
+    console.log("6. Set body.moves = true. Current body.moves:", obstacle.body.moves);
     
-    obstacle.body.setVelocityX(-gameSpeed); // Move left towards the player
-    console.log("Obstacle velocity set. body.velocity.x:", obstacle.body.velocity.x, "Expected:", -gameSpeed);
+    // Set velocity
+    obstacle.body.setVelocityX(-gameSpeed);
+    // Y velocity should ideally be 0 unless explicitly set for other behaviors
+    // obstacle.body.setVelocityY(0); // Explicitly set Y velocity to 0 if needed
+    console.log("7. Set velocityX. Current body.velocity.x:", obstacle.body.velocity.x, "Expected:", -gameSpeed);
+    console.log("   Current body.velocity.y (after setVelocityX):", obstacle.body.velocity.y);
 
 
-    obstacles.add(obstacle); // Add to the group
-    console.log("Obstacle added to group. Group size:", obstacles.getLength());
-
-    // Custom property to track if score has been awarded for this obstacle
     obstacle.setData('isScorable', true);
+    console.log("--- spawnObstacle finished for one obstacle ---");
 }
 
 function update(time, delta) {
     if (gameOver) {
-        return; // Stop game logic if game is over
+        return; 
     }
 
-    // Iterate through obstacles for cleanup and scoring
     obstacles.getChildren().forEach((obstacle, index) => {
-        // Ensure obstacle and its body exist before trying to access properties
         if (!obstacle || !obstacle.body) {
             console.warn("Update loop: Found invalid obstacle in group at index", index, ". Removing it.");
             if (obstacle) obstacles.remove(obstacle, true, true);
             return;
         }
         
-        // Log obstacle position and velocity in update loop
-        console.log(`Update: Obstacle ${index} - x: ${obstacle.x}, vx: ${obstacle.body.velocity.x}, vy: ${obstacle.body.velocity.y}, moves: ${obstacle.body.moves}`);
+        console.log(`Update: Obstacle ${index} - x: ${obstacle.x.toFixed(2)}, vx: ${obstacle.body.velocity.x.toFixed(2)}, vy: ${obstacle.body.velocity.y.toFixed(2)}, moves: ${obstacle.body.moves}, allowGravity: ${obstacle.body.allowGravity}`);
 
-
-        // Remove obstacles that go off-screen to the left
         if (obstacle.getBounds().right < 0) {
             console.log("Obstacle off-screen, removing. x:", obstacle.x);
-            obstacles.remove(obstacle, true, true); // Remove from group, destroy, remove from scene
+            obstacles.remove(obstacle, true, true); 
         }
-        // Award score if obstacle passes player's position
-        // Player's x is fixed at 100. Obstacle's x is its center.
         else if (obstacle.getData('isScorable') && (obstacle.x + obstacle.width / 2) < player.x) {
             score += 10;
             scoreText.setText('Score: ' + score);
-            obstacle.setData('isScorable', false); // Mark as scored to prevent multiple scores
+            obstacle.setData('isScorable', false); 
             console.log("Score updated:", score);
         }
     });
 
-    // Collision check: Player vs Obstacles
-    // `this.physics.overlap` calls `hitObstacle` if player and an obstacle overlap
     this.physics.overlap(player, obstacles, hitObstacle, null, this);
 }
 
 function hitObstacle(playerGameObject, obstacleGameObject) {
     console.log("Collision detected between player and obstacle!");
-    if (gameOver) return; // Prevent multiple triggers if already game over
+    if (gameOver) return; 
 
     gameOver = true;
-    this.physics.pause(); // Stop all physics movement
+    this.physics.pause(); 
     console.log("Game over. Physics paused.");
 
-    // Visually indicate player hit (e.g., change color)
-    playerGameObject.setFillStyle(0x808080); // Grey
+    playerGameObject.setFillStyle(0x808080); 
 
-    // Show Game Over and Restart text
     gameOverText.setVisible(true);
     restartText.setVisible(true);
 
-    // Stop spawning new obstacles
     if (obstacleTimer) {
         console.log("Stopping obstacle timer.");
         obstacleTimer.remove(false);
