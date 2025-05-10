@@ -171,6 +171,7 @@ function create() {
     };
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
+    this.physics.add.overlap(player, trapsGroup, hitTrap, null, this); // Added overlap for traps
 
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
     this.input.on('pointerdown', () => { if (gameOver) this.scene.restart(); });
@@ -211,4 +212,28 @@ function hitObstacle(playerGO, obstacleGO) {
     if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
     // obstacleSpawner.stop(); // No longer needed as timer is external
     // trapSpawner.stop(); // No longer needed as timer is external
+}
+
+function hitTrap(playerGO, trapGO) {
+    if (gameOver || !trapGO.getData('active')) return; // Don't trigger if game over or trap inactive
+
+    console.log('[Main] Player hit a trap!');
+    gameOver = true;
+    scene.physics.pause();
+
+    playerGO.setTint(0xff0000); // Tint red for trap
+    if (playerGO.anims) playerGO.anims.stop();
+
+    gameOverText.setVisible(true);
+    restartText.setVisible(true);
+
+    if (scene.uiButtons)
+        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+
+    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+    
+    // Optionally, make the trap inactive or change its appearance
+    trapGO.setFillStyle(0x333333); // Darken the trap
+    trapGO.setData('active', false);
+    if (trapGO.body) trapGO.body.enable = false;
 }
