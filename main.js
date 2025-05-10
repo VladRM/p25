@@ -268,8 +268,6 @@ function update(time, delta) {
             else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
         }
 
-        }
-
         if (iconKey && scene.disarmButtonIcon) {
             scene.disarmButtonIcon.setTexture(iconKey).setAlpha(1); // Show icon
             scene.disarmButtonIcon.setInteractive({ useHandCursor: true });
