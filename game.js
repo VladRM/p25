@@ -33,6 +33,15 @@ const gameSpeed = 250; // Speed at which obstacles move left (pixels per second)
 const obstacleSpawnDelay = 1750; // Time in milliseconds between obstacle spawns
 const playerJumpVelocity = -400; // Negative Y velocity for jump
 
+// Define 5 obstacle colors
+const obstacleColors = [
+    0xFF0000, // Red
+    0xFFA500, // Orange
+    0xFFFF00, // Yellow
+    0x008000, // Green
+    0x800080  // Purple
+];
+
 // Initialize the Phaser game instance
 const game = new Phaser.Game(config);
 
@@ -126,13 +135,16 @@ function spawnObstacle() {
     const obstacleHeight = Phaser.Math.Between(minObstacleHeight, maxObstacleHeight);
     const obstacleWidth = Phaser.Math.Between(20, 40);
 
+    // Randomly select a color for the obstacle
+    const randomColor = Phaser.Utils.Array.GetRandom(obstacleColors);
+
     // Create a visual rectangle for the obstacle
     const obstacle = this.add.rectangle(
         config.width + obstacleWidth, // Spawn off-screen to the right
         config.height - 20 - obstacleHeight / 2, // Position on top of the ground
         obstacleWidth,
         obstacleHeight,
-        0xFF0000 // Red
+        randomColor // Use the randomly selected color
     );
 
     // Add physics to the obstacle visual
