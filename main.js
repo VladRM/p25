@@ -111,8 +111,8 @@ function create() {
             this.sound.play('level_up', { volume: 1 });
             levelText.setText('Level: ' + level);
 
-            /* Increase world time-scale by fixed 10 % steps based on base speed */
-            currentSpeedScale = 1 + (level - 1) * 0.1;
+            /* Increase world time-scale by fixed 20 % steps based on base speed */
+            currentSpeedScale = 1 + (level - 1) * 0.2;
             this.physics.world.timeScale = currentSpeedScale;
 
             /* After finishing level 5, spawn the voting booth and stop the timer */
