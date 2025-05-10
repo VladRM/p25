@@ -62,6 +62,10 @@ function preload() {
     this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
     this.load.image('icon_compass', 'res/img/player/compass.png');
     this.load.image('icon_brain', 'res/img/player/brain.png');
+
+    // Foot-step sounds
+    this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
+    this.load.audio('footstep_b', 'res/snd/footstep_grass_004.ogg');
 }
 
 function create() {
