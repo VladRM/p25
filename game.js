@@ -7,7 +7,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 600 }, // Gravity affecting the player
-            debug: false // Set to true for physics debugging visuals
+            debug: true // Set to true for physics debugging visuals
         }
     },
     scene: {
