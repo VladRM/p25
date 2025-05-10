@@ -9,8 +9,9 @@ export function createPlayer (scene, groundTopY) {
         'characters_spritesheet', 'character_green_walk_a'
     ).setScale(0.8).setCollideWorldBounds(true);
 
-    player.body.setSize(player.width * 0.6, player.height * 0.9)
-          .setOffset(player.width * 0.2, player.height * 0.1);
+    // Adjust hitbox to be smaller and better centered
+    player.body.setSize(player.width * 0.5, player.height * 0.8)
+          .setOffset(player.width * 0.25, player.height * 0.15);
 
     if (!scene.anims.exists('green_walk')) {
         scene.anims.create({
