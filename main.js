@@ -56,6 +56,11 @@ function preload () {
     // Load new player images
     this.load.image('player_walk1', 'res/img/player/player_walk1.png');
     this.load.image('player_walk2', 'res/img/player/player_walk2.png');
+
+    // --- UI-icons (super-powers) ---
+    this.load.image('icon_flashlight', 'res/img/ui/flashlight.png');
+    this.load.image('icon_compass'  , 'res/img/ui/compass.png');
+    this.load.image('icon_brain'    , 'res/img/ui/brain.png');
 }
 
 function create () {
@@ -83,6 +88,31 @@ function create () {
     restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click or Press R to Restart', {
         fontSize : '24px', fill : '#000000'
     }).setOrigin(0.5).setVisible(false);
+
+    /* ---------- Super-power buttons (top-right) ---------- */
+    const UI_PAD   = 10;
+    const UI_SCALE = 0.8;
+
+    const btnFlash = this.add.image(GAME_WIDTH - UI_PAD, UI_PAD, 'icon_flashlight')
+        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
+        .setInteractive({ useHandCursor: true });
+    const btnCompass = this.add.image(GAME_WIDTH - UI_PAD,
+        btnFlash.y + btnFlash.displayHeight + UI_PAD, 'icon_compass')
+        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
+        .setInteractive({ useHandCursor: true });
+    const btnBrain = this.add.image(GAME_WIDTH - UI_PAD,
+        btnCompass.y + btnCompass.displayHeight + UI_PAD, 'icon_brain')
+        .setOrigin(1, 0).setScale(UI_SCALE).setScrollFactor(0)
+        .setInteractive({ useHandCursor: true });
+
+    // guardar referencia para gestionar visibilidad/interacción
+    this.uiButtons = [btnFlash, btnCompass, btnBrain];
+    this.children.bringToTop(this.uiButtons);   // sobre HUD
+
+    // callbacks (placeholder)
+    btnFlash .on('pointerdown', () => console.log('[UI] Flash-light power activated'));
+    btnCompass.on('pointerdown', () => console.log('[UI] Compass power activated'));
+    btnBrain .on('pointerdown', () => console.log('[UI] Brain power activated'));
 
     /* obstacles */
     const obstaclesGroup = this.physics.add.group();
@@ -129,6 +159,10 @@ function hitObstacle (playerGO, obstacleGO) {
 
     gameOverText.setVisible(true);
     restartText.setVisible(true);
+
+    // desactivar / ocultar botones UI al game-over
+    if (scene.uiButtons)
+        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
     obstacleSpawner.stop();
 }
