@@ -12,6 +12,9 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         'backgrounds_spritesheet', 'background_clouds'
     ).setOrigin(0.5, 0);                // anchor to top-center
 
+    // Raise the cloud image 100 px without changing the sprite's position
+    clouds.tilePositionY = -100;
+
     /* --- Ground (closest) --- */
     const groundTile = scene.add.tileSprite(
         width / 2,
