@@ -259,6 +259,11 @@ function update(time, delta) {
         groundTileSprite.tilePositionX += gameSpeed * (delta / 1000);
     }
 
+    // Layer 3: Hills / Trees – mid-parallax
+    if (hillsTileSprite) {
+        hillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000);   // ≈ 40 % din viteză
+    }
+
     obstacles.getChildren().forEach((obstacle, index) => {
         if (!obstacle || !obstacle.body) {
             // This warning is useful to keep
