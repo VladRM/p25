@@ -1,12 +1,14 @@
 import { createStaticLayers } from './staticLayers.js';
 import { createPlayer, registerPlayerControls } from './player.js';
 import { ObstacleSpawner } from './obstacleSpawner.js';
+import { TrapSpawner } from './trapSpawner.js';
 
 export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 320;
 export const displayedGroundHeight = 20;
 export const gameSpeed = 250;
 export const obstacleSpawnDelay = 1750;
+export const trapSpawnDelay = 3000;
 
 const UI_SIZE = 64;
 const BORDER_W = 2;
@@ -37,7 +39,9 @@ let gameOver = false;
 let gameOverText;
 let restartText;
 let obstacleSpawner;
+let trapSpawner;
 let layers;
+let trapsGroup;
 
 new Phaser.Game(config);
 
@@ -113,6 +117,7 @@ function create() {
             .on('pointerdown', (pointer, localX, localY, event) => {
                 event?.stopPropagation();
                 console.log('[UI] ' + logMsg);
+                scene.deactivateNearestTrap();
             });
 
         return { border, btn };
@@ -129,6 +134,7 @@ function create() {
     this.children.bringToTop(this.uiButtons);
 
     const obstaclesGroup = this.physics.add.group();
+    trapsGroup = this.physics.add.group();
     obstacleSpawner = new ObstacleSpawner(this, obstaclesGroup, {
         spawnDelay: obstacleSpawnDelay,
         groundTopY: layers.groundTopY
@@ -149,6 +155,7 @@ function update(time, delta) {
     layers.groundTile.tilePositionX += gameSpeed * dt;
 
     const gained = obstacleSpawner.update(dt, player);
+    trapSpawner.update(dt, player);
     if (gained) {
         score += gained;
         scoreText.setText('Score: ' + score);
@@ -171,4 +178,5 @@ function hitObstacle(playerGO, obstacleGO) {
         scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
     obstacleSpawner.stop();
+    trapSpawner.stop();
 }
