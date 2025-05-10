@@ -39,6 +39,7 @@ let player;
 let score = 0;
 let gameStarted = false;
 let startScreenText;
+let startScreenOverlay;
 
 /* ----- Level / speed management ----- */
 let level = 1;
@@ -88,10 +89,22 @@ function preload() {
 }
 
 function create() {
-    // Display Start Screen
+    // Create static background layers first
+    layers = createStaticLayers(this, {
+        width: GAME_WIDTH,
+        height: GAME_HEIGHT,
+        displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
+    });
+
+    // Add a semi-transparent overlay for the start screen
+    startScreenOverlay = this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5)
+        .setOrigin(0, 0)
+        .setDepth(50); // Ensure it's above background but below UI text
+
+    // Display Start Screen Text on top of the overlay
     startScreenText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Click / Tap to Start', {
         fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setDepth(51); // Ensure text is above overlay
 
     this.input.once('pointerdown', startGame, this);
     // Keyboard input for starting the game can also be added here if desired, e.g., spacebar
@@ -114,17 +127,19 @@ function create() {
 function startGame() {
     gameStarted = true;
     if (startScreenText) startScreenText.destroy();
+    if (startScreenOverlay) startScreenOverlay.destroy(); // Remove the overlay
 
     score = 0;
     gameOver = false;
     level = 1; // Reset level
     currentSpeedScale = 1; // Reset speed scale
 
-    layers = createStaticLayers(this, {
-        width: GAME_WIDTH,
-        height: GAME_HEIGHT,
-        displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
-    });
+    // Static layers are already created in create(), no need to recreate
+    // layers = createStaticLayers(this, {
+    //     width: GAME_WIDTH,
+    //     height: GAME_HEIGHT,
+    //     displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
+    // });
 
     player = createPlayer(this, layers.groundTopY);
     this.physics.add.collider(player, layers.ground);
