@@ -62,6 +62,9 @@ function create() {
     score = 0;
     gameOver = false;
 
+    // Set main camera background color
+    this.cameras.main.setBackgroundColor('#87CEEB');
+
     // Layer 4: Furthest - Clouds (background_clouds)
     // This uses 'background_clouds' and will scroll for parallax.
     cloudsTileSprite = this.add.tileSprite(
