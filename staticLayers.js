@@ -48,5 +48,11 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         patternTexKey
     ).setOrigin(0.5, 1);
 
+    // Set depths for correct rendering order
+    // Lower depth = further back, Higher depth = closer to camera
+    hills.setDepth(0);      // Hills will be behind clouds and ground
+    clouds.setDepth(1);     // Clouds will be in front of hills, but behind ground
+    groundTile.setDepth(2); // Ground will be in front of clouds and hills
+
     return { clouds, hills, groundTile, ground, groundTopY };
 }
