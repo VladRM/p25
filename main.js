@@ -11,6 +11,10 @@ export const displayedGroundHeight = 20;
 export const gameSpeed            = 250;   // px / s
 export const obstacleSpawnDelay   = 1750;  // ms
 
+const UI_BORDER_PAD   = 6;   // relleno interior entre icono y borde
+const BORDER_RADIUS   = 8;   // esquinas redondeadas (px)
+const BORDER_TOTAL    = UI_SIZE + (BORDER_W + UI_BORDER_PAD) * 2; // ancho/alto exterior del cuadro
+
 /* ------------------------------------------------------------------ */
 /*  Phaser configuration                                              */
 /* ------------------------------------------------------------------ */
@@ -98,35 +102,46 @@ function create () {
     const startY = UI_PAD;
 
     /* helper para crear botón + borde */
-    const addUIButton = (x, texture, logMsg) => {
-        // borde
-        const border = this.add.rectangle(
-            x, startY,
-            UI_SIZE + BORDER_W * 2, UI_SIZE + BORDER_W * 2,
-            0x000000, 0.35                // relleno semitransparente
-        )
-        .setOrigin(1, 0)
-        .setStrokeStyle(BORDER_W, 0xffffff)
-        .setScrollFactor(0);
+    const addUIButton = (xRight, texture, logMsg) => {
+        /* --- borde redondeado --- */
+        const border = scene.add.graphics().setScrollFactor(0).setInteractive();
+        border.fillStyle(0x000000, 0.35);
+        border.fillRoundedRect(
+            xRight - BORDER_TOTAL,           // x (esquina sup-izq)
+            startY,                          // y
+            BORDER_TOTAL, BORDER_TOTAL,
+            BORDER_RADIUS
+        );
+        border.lineStyle(BORDER_W, 0xffffff);
+        border.strokeRoundedRect(
+            xRight - BORDER_TOTAL,
+            startY,
+            BORDER_TOTAL, BORDER_TOTAL,
+            BORDER_RADIUS
+        );
 
-        // icono
-        const btn = this.add.image(x, startY, texture)
-            .setOrigin(1, 0)
-            .setDisplaySize(UI_SIZE, UI_SIZE)
-            .setScrollFactor(0)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', (pointer, localX, localY, event) => {
-                event?.stopPropagation();               // evita que el tap haga saltar al jugador
-                console.log('[UI] ' + logMsg);
-            });
+        /* --- icono centrado --- */
+        const btn = scene.add.image(
+            xRight - BORDER_TOTAL / 2,       // centro en X
+            startY + BORDER_TOTAL / 2,       // centro en Y
+            texture
+        )
+        .setOrigin(0.5)                      // centrado respecto de su posición
+        .setDisplaySize(UI_SIZE, UI_SIZE)
+        .setScrollFactor(0)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', (pointer, localX, localY, event) => {
+            event?.stopPropagation();
+            console.log('[UI] ' + logMsg);
+        });
 
         return { border, btn };
     };
 
     // derecha → izquierda
-    const { border: borderFlash,   btn: btnFlash   } = addUIButton(startX                          , 'icon_flashlight', 'Flash-light power activated');
-    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (UI_SIZE + UI_PAD)    , 'icon_compass',   'Compass power activated');
-    const { border: borderBrain,   btn: btnBrain   } = addUIButton(startX - 2*(UI_SIZE + UI_PAD) , 'icon_brain',     'Brain power activated');
+    const { border: borderFlash,   btn: btnFlash   } = addUIButton(startX,                                           'icon_flashlight', 'Flash-light power activated');
+    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (BORDER_TOTAL + UI_PAD),                'icon_compass',   'Compass power activated');
+    const { border: borderBrain,   btn: btnBrain   } = addUIButton(startX - 2 * (BORDER_TOTAL + UI_PAD),            'icon_brain',     'Brain power activated');
 
     // guardar referencias para ocultarlas al morir
     this.uiButtons = [
