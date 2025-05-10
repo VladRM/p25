@@ -1,4 +1,3 @@
-Below is the updated design document for **Echo-Chamber Escape**, now explicitly framed as a left‑to‑right auto‑runner. High‑level functionality notes have been added to the core concept.
 
 1. **Game Title & Tagline**
 
