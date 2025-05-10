@@ -1,76 +1,114 @@
+## 🎮 P25 Game Summary [nume tbd]
 
-1. **Game Title & Tagline**
+A 2D side-scrolling **auto-runner** game built using Phaser.js. The player takes on the role of a **Romanian voter** navigating an increasingly absurd and threatening political landscape on the way to the **voting booth**. Along the way, they must **avoid obstacles** and **free fellow citizens** trapped in webs of misinformation, propaganda, and populism using symbolic **power-ups**.
 
-   * **Misinformation Marathon**: “Dodge the lies. Sprint to the booth.”
-   * **Truth Sprint: Simion’s Spin Cycle**: “When slogans flip, your reflexes must flip faster.”
-   * **Freedom Flags Run**: “Catch the facts before they catch you.”
-   * **Echo-Chamber Escape**: “Break out of the bubble—vote for reality.”
+The game is both satirical and civic-minded, aiming to **encourage voter participation** in the second round of the 2025 Romanian presidential elections, especially among those aligned with **pro-European, democratic values**.
 
-2. **Core Concept & Satirical Framing**
+---
 
-   * A voter races through an endless boulevard of AUR propaganda: nationalist banners, fake‑news tabloids, and glitching campaign slogans.
-   * Satire is delivered through dynamic, absurd obstacles (e.g., posters that self‑transform into conspiracy pamphlets, “Freedom Flags” toggling into “Control Flags”).
-   * **Movement Style (Left‑to‑Right Auto‑Runner)**
+## 🧑‍💼 Main Character: The Voter
 
-     * The player’s character runs automatically to the right at a constant pace; players cannot slow or reverse direction.
-     * The camera follows the runner in a side‑scroll, creating a continuous flow of new content from the right edge.
-     * Obstacles, power‑ups, and NPCs spawn off‑screen to the right and scroll left across the screen, then despawn off the left edge.
-     * Parallax backgrounds shift at different speeds to reinforce a sense of depth and endless progression.
-     * Player input is limited to jumping and sliding to navigate hazards, emphasizing reflexes and strategic use of power‑ups.
+* Auto-runs from left to right.
+* Symbolizes the engaged, informed citizen.
+* Can **jump** over obstacles (propaganda threats).
+* Can activate **power-ups** (assigned keys/buttons) to free groups of NPCs from traps.
 
-3. **Main Character**
+---
 
-   * **The Voter** represents Romania’s silent majority—caught between civic duty and propaganda overload.
-   * **Abilities**:
+## 🕹️ Core Gameplay Loop
 
-     * **Critical Leap**: Double‑jump to clear stacks of contradictory flyers.
-     * **Data Dive Slide**: Duck under rolling misinformation barrels.
-     * **Fact‑Check Flashlight**: Illuminate and clear waves of false claims.
-   * **Upgrades**: Civic Education Boots (higher jumps), Media Goggles (longer flashlight duration).
+1. **Run**: The voter moves forward continuously; terrain and scenes scroll in from the right.
+2. **Avoid**: The player must jump over threats like misinformation signs, disinformation drones, or protest mobs.
+3. **Rescue**: When a group of NPCs appears trapped in a propaganda scene, the player must use the correct power-up:
 
-4. **Enemies / Obstacles**
+   * `Q`: Fact-Check Flashlight
+   * `W`: Constitutional Compass
+   * `E`: Critical Thinking Burst
+4. **Score**: Each rescue adds to the "Freed Voters" counter.
+5. **Finale**: The player reaches a **voting booth**. They cast their vote and get a final score based on how many people they liberated.
 
-   * **Contradictory Claims**: Posters flipping text mid‑run ("Romania First!" ↔ "Globalist Puppet!").
-   * **Anti‑Vax Flyers**: Spiraling pamphlets that impede movement.
-   * **Conspiracy Banners**: Ribbon streams declaring hidden agendas.
-   * **Protest Mobs**: Charges that knock the player back.
-   * **Fake News Headlines**: Floating tabloids that stall progress until cleared.
-   * **Troll Drones**: Bots spamming pop‑up comments, requiring rapid fact‑check activation.
+---
 
-5. **Power‑Ups / Tools of Resistance**
+## ⚡️ Power-Ups & Symbolism
 
-   * **Critical Thinking**: Slows obstacle speed for a short window.
-   * **Fact Checking**: Clears clusters of propaganda into collectible Truth Tokens.
-   * **Civic Education Workshop**: Temporarily shields nearby NPCs from misinformation.
-   * **Independent Media Access**: Auto‑reveals hidden traps and strengthens rescue radius.
-   * **Disinformation Scanner**: Highlights camouflaged hazards on the track.
+### 1. **Fact-Check Flashlight**
 
-6. **Rescuable NPCs**
+* Visual: A beam of light pierces a dark area.
+* Use Case: Frees NPCs from the "Dark Web of Lies."
+* Symbolism: Enlightenment, media literacy, combating online disinformation.
 
-   * Citizens trapped in misinformation bubbles: pensioners fearing vaccines, youths spouting reunification memes, influencers sharing AUR TikToks.
-   * While powered by Fact Checking or Independent Media, touching an NPC frees them—converting their misinformation icons into Enlightened statuses and boosting your final score.
+### 2. **Constitutional Compass**
 
-7. **Visual & Audio Style**
+* Visual: Glowing compass reorients slogans.
+* Use Case: Breaks authoritarian slogans and guides trapped NPCs back.
+* Symbolism: Rule of law, European democratic values.
 
-   * **Art**: Punk pixel‑art with Eastern‑European meme motifs, glitch filters on propaganda.
-   * **Palette**: High‑contrast reds/yellows for disinfo, cool blues/greens for truth moments.
-   * **Sound**: Industrial‑folk mash‑ups; "lie alarms" on false claims; uplifting choral swells on rescues.
+### 3. **Critical Thinking**
 
-8. **Narrative Progression**
+* Visual: A wave of mental clarity or a brain-light spark.
+* Use Case: Breaks hypnotic populist promises and frees mesmerized citizens.
+* Symbolism: Rational thinking, rejecting emotional manipulation.
 
-   * **Early Campaign**: Scattered, low‑speed obstacles.
-   * **Annulment Shock**: Post‑disqualification frenzy, increased spawn rates and speeds.
-   * **Runoff Reckoning**: Peak absurdity with nonstop social‑media surges and toughest hazards.
+---
 
-9. **UI Elements**
+## 🧨 Threats / Obstacles
 
-   * **Cognitive Load Bar**: Fills with each hit; empties via Critical Thinking.
-   * **Disinformation Meter**: Tracks on‑screen false claims; cleared by Fact Checking.
-   * **Truth Token Counter**: Shows collected tokens used to recharge tools.
-   * **Rescue Gauge**: Percentage of NPCs freed, determining epilogue outcome.
+These appear as physical or visual threats that must be jumped over or avoided.
 
-10. **Win Condition & Replay Value**
+* **Contradictory Campaign Slogans**: Flip-flop between nationalism and Europeanism.
+* **Fake News Flyers**: Spiraling toward the player.
+* **Conspiracy Drones**: Hovering agents of confusion.
+* **Populist Posters**: Large signs with emotional, hollow promises.
+* **Obedience Walls**: Banners shouting authoritarian phrases
 
-* **Voting Booth Finale**: Cast a ballot; epilogue varies by civic‑health score ("Democracy Strengthened" vs. "Battle Continues").
-* **Unlockables**: Hard Mode, Simion’s Spin Chaos Mode, Local Co‑op.
-* **Leaderboards**: Rank by Truth Tokens and NPC rescues to encourage replay.
+---
+
+## 👥 Rescue Scenes (Mini-Events)
+
+Each rescue scene consists of a **group of undecided/trapped citizens**.
+
+### Scene A — *Dark Web of Lies*
+
+* Visual: A dimly lit zone, tangled wires or shadowy fog.
+* Rescue Tool: Fact-Check Flashlight
+
+### Scene B — *Wall of Obedience*
+
+* Visual: Large authoritarian slogans pulsating.
+* Rescue Tool: Constitutional Compass
+
+### Scene C — *Hypnotic Populist Promises*
+
+* Visual: Glittering, animated speech bubbles offering unrealistic benefits.
+* Rescue Tool: Critical Thinking
+
+---
+
+## 📊 UI Elements
+
+* **Score**: Total number of NPCs freed.
+* **Special Power Buttons**: Displayed at top-right of screen.
+
+---
+
+## 🎯 Win Condition & End Screen
+
+* Reaching the **voting booth** triggers a slow-motion cutscene.
+* Final screen shows:
+
+  * "You voted!"
+  * Number of citizens you helped liberate.
+  * Optional: Epilogue title based on your score (e.g., "Civic Hero", "Barely Escaped the Lies").
+
+---
+
+## 🛠️ Technical Implementation Notes
+
+* Left-to-right Phaser auto-runner with timed obstacle generation.
+* Player can trigger context-sensitive actions (rescue powers) when near an event.
+* Trap scenes are modular, with custom visuals and logic.
+* Mobile and keyboard-friendly control scheme.
+
+---
+
+If you have suggestions for more power-ups, want to define difficulty scaling, or need feedback on level pacing or UI mockups, just let me know!
