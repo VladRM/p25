@@ -46,11 +46,20 @@ export class ObstacleSpawner {
 
         const enemy = new Enemy(
             this.scene,
-            this.scene.sys.game.config.width + w,
+            this.scene.sys.game.config.width + w, // Initial X position
             yPos,
-            w, h, col
+            w, h, col // Pass w, h for Enemy's dimensions
         );
-        this.group.add(enemy);
+        this.group.add(enemy);    // Adds to group, which should enable physics body on enemy
+        enemy.initializePhysics(); // Now that body exists (from being added to physics group), set its properties
+
+        // Log parent container status and body info after all setup
+        console.log(`[ObstacleSpawner] Enemy added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`);
+        if (enemy.body) {
+             console.log(`[ObstacleSpawner] Enemy body in group: pos=(${enemy.body.x.toFixed(2)}, ${enemy.body.y.toFixed(2)}), size=(${enemy.body.width}x${enemy.body.height}), velX=${enemy.body.velocity.x}`);
+        } else {
+             console.error('[ObstacleSpawner] Enemy added to group but has NO BODY? This should not happen if group is a physics group.');
+        }
     }
 
     /* update returns score gained this frame */
