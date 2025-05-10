@@ -27,20 +27,6 @@ export function createPlayer (scene, groundTopY) {
     }
     player.anims.play('green_walk');
 
-    // Play foot-step sounds on each walk frame when the player is on the ground
-    player.on('animationupdate-green_walk', (anim, frame) => {
-        if (!player.body || !player.body.touching.down || player.getData('justJumped')) return;
-
-        const texFrame = frame.textureFrame || frame.frame || frame.key;
-        if (texFrame === 'player_walk1') {
-            scene.sound.play('footstep_a', { volume: 0.4 });
-            player.setData('justJumped', false);
-        } else if (texFrame === 'player_walk2') {
-            scene.sound.play('footstep_b', { volume: 0.4 });
-            player.setData('justJumped', false);
-        }
-    });
-
     return player;
 }
 
