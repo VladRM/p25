@@ -144,7 +144,9 @@ function create() {
     });
 
     const spawnRandomly = () => {
-        if (Phaser.Math.Between(0, 1) === 0) {
+        const choice = Phaser.Math.Between(0, 1);
+        console.log(`[Main] spawnRandomly choice: ${choice === 0 ? 'Obstacle' : 'Trap'}`);
+        if (choice === 0) {
             obstacleSpawner.spawnObstacle();
         } else {
             trapSpawner.spawnTrap();

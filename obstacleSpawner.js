@@ -16,7 +16,7 @@ export class ObstacleSpawner {
     }
 
     spawnObstacle () {
-        console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}, spawnDelay: ${this.spawnDelay}`);
+        console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}`);
         
         const enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
         const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas

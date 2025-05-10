@@ -6,6 +6,7 @@ export class TrapSpawner {
     }
 
     spawnTrap() {
+        console.log(`[TrapSpawner] spawnTrap called. groundTopY: ${this.groundTopY}`);
         const COLORS = [0xff69b4, 0x1e90ff, 0xffd700]; // pink, blue, yellow
         const color = Phaser.Utils.Array.GetRandom(COLORS);
 
@@ -19,7 +20,8 @@ export class TrapSpawner {
 
         this.scene.physics.add.existing(trap);
         trap.body.setAllowGravity(false);
-        trap.body.setVelocityX(-this.scene.game.config.physics.arcade?.gravity ? this.scene.physics.world.gravity.y : 0);
+        // The following line was redundant as setVelocityX is called again immediately.
+        // trap.body.setVelocityX(-this.scene.game.config.physics.arcade?.gravity ? this.scene.physics.world.gravity.y : 0);
         trap.body.setVelocityX(-250); // same speed as obstacles
 
         this.group.add(trap);
