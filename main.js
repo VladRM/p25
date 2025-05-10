@@ -250,7 +250,7 @@ function create() {
             trapToDeactivate.setFillStyle(0x888888); // Change color
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
-                trapToDeactivate.body.setVelocityX(-gameSpeed / 2); // Slow down
+                trapToDeactivate.body.setVelocityX(-gameSpeed * currentSpeedScale / 2); // Slow down (half of current speed)
             }
             score += 10;
             scoreText.setText('Score: ' + score);
@@ -299,7 +299,14 @@ function update(time, delta) {
 
     /* Keep all dynamic objects in sync with current speed */
     if (obstacleSpawner && obstacleSpawner.group) obstacleSpawner.group.setVelocityX(-effectiveSpeed);
-    if (trapSpawner && trapSpawner.group)      trapSpawner.group.setVelocityX(-effectiveSpeed);
+    if (trapSpawner && trapSpawner.group) {
+        // Active traps move at full speed, de-activated traps at half speed
+        trapSpawner.group.getChildren().forEach(trap => {
+            if (!trap.body) return;
+            const velocityX = trap.getData('active') ? -effectiveSpeed : -effectiveSpeed / 2;
+            trap.body.setVelocityX(velocityX);
+        });
+    }
     if (votingBooth && votingBooth.body)       votingBooth.body.setVelocityX(-effectiveSpeed);
 
     const gained = obstacleSpawner.update(dt, player);
