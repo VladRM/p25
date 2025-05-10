@@ -320,6 +320,10 @@ function hitObstacle(playerGameObject, obstacleGameObject) {
     console.log("Game over. Physics paused.");
 
     playerGameObject.setTint(0x808080);
+    // Stop the walking animation when the game ends
+    if (playerGameObject.anims) {
+        playerGameObject.anims.stop();
+    }
 
     gameOverText.setVisible(true);
     restartText.setVisible(true);
