@@ -1,7 +1,7 @@
 const config = {
     type: Phaser.AUTO,
     width: 800,
-    height: 300,
+    height: 400, // Increased height for more sky
     backgroundColor: '#87CEEB', // Sky blue for the game background
     physics: {
         default: 'arcade',
@@ -20,8 +20,8 @@ const config = {
 // Game variables
 let player;
 // skyTileSprite has been removed as per new layer structure
-let cloudsTileSprite; // Layer 4: Furthest clouds (background_clouds)
-let distantTreesTileSprite; // Layer 3: More distant hills/trees (background_fade_trees)
+let cloudsTileSprite; // Single cloud layer (background_clouds)
+// distantTreesTileSprite has been removed to keep only one cloud layer
 let treesTileSprite; // Layer 2: Hills/trees (background_color_trees)
 let ground;
 let groundTileSprite; // For the visual ground tile sprite
@@ -75,23 +75,7 @@ function create() {
         'backgrounds_spritesheet',
         'background_clouds' // Ensuring background_clouds is used
     );
-    cloudsTileSprite.tilePositionY = 90;
-
-    // Layer 3: More Distant Hills/Trees (background_fade_trees)
-    // The 'background_fade_trees' sprite is 256x256.
-    // Position its bottom edge slightly above the ground.
-    // Ground top is at config.height - 20. Sprite height is 256.
-    // Center Y = (config.height - 20) - (256 / 2) + offset.
-    // Offset chosen to place it visually behind Layer 2.
-    distantTreesTileSprite = this.add.tileSprite(
-        config.width / 2,
-        (config.height - 20) - (256 / 2) + 10, // Y: center of sprite, positioned relative to ground
-        config.width,
-        256, // Full height of the sprite
-        'backgrounds_spritesheet',
-        'background_clouds'
-    );
-    distantTreesTileSprite.tilePositionY = 90;
+    cloudsTileSprite.tilePositionY = 90; // Keep fluffy clouds visible
 
     // Layer 2: Hills/Trees (background_color_trees)
     // The 'background_color_trees' sprite is 256x256.
@@ -239,11 +223,6 @@ function update(time, delta) {
     // Layer 4: Scroll clouds (background_clouds) - slowest
     if (cloudsTileSprite) {
         cloudsTileSprite.tilePositionX += (gameSpeed / 5) * (delta / 1000); 
-    }
-
-    // Layer 3: Scroll distant trees (background_fade_trees)
-    if (distantTreesTileSprite) {
-        distantTreesTileSprite.tilePositionX += (gameSpeed / 3.5) * (delta / 1000);
     }
 
     // Layer 2: Scroll trees (background_color_trees)
