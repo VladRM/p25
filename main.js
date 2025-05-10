@@ -120,7 +120,6 @@ function create() {
             } else if (level === MAX_LEVELS) {
                 // This is the transition from MAX_LEVELS to MAX_LEVELS + 1
                 level += 1; // Increment to MAX_LEVELS + 1 to trigger booth logic
-                this.sound.play('game_win', { volume: 0.7 });
                 // Do not update levelText to "Level: 6"
                 // currentSpeedScale remains at MAX_LEVELS rate
 
@@ -429,6 +428,7 @@ function winGame(playerGO, boothGO) {
     // Condition for player entering the booth
     if (playerGO.x <= boothGO.x && !playerGO.getData('isVoting')) {
         playerGO.setData('isVoting', true); // Flag to prevent re-triggering
+        scene.sound.play('game_win', { volume: 0.7 }); // Play win sound on first contact
         gameOver = true; // Set gameOver early to stop other updates
 
         playerGO.setVisible(false);
