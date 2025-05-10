@@ -20,6 +20,7 @@ const config = {
 // Game variables
 let player;
 let ground;
+let groundTileSprite; // For the visual ground tile sprite
 let obstacles;
 let cursors;
 let score = 0;
@@ -46,7 +47,8 @@ const obstacleColors = [
 const game = new Phaser.Game(config);
 
 function preload() {
-    // No external assets to load for this simple version
+    // Load the atlas for the tiles (ground, etc.)
+    this.load.atlasXML('tiles_spritesheet', 'res/img/spritesheet-tiles-default.png', 'res/img/spritesheet-tiles-default.xml');
 }
 
 function create() {
@@ -55,8 +57,16 @@ function create() {
     gameOver = false;
 
     // Ground
-    const groundVisual = this.add.rectangle(0, config.height - 20, config.width, 40, 0x8B4513).setOrigin(0);
-    ground = this.physics.add.existing(groundVisual, true); // `true` for static
+    const groundSpriteHeight = 64; // Height of the "terrain_grass_horizontal_middle" sprite
+    groundTileSprite = this.add.tileSprite(
+        config.width / 2, // Center X of the TileSprite
+        config.height - 20 + (groundSpriteHeight / 2), // Position its center so its top aligns with y = config.height - 20
+        config.width,
+        groundSpriteHeight, // Visual height of the TileSprite
+        'tiles_spritesheet',
+        'terrain_grass_horizontal_middle' // Using "terrain_grass_horizontal_middle" tile
+    );
+    ground = this.physics.add.existing(groundTileSprite, true); // `true` for static, makes it a physics body
 
     // Player
     const playerWidth = 30;
@@ -165,6 +175,12 @@ function spawnObstacle() {
 function update(time, delta) {
     if (gameOver) {
         return; 
+    }
+
+    // Scroll the ground texture
+    if (groundTileSprite) {
+        // gameSpeed is pixels per second, delta is in ms. delta / 1000 is seconds.
+        groundTileSprite.tilePositionX += gameSpeed * (delta / 1000);
     }
 
     obstacles.getChildren().forEach((obstacle, index) => {
