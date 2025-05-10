@@ -15,12 +15,17 @@ export class TrapSpawner {
         const x = this.scene.cameras.main.width + width;
         const y = this.groundTopY - height / 2;
 
+        const trapId = `trap_${Date.now()}_${Phaser.Math.Between(1000,9999)}`;
         const trap = this.scene.add.rectangle(x, y, width, height, color)
             .setOrigin(0.5)
-            .setDepth(9); // Set depth similar to enemies, but slightly less to be distinct if needed
+            .setDepth(9) // Set depth similar to enemies, but slightly less to be distinct if needed
+            .setName(trapId); // Give it a unique name for logging
 
         this.scene.physics.add.existing(trap);
         trap.body.setAllowGravity(false);
+        // Explicitly set debug flags, though global debug should cover this
+        trap.body.debugShowBody = true;
+        trap.body.debugShowVelocity = true;
         // The following line was redundant as setVelocityX is called again immediately.
         // trap.body.setVelocityX(-this.scene.game.config.physics.arcade?.gravity ? this.scene.physics.world.gravity.y : 0);
         // trap.body.setVelocityX(-250); // Moved to after adding to group
@@ -46,7 +51,11 @@ export class TrapSpawner {
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
+            if (trap.body) { 
+                console.log(`[TrapSpawner Update] Trap ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}, Body X: ${trap.body.x.toFixed(2)}, Velocity X: ${trap.body.velocity.x.toFixed(2)}, Visible: ${trap.visible}, Active: ${trap.active}`);
+            }
             if (trap.getBounds().right < 0) {
+                console.log(`[TrapSpawner Update] Removing trap that went off-screen left. ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}`);
                 this.group.remove(trap, true, true);
             }
         });
