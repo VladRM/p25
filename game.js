@@ -37,6 +37,12 @@ const gameSpeed = 250; // Speed at which obstacles move left (pixels per second)
 const obstacleSpawnDelay = 1750; // Time in milliseconds between obstacle spawns
 const playerJumpVelocity = -821; // Negative Y velocity for jump (increased for faster, higher jump)
 
+// ---- Hill / Tree pattern ---------------------------------------
+const HILLS_FRAMES_PATTERN = ['background_color_hills',
+                              'background_color_hills',
+                              'background_color_trees'];   // 2× hills + 1× trees
+const HILLS_TEXTURE_KEY = 'hills_pattern_texture';        // intern, creat dinamic
+
 // Define 5 obstacle colors
 const obstacleColors = [
     0xFF0000, // Red
@@ -76,19 +82,6 @@ function create() {
     );
     cloudsTileSprite.tilePositionY = 90; // Keep fluffy clouds visible
 
-    // Layer 2: Combined Hills Layer (alternating textures)
-    // Hills layer (single texture - dynamic textures cannot be used with TileSprite)
-    const subTextureHeight = 256; // Height of the individual hill texture frame
-    hillsTileSprite = this.add.tileSprite(
-        config.width / 2,
-        (config.height - 20) - (subTextureHeight / 2) + 40,
-        config.width,
-        subTextureHeight,
-        'backgrounds_spritesheet',
-        'background_color_hills'
-    );
-    hillsTileSprite.tilePositionY = 120; // Adjust to show features (hills, not just sky part of texture)
-
     // Order of creation: cloudsTileSprite -> hillsTileSprite -> groundTileSprite -> player.
 
     // Ground
@@ -110,6 +103,40 @@ function create() {
     ground = this.physics.add.existing(groundTileSprite, true); // `true` for static, makes it a physics body
     // The physics body will now be config.width x displayedGroundHeight (20px).
     // Its top surface will be at y = config.height - 20, consistent with the previous ground.
+
+    // ---------- New Hills + Trees layer (bottom-aligned) -------------
+    const hillFrame   = this.textures.getFrame('backgrounds_spritesheet', 'background_color_hills');
+    const treeFrame   = this.textures.getFrame('backgrounds_spritesheet', 'background_color_trees');
+    const frameW      = hillFrame.width;              // ambele au aceeași lățime
+    const frameH      = hillFrame.height;             // …și aceeași înălțime
+    const patternW    = frameW * HILLS_FRAMES_PATTERN.length;
+
+    // creează textura „hills_pattern_texture” o singură dată
+    if (!this.textures.exists(HILLS_TEXTURE_KEY)) {
+        const canvasTex = this.textures.createCanvas(HILLS_TEXTURE_KEY, patternW, frameH);
+        const ctx       = canvasTex.getContext();
+
+        HILLS_FRAMES_PATTERN.forEach((key, idx) => {
+            const fr = this.textures.getFrame('backgrounds_spritesheet', key);
+            ctx.drawImage(
+                fr.source.image,
+                fr.cutX, fr.cutY, fr.width, fr.height,
+                idx * frameW, 0, fr.width, fr.height
+            );
+        });
+        canvasTex.refresh();
+    }
+
+    // coordonata Y a top-ului ground-ului
+    const groundTopY = config.height - 20;   // 20 = displayedGroundHeight
+
+    hillsTileSprite = this.add.tileSprite(
+        config.width / 2,   // x centru
+        groundTopY,         // y = linia de jos a colinei
+        config.width,
+        frameH,
+        HILLS_TEXTURE_KEY
+    ).setOrigin(0.5, 1);    // ancorează la baza sprite-ului
 
     // Player
     const playerWidth = 30;
@@ -225,9 +252,9 @@ function update(time, delta) {
         cloudsTileSprite.tilePositionX += (gameSpeed / 5) * (delta / 1000); 
     }
 
-    // Layer 2: Scroll combined hills layer
+    // Layer 2: Hills/Trees parallax
     if (hillsTileSprite) {
-        hillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000); // Speed for single prominent hills layer
+        hillsTileSprite.tilePositionX += (gameSpeed / 2.5) * (delta / 1000);
     }
 
     // Scroll the ground texture
