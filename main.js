@@ -52,6 +52,10 @@ function preload () {
     this.load.atlasXML('backgrounds_spritesheet', 'res/img/spritesheet-backgrounds-default.png', 'res/img/spritesheet-backgrounds-default.xml');
     this.load.atlasXML('characters_spritesheet' , 'res/img/spritesheet-characters-default.png' , 'res/img/spritesheet-characters-default.xml');
     this.load.atlasXML('enemies_spritesheet'    , 'res/img/spritesheet-enemies-default.png'    , 'res/img/spritesheet-enemies-default.xml');
+
+    // Load new player images
+    this.load.image('player_walk1', 'res/img/player/player_walk1.png');
+    this.load.image('player_walk2', 'res/img/player/player_walk2.png');
 }
 
 function create () {

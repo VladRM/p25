@@ -6,7 +6,7 @@ const JUMP_VELOCITY = -821;
 export function createPlayer (scene, groundTopY) {
     const player = scene.physics.add.sprite(
         100, groundTopY - 64,
-        'characters_spritesheet', 'character_green_walk_a'
+        'player_walk1' // Use the first frame of the new animation
     ).setScale(0.8).setCollideWorldBounds(true);
 
     // Adjust hitbox to be smaller and better centered
@@ -15,12 +15,12 @@ export function createPlayer (scene, groundTopY) {
 
     if (!scene.anims.exists('green_walk')) {
         scene.anims.create({
-            key : 'green_walk',
+            key : 'green_walk', // Animation key can remain the same or be changed
             frames : [
-                { key : 'characters_spritesheet', frame : 'character_green_walk_a' },
-                { key : 'characters_spritesheet', frame : 'character_green_walk_b' }
+                { key : 'player_walk1' },
+                { key : 'player_walk2' }
             ],
-            frameRate : 6,
+            frameRate : 6, // Adjust frameRate as needed for the new animation
             repeat : -1
         });
     }
