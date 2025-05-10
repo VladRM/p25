@@ -82,6 +82,7 @@ function preload() {
     this.load.audio('jump',        'res/snd/cartoon-jump-6462.mp3');
     this.load.audio('level_up',    'res/snd/next-level.mp3');
     this.load.audio('game_win',    'res/snd/game-win.mp3');
+    this.load.audio('game_over',   'res/snd/game-over.mp3');
 }
 
 function create() {
@@ -400,6 +401,7 @@ function hitObstacle(playerGO, obstacleGO) {
     if (gameOver) return;
 
     gameOver = true;
+    scene.sound.play('game_over', { volume: 0.7 });
     scene.physics.pause();
 
     playerGO.setTint(0x808080);
