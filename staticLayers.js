@@ -4,12 +4,13 @@
 export function createStaticLayers (scene, { width, height, displayedGroundHeight }) {
 
     /* --- Clouds (furthest) --- */
+    const cloudFrame  = scene.textures.getFrame('backgrounds_spritesheet', 'background_clouds');
+    const cloudHeight = cloudFrame.height;
     const clouds = scene.add.tileSprite(
-        width / 2, height / 2,
-        width, height,
+        width / 2, 0,                    // x stays centered, y = 0 (top of screen)
+        width, cloudHeight,              // height exactly the cloud frame height
         'backgrounds_spritesheet', 'background_clouds'
-    );
-    clouds.tilePositionY = 90;
+    ).setOrigin(0.5, 0);                // anchor to top-center
 
     /* --- Ground (closest) --- */
     const groundTile = scene.add.tileSprite(
