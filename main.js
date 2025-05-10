@@ -106,7 +106,7 @@ function create() {
     gameOverText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
         fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
     }).setOrigin(0.5).setVisible(false);
-    restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click or Press R to Restart', {
+    restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click / Tap to Restart', {
         fontSize: '24px', fill: '#000000'
     }).setOrigin(0.5).setVisible(false);
 
