@@ -227,7 +227,7 @@ function update(time, delta) {
 
     // Layer 2: Scroll trees (background_color_trees)
     if (treesTileSprite) {
-        treesTileSprite.tilePositionX += (gameSpeed / 2) * (delta / 1000);
+        treesTileSprite.tilePositionX += (gameSpeed / 3) * (delta / 1000); // Adjusted for smaller parallax
     }
 
     // Scroll the ground texture
