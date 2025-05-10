@@ -1,8 +1,13 @@
 import Enemy from './enemy.js';
 import { gameSpeed } from './main.js';
 
-/* obstacle colors exported by main.js */
-import { obstacleColors } from './main.js';
+const obstacleColors = [
+    0xFF0000, // Red
+    0xFFA500, // Orange
+    0xFFFF00, // Yellow
+    0x008000, // Green
+    0x800080  // Purple
+];
 
 export class ObstacleSpawner {
     constructor (scene, group, { spawnDelay, groundTopY }) {
