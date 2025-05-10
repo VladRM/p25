@@ -1,4 +1,4 @@
-import { gameSpeed } from './main.js';
+import { GAME_SPEED } from './gameConfig.js';
 
 const ENEMY_ANIMATIONS = {
     'barnacle': { frames: ['barnacle_attack_a', 'barnacle_attack_b'], frameRate: 5 },
@@ -60,7 +60,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.body.setImmovable(true);
         // this.body.moves is true by default for dynamic bodies if the group adds dynamic bodies.
 
-        this.body.setVelocityX(-gameSpeed);
+        this.body.setVelocityX(-GAME_SPEED);
 
         // console.log(`[Enemy] Physics initialized: VelocityX=${this.body.velocity.x}, Size=${this.body.width}x${this.body.height}`); // Removed log
         if (this.body) { // Redundant check as it's checked above, but good for detailed logging
