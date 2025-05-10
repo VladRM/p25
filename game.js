@@ -130,6 +130,11 @@ function jump() {
 function spawnObstacle() {
     if (gameOver) return; // Don't spawn if game is over
 
+    // Guard against 'this' not being the scene context (highly unlikely with callbackScope)
+    if (!this.add || !this.physics) {
+        return;
+    }
+
     const minObstacleHeight = 20;
     const maxObstacleHeight = 70;
     const obstacleHeight = Phaser.Math.Between(minObstacleHeight, maxObstacleHeight);
@@ -149,9 +154,23 @@ function spawnObstacle() {
 
     // Add physics to the obstacle visual
     this.physics.add.existing(obstacle);
+
+    // Check if the physics body was successfully created on the obstacle
+    if (!obstacle.body) {
+        // If no body, something went wrong with physics.add.existing.
+        // Destroy the visual obstacle and don't proceed.
+        obstacle.destroy();
+        return;
+    }
+    
     obstacle.body.setAllowGravity(false); // Obstacles are not affected by gravity
-    obstacle.body.setVelocityX(-gameSpeed); // Move left towards the player
     obstacle.body.setImmovable(true); // Player collides with it, it doesn't move
+    
+    // Explicitly ensure the obstacle's physics body is set to allow movement.
+    // This is usually true by default for dynamic bodies in Arcade Physics.
+    obstacle.body.moves = true; 
+    
+    obstacle.body.setVelocityX(-gameSpeed); // Move left towards the player
 
     obstacles.add(obstacle); // Add to the group
 
@@ -166,6 +185,13 @@ function update(time, delta) {
 
     // Iterate through obstacles for cleanup and scoring
     obstacles.getChildren().forEach(obstacle => {
+        // Ensure obstacle and its body exist before trying to access properties
+        if (!obstacle || !obstacle.body) {
+            // If an invalid obstacle is in the group, remove it.
+            if (obstacle) obstacles.remove(obstacle, true, true);
+            return;
+        }
+
         // Remove obstacles that go off-screen to the left
         if (obstacle.getBounds().right < 0) {
             obstacles.remove(obstacle, true, true); // Remove from group, destroy, remove from scene
@@ -201,11 +227,4 @@ function hitObstacle(playerGameObject, obstacleGameObject) {
     if (obstacleTimer) {
         obstacleTimer.remove(false);
     }
-
-    // Stop existing obstacles from moving (optional, physics.pause() should handle this)
-    // obstacles.getChildren().forEach(obs => {
-    //     if (obs.body) {
-    //         obs.body.setVelocityX(0);
-    //     }
-    // });
 }
