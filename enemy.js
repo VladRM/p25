@@ -9,7 +9,7 @@ const ENEMY_ANIMATIONS = {
 export default class Enemy extends Phaser.GameObjects.Sprite {
     constructor (scene, x, y, texture, frame, enemyType, scale) {
         super(scene, x, y, texture, frame);
-        console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}, scale:${scale}`);
+        // console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}, scale:${scale}`); // Removed log
         
         scene.add.existing(this);
 
@@ -24,7 +24,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // Play animation
         this.playAnimation();
         
-        console.log(`[Enemy] Constructor end: visible=${this.visible}, active=${this.active}, depth=${this.depth}, parentContainer=${this.parentContainer ? this.parentContainer.constructor.name : 'null'}`);
+        // console.log(`[Enemy] Constructor end: visible=${this.visible}, active=${this.active}, depth=${this.depth}, parentContainer=${this.parentContainer ? this.parentContainer.constructor.name : 'null'}`); // Removed log
     }
 
     playAnimation() {
@@ -45,10 +45,10 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
     initializePhysics() {
         if (!this.body) {
-            console.error('[Enemy] initializePhysics called but this.body is not defined. Ensure it was added to a physics group.');
+            // console.error('[Enemy] initializePhysics called but this.body is not defined. Ensure it was added to a physics group.'); // Removed log
             return;
         }
-        console.log('[Enemy] initializePhysics called.');
+        // console.log('[Enemy] initializePhysics called.'); // Removed log
 
         // Set body size based on displayed sprite size, adjust as necessary
         // Make hitbox smaller and offset to be more forgiving
@@ -62,9 +62,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
         this.body.setVelocityX(-gameSpeed);
 
-        console.log(`[Enemy] Physics initialized: VelocityX=${this.body.velocity.x}, Size=${this.body.width}x${this.body.height}`);
+        // console.log(`[Enemy] Physics initialized: VelocityX=${this.body.velocity.x}, Size=${this.body.width}x${this.body.height}`); // Removed log
         if (this.body) { // Redundant check as it's checked above, but good for detailed logging
-            console.log(`[Enemy] Physics body properties: debugShowBody=${this.body.debugShowBody}, debugShowVelocity=${this.body.debugShowVelocity}, enable=${this.body.enable}`);
+            // console.log(`[Enemy] Physics body properties: debugShowBody=${this.body.debugShowBody}, debugShowVelocity=${this.body.debugShowVelocity}, enable=${this.body.enable}`); // Removed log
         }
     }
 }

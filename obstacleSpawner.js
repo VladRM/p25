@@ -16,7 +16,7 @@ export class ObstacleSpawner {
     }
 
     spawnObstacle () {
-        console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}`);
+        // console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}`); // Removed log
         
         const enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
         const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
@@ -40,7 +40,7 @@ export class ObstacleSpawner {
 
         let yPos = this.groundTopY - spriteHeight / 2; // Position based on sprite's center
         if (typeof this.groundTopY !== 'number' || isNaN(this.groundTopY)) {
-            console.warn(`[ObstacleSpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for obstacle.`);
+            // console.warn(`[ObstacleSpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for obstacle.`); // Removed log
             yPos = this.scene.sys.game.config.height - 20 - spriteHeight / 2; // Default based on game height
         }
 
@@ -56,11 +56,11 @@ export class ObstacleSpawner {
         this.group.add(enemy);
         enemy.initializePhysics();
 
-        console.log(`[ObstacleSpawner] Enemy ${enemyTypeData.type} added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`);
+        // console.log(`[ObstacleSpawner] Enemy ${enemyTypeData.type} added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`); // Removed log
         if (enemy.body) {
-             console.log(`[ObstacleSpawner] Enemy body in group: pos=(${enemy.body.x.toFixed(2)}, ${enemy.body.y.toFixed(2)}), size=(${enemy.body.width}x${enemy.body.height}), velX=${enemy.body.velocity.x}`);
+             // console.log(`[ObstacleSpawner] Enemy body in group: pos=(${enemy.body.x.toFixed(2)}, ${enemy.body.y.toFixed(2)}), size=(${enemy.body.width}x${enemy.body.height}), velX=${enemy.body.velocity.x}`); // Removed log
         } else {
-             console.error('[ObstacleSpawner] Enemy added to group but has NO BODY? This should not happen if group is a physics group.');
+             // console.error('[ObstacleSpawner] Enemy added to group but has NO BODY? This should not happen if group is a physics group.'); // Removed log
         }
     }
 

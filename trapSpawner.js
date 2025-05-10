@@ -6,7 +6,7 @@ export class TrapSpawner {
     }
 
     spawnTrap() {
-        console.log(`[TrapSpawner] spawnTrap called. groundTopY: ${this.groundTopY}`);
+        // console.log(`[TrapSpawner] spawnTrap called. groundTopY: ${this.groundTopY}`); // Removed log
         const COLORS = [0xff69b4, 0x1e90ff, 0xffd700]; // pink, blue, yellow
         const color = Phaser.Utils.Array.GetRandom(COLORS);
 
@@ -31,26 +31,26 @@ export class TrapSpawner {
             trap.body.debugShowBody = true;
             trap.body.debugShowVelocity = true;
             trap.body.setVelocityX(-250); // same speed as obstacles
-            console.log(`[TrapSpawner] Trap body configured. Velocity set to: ${trap.body.velocity.x}`);
+            // console.log(`[TrapSpawner] Trap body configured. Velocity set to: ${trap.body.velocity.x}`); // Removed log
         } else {
-            console.error('[TrapSpawner] Trap added to group but has NO BODY! Cannot configure physics.');
+            // console.error('[TrapSpawner] Trap added to group but has NO BODY! Cannot configure physics.'); // Removed log
         }
 
-        console.log(`[TrapSpawner] Trap created: x=${trap.x}, y=${trap.y}, width=${trap.width}, height=${trap.height}, color=${trap.fillColor.toString(16)}, visible=${trap.visible}, depth=${trap.depth}, active=${trap.getData('active')}`);
+        // console.log(`[TrapSpawner] Trap created: x=${trap.x}, y=${trap.y}, width=${trap.width}, height=${trap.height}, color=${trap.fillColor.toString(16)}, visible=${trap.visible}, depth=${trap.depth}, active=${trap.getData('active')}`); // Removed log
         if (trap.body) {
-            console.log(`[TrapSpawner] Trap body (final): x=${trap.body.x}, y=${trap.body.y}, width=${trap.body.width}, height=${trap.body.height}, velocityX=${trap.body.velocity.x}`);
+            // console.log(`[TrapSpawner] Trap body (final): x=${trap.body.x}, y=${trap.body.y}, width=${trap.body.width}, height=${trap.body.height}, velocityX=${trap.body.velocity.x}`); // Removed log
         } else {
-            console.error('[TrapSpawner] Trap has no physics body after being added to group!');
+            // console.error('[TrapSpawner] Trap has no physics body after being added to group!'); // Removed log
         }
     }
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
-            if (trap.body) { 
-                console.log(`[TrapSpawner Update] Trap ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}, Body X: ${trap.body.x.toFixed(2)}, Velocity X: ${trap.body.velocity.x.toFixed(2)}, Visible: ${trap.visible}, Active: ${trap.active}`);
-            }
+            // if (trap.body) {  // Removed log
+                // console.log(`[TrapSpawner Update] Trap ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}, Body X: ${trap.body.x.toFixed(2)}, Velocity X: ${trap.body.velocity.x.toFixed(2)}, Visible: ${trap.visible}, Active: ${trap.active}`);
+            // } // Removed log
             if (trap.getBounds().right < 0) {
-                console.log(`[TrapSpawner Update] Removing trap that went off-screen left. ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}`);
+                // console.log(`[TrapSpawner Update] Removing trap that went off-screen left. ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}`); // Removed log
                 this.group.remove(trap, true, true);
             }
         });

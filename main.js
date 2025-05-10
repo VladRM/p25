@@ -145,7 +145,7 @@ function create() {
 
     const spawnRandomly = () => {
         const choice = Phaser.Math.Between(0, 1);
-        console.log(`[Main] spawnRandomly choice: ${choice === 0 ? 'Obstacle' : 'Trap'}`);
+        // console.log(`[Main] spawnRandomly choice: ${choice === 0 ? 'Obstacle' : 'Trap'}`); // Removed log
         if (choice === 0) {
             obstacleSpawner.spawnObstacle();
         } else {
@@ -164,9 +164,11 @@ function create() {
         if (!activeTraps.length) return;
         const nearest = activeTraps.sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
         if (Math.abs(nearest.x - player.x) <= 200) {
-            nearest.setFillStyle(0x888888);
-            nearest.setData('active', false);
-            nearest.body.enable = false;
+            nearest.setFillStyle(0x888888); // Change color
+            nearest.setData('active', false); // Mark as inactive
+            if (nearest.body) {
+                nearest.body.setVelocityX(-gameSpeed / 2); // Slow down
+            }
         }
     };
 
@@ -215,25 +217,7 @@ function hitObstacle(playerGO, obstacleGO) {
 }
 
 function hitTrap(playerGO, trapGO) {
-    if (gameOver || !trapGO.getData('active')) return; // Don't trigger if game over or trap inactive
-
-    console.log('[Main] Player hit a trap!');
-    gameOver = true;
-    scene.physics.pause();
-
-    playerGO.setTint(0xff0000); // Tint red for trap
-    if (playerGO.anims) playerGO.anims.stop();
-
-    gameOverText.setVisible(true);
-    restartText.setVisible(true);
-
-    if (scene.uiButtons)
-        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
-
-    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
-    
-    // Optionally, make the trap inactive or change its appearance
-    trapGO.setFillStyle(0x333333); // Darken the trap
-    trapGO.setData('active', false);
-    if (trapGO.body) trapGO.body.enable = false;
+    // Player passes through traps without consequence.
+    // The trap's state (active, color, speed) is only changed by deactivateNearestTrap.
+    // This function is now a no-op regarding game state changes from collision.
 }
