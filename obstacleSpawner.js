@@ -32,14 +32,22 @@ export class ObstacleSpawner {
     }
 
     spawnObstacle () {
+        console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}, spawnDelay: ${this.spawnDelay}`);
         const h = Phaser.Math.Between(20, 70);
         const w = Phaser.Math.Between(20, 40);
         const col = Phaser.Utils.Array.GetRandom(obstacleColors);
 
+        let yPos = this.groundTopY - h / 2;
+        if (typeof this.groundTopY !== 'number' || isNaN(this.groundTopY)) {
+            console.warn(`[ObstacleSpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for obstacle.`);
+            // Default Y position calculation, assuming ground is 20px from bottom of game area and using game config height
+            yPos = this.scene.sys.game.config.height - 20 - h / 2;
+        }
+
         const enemy = new Enemy(
             this.scene,
             this.scene.sys.game.config.width + w,
-            this.groundTopY - h / 2,
+            yPos,
             w, h, col
         );
         this.group.add(enemy);
