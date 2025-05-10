@@ -21,24 +21,19 @@ export class TrapSpawner {
             .setDepth(9) // Set depth similar to enemies, but slightly less to be distinct if needed
             .setName(trapId); // Give it a unique name for logging
 
-        this.scene.physics.add.existing(trap);
-        trap.body.setAllowGravity(false);
-        // Explicitly set debug flags, though global debug should cover this
-        trap.body.debugShowBody = true;
-        trap.body.debugShowVelocity = true;
-        // The following line was redundant as setVelocityX is called again immediately.
-        // trap.body.setVelocityX(-this.scene.game.config.physics.arcade?.gravity ? this.scene.physics.world.gravity.y : 0);
-        // trap.body.setVelocityX(-250); // Moved to after adding to group
-
+        // Add to the group first. The group will ensure a physics body is created/enabled.
         this.group.add(trap);
         trap.setData('active', true);
         
-        // Set velocity AFTER adding to the group, as adding to group might reset/finalize body properties
         if (trap.body) {
+            trap.body.setAllowGravity(false);
+            // Explicitly set debug flags, though global debug should cover this
+            trap.body.debugShowBody = true;
+            trap.body.debugShowVelocity = true;
             trap.body.setVelocityX(-250); // same speed as obstacles
-            console.log(`[TrapSpawner] Trap body velocity set to: ${trap.body.velocity.x}`);
+            console.log(`[TrapSpawner] Trap body configured. Velocity set to: ${trap.body.velocity.x}`);
         } else {
-            console.error('[TrapSpawner] Trap has no physics body after being added to group, cannot set velocity!');
+            console.error('[TrapSpawner] Trap added to group but has NO BODY! Cannot configure physics.');
         }
 
         console.log(`[TrapSpawner] Trap created: x=${trap.x}, y=${trap.y}, width=${trap.width}, height=${trap.height}, color=${trap.fillColor.toString(16)}, visible=${trap.visible}, depth=${trap.depth}, active=${trap.getData('active')}`);
