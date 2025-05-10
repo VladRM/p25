@@ -37,6 +37,8 @@ const config = {
 let scene;
 let player;
 let score = 0;
+let gameStarted = false;
+let startScreenText;
 
 /* ----- Level / speed management ----- */
 let level = 1;
@@ -86,6 +88,33 @@ function preload() {
 }
 
 function create() {
+    // Display Start Screen
+    startScreenText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Click / Tap to Start', {
+        fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    this.input.once('pointerdown', startGame, this);
+    // Keyboard input for starting the game can also be added here if desired, e.g., spacebar
+    // this.input.keyboard.once('keydown-SPACE', startGame, this);
+
+    // Initialize gameOverText and restartText here so they exist, but keep them invisible.
+    // They are made visible in hitObstacle.
+    gameOverText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
+        fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
+    }).setOrigin(0.5).setVisible(false);
+    restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click / Tap to Restart', {
+        fontSize: '24px', fill: '#000000'
+    }).setOrigin(0.5).setVisible(false);
+
+    // Setup restart handlers. They only act if gameOver is true.
+    this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
+    this.input.on('pointerdown', () => { if (gameOver && !gameStarted) { /* Do nothing if start screen is active */ } else if (gameOver) { this.scene.restart(); } });
+}
+
+function startGame() {
+    gameStarted = true;
+    if (startScreenText) startScreenText.destroy();
+
     score = 0;
     gameOver = false;
     level = 1; // Reset level
@@ -103,12 +132,10 @@ function create() {
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000000' });
     levelText = this.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
-    gameOverText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
-        fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
-    }).setOrigin(0.5).setVisible(false);
-    restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click / Tap to Restart', {
-        fontSize: '24px', fill: '#000000'
-    }).setOrigin(0.5).setVisible(false);
+    // gameOverText and restartText are already created in create(), just ensure they are hidden initially if not already.
+    gameOverText.setVisible(false);
+    restartText.setVisible(false);
+
 
     /* Level-up timer */
     levelTimer = this.time.addEvent({
@@ -291,13 +318,11 @@ function create() {
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
     this.physics.add.overlap(player, trapsGroup, hitTrap, null, this); // Added overlap for traps
-
-    this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
-    this.input.on('pointerdown', () => { if (gameOver) this.scene.restart(); });
 }
 
+
 function update(time, delta) {
-    if (gameOver) return;
+    if (!gameStarted || gameOver) return;
 
     const dt = delta / 1000;
 
