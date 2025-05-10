@@ -3,7 +3,8 @@ import { gameSpeed } from './main.js';
 export default class Enemy extends Phaser.GameObjects.Rectangle {
     constructor (scene, x, y, w, h, color = 0xff0000) {
         super(scene, x, y, w, h, color);
-        console.log(`[Enemy] Creating enemy at x:${x}, y:${y}, w:${w}, h:${h}, color:${color.toString(16)}`);
+        this.setFillStyle(color, 1); // Explicitly set fillStyle with alpha = 1
+        console.log(`[Enemy] Creating enemy at x:${x}, y:${y}, w:${w}, h:${h}, color:${color.toString(16)}, initialFillAlpha:${this.fillAlpha}`);
         scene.add.existing(this);
         scene.physics.add.existing(this);
         /* Ensure the physics body matches the visual rectangle size */
@@ -28,6 +29,14 @@ export default class Enemy extends Phaser.GameObjects.Rectangle {
         // Try forcing visibility and depth
         this.setVisible(true);
         this.setDepth(10); // Ensure it's rendered on top of default depth (0) items, like ground/background
+
+        console.log(`[Enemy] Post-setup: visible=${this.visible}, active=${this.active}, depth=${this.depth}, fillAlpha=${this.fillAlpha}`);
+        if (this.parentContainer) {
+            console.log(`[Enemy] Parent Container: ${this.parentContainer.constructor.name}`);
+        } else {
+            console.log('[Enemy] Parent Container: null (Not added to a display list properly?)');
+        }
+        console.log(`[Enemy] Camera Filter: ${this.cameraFilter}`);
 
         this.setData('isScorable', true);
     }
