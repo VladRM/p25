@@ -33,6 +33,13 @@ const config = {
 let scene;
 let player;
 let score = 0;
+
+/* ----- Level / speed management ----- */
+let level = 1;
+let currentSpeedScale = 1;          // 1.0 = base speed (level 1)
+let levelTimer;                     // 30-second timer for level-ups
+let levelText;
+let votingBooth;                    // Rectangle that appears after level 5
 let scoreText;
 let gameOver = false;
 let gameOverText;
@@ -67,6 +74,7 @@ function preload() {
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
     this.load.audio('footstep_b', 'res/snd/footstep_grass_004.ogg');
     this.load.audio('jump',        'res/snd/cartoon-jump-6462.mp3');
+    this.load.audio('level_up',    'res/snd/next-level.mp3');
 }
 
 function create() {
@@ -84,12 +92,44 @@ function create() {
     registerPlayerControls(this, player);
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000000' });
+    levelText = this.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
     gameOverText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
         fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
     }).setOrigin(0.5).setVisible(false);
     restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click or Press R to Restart', {
         fontSize: '24px', fill: '#000000'
     }).setOrigin(0.5).setVisible(false);
+
+    /* 30-second level-up timer */
+    levelTimer = this.time.addEvent({
+        delay   : 30000,
+        loop    : true,
+        callback: () => {
+            level += 1;
+            this.sound.play('level_up', { volume: 1 });
+            levelText.setText('Level: ' + level);
+
+            /* Increase world time-scale by fixed 10 % steps based on base speed */
+            currentSpeedScale = 1 + (level - 1) * 0.1;
+            this.physics.world.timeScale = currentSpeedScale;
+
+            /* After finishing level 5, spawn the voting booth and stop the timer */
+            if (level === 6) {
+                levelTimer.remove(false);
+                /* Spawn a big black rectangle that moves like an obstacle */
+                votingBooth = this.add.rectangle(
+                    GAME_WIDTH + 120,              // start off-screen right
+                    layers.groundTopY,             // sit on the ground
+                    120, 180, 0x000000
+                ).setOrigin(0.5, 1);
+                this.physics.add.existing(votingBooth);
+                votingBooth.body.setAllowGravity(false);
+                votingBooth.body.setVelocityX(-gameSpeed * currentSpeedScale);
+
+                this.physics.add.overlap(player, votingBooth, winGame, null, this);
+            }
+        }
+    });
 
     const UI_PAD = 10;
 
@@ -259,9 +299,10 @@ function update(time, delta) {
 
     const dt = delta / 1000;
 
-    layers.clouds.tilePositionX += (gameSpeed / 5) * dt;
-    layers.hills.tilePositionX += (gameSpeed / 2.5) * dt;
-    layers.groundTile.tilePositionX += gameSpeed * dt;
+    const effectiveSpeed = gameSpeed * currentSpeedScale;
+    layers.clouds.tilePositionX  += (effectiveSpeed / 5)   * dt;
+    layers.hills.tilePositionX   += (effectiveSpeed / 2.5) * dt;
+    layers.groundTile.tilePositionX +=  effectiveSpeed      * dt;
 
     const gained = obstacleSpawner.update(dt, player);
     trapSpawner.update(dt, player);
@@ -339,6 +380,7 @@ function hitObstacle(playerGO, obstacleGO) {
         scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
 
     if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+    if (levelTimer) levelTimer.remove(false);
     // obstacleSpawner.stop(); // No longer needed as timer is external
     // trapSpawner.stop(); // No longer needed as timer is external
 }
@@ -347,4 +389,23 @@ function hitTrap(playerGO, trapGO) {
     // Player passes through traps without consequence.
     // The trap's state (active, color, speed) is only changed by deactivateNearestTrap.
     // This function is now a no-op regarding game state changes from collision.
+}
+
+/* ---------------- WIN CONDITION ---------------- */
+function winGame(playerGO, boothGO) {
+    if (gameOver) return;          // prevent double processing
+
+    gameOver = true;               // reuse existing flag to halt update loop
+    scene.physics.pause();
+
+    const winText = scene.add.text(
+        GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
+        { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
+    ).setOrigin(0.5);
+
+    if (scene.uiButtons)
+        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+
+    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+    if (levelTimer) levelTimer.remove(false);
 }
