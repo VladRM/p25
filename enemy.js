@@ -5,6 +5,8 @@ export default class Enemy extends Phaser.GameObjects.Rectangle {
         super(scene, x, y, w, h, color);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        /* Ensure the physics body matches the visual rectangle size */
+        this.body.setSize(w, h);
 
         this.body.setAllowGravity(false);
         this.body.setImmovable(true);
