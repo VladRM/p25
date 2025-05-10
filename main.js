@@ -66,6 +66,7 @@ function preload() {
     // Foot-step sounds
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
     this.load.audio('footstep_b', 'res/snd/footstep_grass_004.ogg');
+    this.load.audio('jump',        'res/snd/cartoon-jump-6462.mp3');
 }
 
 function create() {

@@ -28,13 +28,15 @@ export function createPlayer (scene, groundTopY) {
 
     // Play foot-step sounds on each walk frame when the player is on the ground
     player.on('animationupdate-green_walk', (anim, frame) => {
-        if (!player.body || !player.body.touching.down) return;
+        if (!player.body || !player.body.touching.down || player.getData('justJumped')) return;
 
         const texFrame = frame.textureFrame || frame.frame || frame.key;
         if (texFrame === 'player_walk1') {
             scene.sound.play('footstep_a', { volume: 0.4 });
+            player.setData('justJumped', false);
         } else if (texFrame === 'player_walk2') {
             scene.sound.play('footstep_b', { volume: 0.4 });
+            player.setData('justJumped', false);
         }
     });
 
@@ -49,6 +51,8 @@ export function registerPlayerControls (scene, player) {
     function jump () {
         if (player.body.touching.down) {
             player.body.setVelocityY(JUMP_VELOCITY);
+            scene.sound.play('jump', { volume: 0.5 });
+            player.setData('justJumped', true);
         }
     }
     scene.input.keyboard.on('keydown-SPACE', jump, scene);
