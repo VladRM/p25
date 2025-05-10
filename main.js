@@ -90,42 +90,50 @@ function create () {
     }).setOrigin(0.5).setVisible(false);
 
     /* ---------- Super-power buttons (top-right, horizontal) ---------- */
-    const UI_PAD  = 10;   // separación entre botones/borde
-    const UI_SIZE = 64;   // lado en px (tamaño cómodo para móvil)
+    const UI_PAD   = 10;   // margen entre borde y botones
+    const UI_SIZE  = 64;   // lado del icono (tamaño cómodo para móvil)
+    const BORDER_W = 2;    // grosor del borde
 
-    const startX = GAME_WIDTH - UI_PAD;      // extremo derecho
-    const startY = UI_PAD;                   // parte superior
+    const startX = GAME_WIDTH - UI_PAD;
+    const startY = UI_PAD;
 
-    // botón más a la derecha
-    const btnFlash = this.add.image(startX, startY, 'icon_flashlight')
+    /* helper para crear botón + borde */
+    const addUIButton = (x, texture, logMsg) => {
+        // borde
+        const border = this.add.rectangle(
+            x, startY,
+            UI_SIZE + BORDER_W * 2, UI_SIZE + BORDER_W * 2,
+            0x000000, 0.35                // relleno semitransparente
+        )
         .setOrigin(1, 0)
-        .setDisplaySize(UI_SIZE, UI_SIZE)    // tamaño fijo
-        .setScrollFactor(0)
-        .setInteractive({ useHandCursor: true });
+        .setStrokeStyle(BORDER_W, 0xffffff)
+        .setScrollFactor(0);
 
-    // siguiente hacia la izquierda
-    const btnCompass = this.add.image(
-        btnFlash.x - UI_SIZE - UI_PAD, startY, 'icon_compass')
-        .setOrigin(1, 0)
-        .setDisplaySize(UI_SIZE, UI_SIZE)
-        .setScrollFactor(0)
-        .setInteractive({ useHandCursor: true });
+        // icono
+        const btn = this.add.image(x, startY, texture)
+            .setOrigin(1, 0)
+            .setDisplaySize(UI_SIZE, UI_SIZE)
+            .setScrollFactor(0)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', (pointer, localX, localY, event) => {
+                event?.stopPropagation();               // evita que el tap haga saltar al jugador
+                console.log('[UI] ' + logMsg);
+            });
 
-    // más a la izquierda
-    const btnBrain = this.add.image(
-        btnCompass.x - UI_SIZE - UI_PAD, startY, 'icon_brain')
-        .setOrigin(1, 0)
-        .setDisplaySize(UI_SIZE, UI_SIZE)
-        .setScrollFactor(0)
-        .setInteractive({ useHandCursor: true });
+        return { border, btn };
+    };
 
-    this.uiButtons = [btnFlash, btnCompass, btnBrain];
-    this.children.bringToTop(this.uiButtons);
+    // derecha → izquierda
+    const { border: borderFlash,   btn: btnFlash   } = addUIButton(startX                          , 'icon_flashlight', 'Flash-light power activated');
+    const { border: borderCompass, btn: btnCompass } = addUIButton(startX - (UI_SIZE + UI_PAD)    , 'icon_compass',   'Compass power activated');
+    const { border: borderBrain,   btn: btnBrain   } = addUIButton(startX - 2*(UI_SIZE + UI_PAD) , 'icon_brain',     'Brain power activated');
 
-    // callbacks placeholder
-    btnFlash .on('pointerdown', () => console.log('[UI] Flash-light power activated'));
-    btnCompass.on('pointerdown', () => console.log('[UI] Compass power activated'));
-    btnBrain .on('pointerdown', () => console.log('[UI] Brain power activated'));
+    // guardar referencias para ocultarlas al morir
+    this.uiButtons = [
+        btnFlash, btnCompass, btnBrain,
+        borderFlash, borderCompass, borderBrain
+    ];
+    this.children.bringToTop(this.uiButtons);   // asegurar que queden sobre el HUD
 
     /* obstacles */
     const obstaclesGroup = this.physics.add.group();
