@@ -88,7 +88,7 @@ function create() {
         config.width,
         256, // Full height of the sprite
         'backgrounds_spritesheet',
-        'background_fade_trees'
+        'background_clouds'
     );
 
     // Layer 2: Hills/Trees (background_color_trees)
