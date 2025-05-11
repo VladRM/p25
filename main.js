@@ -688,13 +688,10 @@ function hitObstacle(playerGO, obstacleGO) {
 }
 
 function hitTrap(playerGO, trapGO) {
-    // Player passes through traps. If it's active and message not shown, show "passed by" message.
-    if (trapGO.getData('active') && !trapGO.getData('passed_by_message_shown')) {
-        if (trapGO.getData('message_passed_by')) {
-            displayGameMessage(trapGO.getData('message_passed_by'));
-        }
-        trapGO.setData('passed_by_message_shown', true); // Prevent multiple messages for same trap
-    }
+    // This function is called when the player's physics body overlaps with a trap's physics body.
+    // Currently, player-trap collision itself has no direct game consequence (e.g., damage).
+    // The "trap passed by" message is now handled exclusively by trapSpawner.js's update method
+    // to ensure it's only shown when the trap has truly passed the player.
 }
 
 /* ---------------- WIN CONDITION ---------------- */
