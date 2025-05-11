@@ -124,7 +124,7 @@ function create() {
 // displayGameMessage function is now in UIManager.js
 
 function startGame() {
-    gameStarted = true;
+    // gameStarted = true; // Moved to the end of the function
     UIManager.destroyStartScreen();
 
     score = 0;
@@ -242,6 +242,8 @@ function startGame() {
     // This is already handled by passing `this.deactivateNearestTrap` to `UIManager.createDisarmButton`.
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
+
+    gameStarted = true; // Game is officially started only after all initializations
 }
 
 

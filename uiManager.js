@@ -364,6 +364,11 @@ export function resetUIForNewGame() {
     uiButtonsCollection = [];
     // Ensure disarm button elements are reset if they persist across scenes/restarts
     // (though they are typically recreated in startGame)
-    if (disarmButtonIcon) disarmButtonIcon.setAlpha(0).setInteractive();
+    if (disarmButtonIcon) {
+        disarmButtonIcon.setAlpha(0);
+        if (disarmButtonIcon.scene) { // Only call setInteractive if part of a scene
+            disarmButtonIcon.setInteractive();
+        }
+    }
     if (disarmButtonBorder) disarmButtonBorder.setAlpha(0.5);
 }
