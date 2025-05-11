@@ -1,26 +1,9 @@
 import { GAME_SPEED } from './gameConfig.js';
 
 const ENEMY_ANIMATIONS = {
-    // Example: You would need to find the actual max dimensions for your enemy frames
-    // and populate maxFrameWidth and maxFrameHeight accordingly.
-    'enemy_1':  { 
-        frames: ['enemy_1_a', 'enemy_1_b'], 
-        frameRate: 5,
-        // maxFrameWidth: 64, // Example: unscaled width of the largest frame for enemy_1
-        // maxFrameHeight: 64 // Example: unscaled height of the largest frame for enemy_1
-    }, 
-    'enemy_2':  { 
-        frames: ['enemy_2_a', 'enemy_2_b'], 
-        frameRate: 5
-        // maxFrameWidth: 70, // Example
-        // maxFrameHeight: 70  // Example
-    },  
-    'enemy_3':  { 
-        frames: ['enemy_3_a', 'enemy_3_b'], 
-        frameRate: 5
-        // maxFrameWidth: 60, // Example
-        // maxFrameHeight: 60  // Example
-    }  
+    'enemy_1':  { frames: ['enemy_1_a', 'enemy_1_b'], frameRate: 5 },
+    'enemy_2':  { frames: ['enemy_2_a', 'enemy_2_b'], frameRate: 5 },
+    'enemy_3':  { frames: ['enemy_3_a', 'enemy_3_b'], frameRate: 5 }
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
@@ -82,22 +65,15 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // Phaser.Physics.Arcade.Body.setSize() by default centers the new body on the sprite's origin.
         // Assuming the sprite's origin is (0.5, 0.5), this will correctly center the hitbox on the sprite.
         
-        const animConfig = ENEMY_ANIMATIONS[this.enemyType];
-        let bodyWidth, bodyHeight;
-
-        if (animConfig && animConfig.maxFrameWidth && animConfig.maxFrameHeight) {
-            // Use defined max frame dimensions if available
-            bodyWidth = animConfig.maxFrameWidth * this.scaleX * 0.8;
-            bodyHeight = animConfig.maxFrameHeight * this.scaleY * 0.8;
-        } else {
-            // Fallback to current display dimensions (based on the first animation frame)
-            bodyWidth = this.displayWidth * 0.8;
-            bodyHeight = this.displayHeight * 0.8;
-        }
+        // Set hitbox to 80% of the sprite's current displayed width and height.
+        // When initializePhysics is called, this will be based on the scaled dimensions of the first frame of the animation.
+        // If subsequent animation frames have different dimensions, the hitbox will not resize with them.
+        const bodyWidth = this.displayWidth * 0.8;
+        const bodyHeight = this.displayHeight * 0.8;
         
         this.body.setSize(bodyWidth, bodyHeight);
-        // No explicit setOffset is needed if the sprite origin is (0.5, 0.5) and setSize's default centering is used.
-
+        // No explicit setOffset is needed if the sprite origin is (0.5, 0.5) 
+        // as setSize centers the new body on the sprite's origin by default.
 
         this.body.setAllowGravity(false);
         this.body.setImmovable(true);
