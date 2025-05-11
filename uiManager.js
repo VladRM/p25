@@ -13,12 +13,12 @@ const MESSAGE_X_CENTER = GAME_WIDTH / 2;
 const MESSAGE_Y_BOTTOM = 30; // Note: Messages appear 30px from bottom. Progress bar will be below this area.
 
 // Progress Bar Constants
-const PROGRESS_BAR_HEIGHT = 10;
+const PROGRESS_BAR_HEIGHT = 8;
 const PROGRESS_BAR_PADDING_X = 20; // Padding from left/right edges of the screen
 const PROGRESS_BAR_PADDING_Y_BOTTOM = 5; // Padding from the absolute bottom edge of the screen
-const PROGRESS_BAR_BG_COLOR = 0x333333; // Dark grey for background
-const PROGRESS_BAR_FG_COLOR = 0x4CAF50; // Green for foreground (progress fill)
-const PROGRESS_BAR_BORDER_COLOR = 0xCCCCCC; // Light grey for border
+const PROGRESS_BAR_BG_COLOR = 0x222222; // Darker grey for background
+const PROGRESS_BAR_FG_COLOR = 0x00FF00; // Brighter green for foreground (progress fill)
+const PROGRESS_BAR_BORDER_COLOR = 0xAAAAAA; // Medium grey for border
 const PROGRESS_BAR_BORDER_THICKNESS = 1;
 const PROGRESS_BAR_DEPTH = 100; // Render depth
 const MESSAGE_Y_TOP = 10;
