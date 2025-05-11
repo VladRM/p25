@@ -256,7 +256,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             if (disarmButtonBorder) {
                 disarmButtonBorder
                     .setAlpha(0)                                             // start invisible
-                    .setScale(BORDER_POP_SCALE_START);                       // pop-in effect – grow to 1
+                    .setScale(1);                                            // keep size, fade-in centered
                 if (disarmButtonBorder.input) {
                     disarmButtonBorder.input.cursor = 'hand';
                 }
