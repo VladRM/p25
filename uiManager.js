@@ -353,14 +353,18 @@ export function showGameOverScreen() {
     scene.children.bringToTop(restartText);
 }
 
-export function showWinScreen() {
+export function showWinScreen(freedCharactersCount = 0) { // Add parameter with default
     const scene = getScene();
     if (!scene) return;
 
     // Clear any active game messages first
     clearAllMessages();
 
-    const winMessageString = 'Felicitari, ai evitat propaganda si ajuns cu bine la vot!';
+    let winMessageString = 'Felicitari, ai evitat propaganda si ajuns cu bine la vot!';
+    if (freedCharactersCount > 0) {
+        winMessageString += `\nAi eliberat ${freedCharactersCount} votanti din capcanele populismului si dezinformarii`;
+    }
+
     const textStyle = {
         fontSize: '20px', // Reduced font size
         fill: '#006400', // Dark Green
