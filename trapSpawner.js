@@ -12,7 +12,7 @@ export class TrapSpawner {
         const TRAP_TYPES = [
             { name: 'populist', color: 0xff69b4, message_disarmed: "Ai folosit gandirea critica!", message_passed_by: "Nu trece nepasator pe langa cei nehotarati!" }, // Pink
             { name: 'obedience', color: 0x1e90ff, message_disarmed: "Bravo, le-ai aratat directia!", message_passed_by: "Ajuta-i pe cei dezorientati sa gaseasca calea!" }, // Blue
-            { name: 'darkweb', color: 0xffd700, message_disarmed: "Felicitari! Ai facut lumina si i-ai ajutat sa se decida!", message_passed_by: "Nu-i lasa pe apropiati in intuneric!" }  // Yellow (Dark Web of Lies)
+            { name: 'darkweb', color: 0xffd700, message_disarmed: "Felicitari! Ai facut lumina si s-au decis!", message_passed_by: "Nu-i lasa pe apropiati in intuneric!" }  // Yellow (Dark Web of Lies)
         ];
         let selectedTrapType;
         do {
