@@ -7,13 +7,16 @@ const ENEMY_ANIMATIONS = {
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
-    constructor (scene, x, y, texture, frame, enemyType, scale) {
+    constructor (scene, x, y, texture, frame, enemyType, scale, animMaxUnscaledWidth, animMaxUnscaledHeight) {
         super(scene, x, y, texture, frame);
         // console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}, scale:${scale}`); // Removed log
         
         scene.add.existing(this);
 
         this.enemyType = enemyType; // Store the type to select animation
+        this.animMaxUnscaledWidth = animMaxUnscaledWidth || this.width; // Fallback to current frame's width if not provided
+        this.animMaxUnscaledHeight = animMaxUnscaledHeight || this.height; // Fallback to current frame's height if not provided
+
 
         // Set GameObject properties
         this.setVisible(true);
@@ -70,12 +73,19 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // If subsequent animation frames have different dimensions, the hitbox will not resize with them.
         console.log(`[Enemy] initializePhysics: enemyType=${this.enemyType}, texture=${this.texture.key}, frame=${this.frame.name}`);
         console.log(`[Enemy] initializePhysics: scaleX=${this.scaleX}, scaleY=${this.scaleY}`);
-        console.log(`[Enemy] initializePhysics: width=${this.width}, height=${this.height}`);
-        console.log(`[Enemy] initializePhysics: displayWidth=${this.displayWidth}, displayHeight=${this.displayHeight}`);
+        // Log original (current frame) width/height and displayWidth/Height for reference
+        console.log(`[Enemy] initializePhysics: current frame width=${this.width}, height=${this.height}`);
+        console.log(`[Enemy] initializePhysics: current frame displayWidth=${this.displayWidth}, displayHeight=${this.displayHeight}`);
+        console.log(`[Enemy] initializePhysics: using animMaxUnscaledWidth=${this.animMaxUnscaledWidth}, animMaxUnscaledHeight=${this.animMaxUnscaledHeight} for hitbox calc.`);
+
+        // Calculate hitbox based on the maximum possible scaled dimensions of the animation
+        const maxScaledWidth = this.animMaxUnscaledWidth * this.scaleX;
+        const maxScaledHeight = this.animMaxUnscaledHeight * this.scaleY;
         
-        const bodyWidth = this.displayWidth * 0.8;
-        const bodyHeight = this.displayHeight * 0.8;
+        const bodyWidth = maxScaledWidth * 0.8;
+        const bodyHeight = maxScaledHeight * 0.8;
         
+        console.log(`[Enemy] initializePhysics: maxScaledWidth=${maxScaledWidth}, maxScaledHeight=${maxScaledHeight}`);
         console.log(`[Enemy] initializePhysics: calculated bodyWidth=${bodyWidth}, bodyHeight=${bodyHeight}`);
         
         this.body.setSize(bodyWidth, bodyHeight);

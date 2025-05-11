@@ -3,9 +3,10 @@ import Enemy from './enemy.js';
 // import { gameSpeed } from './main.js';
 
 const ENEMY_TYPES = [
-    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null }, // baseFrame is null as textureKey is the full image
-    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null },  // baseFrame is null as textureKey is the full image
-    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null }  // baseFrame is null as textureKey is the full image
+    // IMPORTANT: Replace animMaxUnscaledWidth/Height with actual max dimensions from your art assets
+    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350 }, // Example: if 1_b is taller due to sign
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320 }, // Example: if 2_b is taller due to flags
+    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256 }  // Example: if 3_a and 3_b are same size
 ];
 
 export class ObstacleSpawner {
@@ -63,8 +64,10 @@ export class ObstacleSpawner {
             yPos,
             enemyTypeData.textureKey, // Use the textureKey from ENEMY_TYPES
             enemyTypeData.baseFrame,  // Use the baseFrame from ENEMY_TYPES (can be null)
-            enemyTypeData.type, // Pass the enemy type for animation handling
-            chosenScale         // Pass the chosen scale
+            enemyTypeData.type,       // Pass the enemy type for animation handling
+            chosenScale,              // Pass the chosen scale
+            enemyTypeData.animMaxUnscaledWidth, // Pass the max unscaled width for hitbox calculation
+            enemyTypeData.animMaxUnscaledHeight // Pass the max unscaled height for hitbox calculation
         );
         this.group.add(enemy);
         this.lastEnemyType = enemyTypeData.type; // Remember last enemy type
