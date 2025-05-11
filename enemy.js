@@ -1,9 +1,10 @@
 import { GAME_SPEED } from './gameConfig.js';
 
 const ENEMY_ANIMATIONS = {
-    'barnacle': { frames: ['barnacle_attack_a', 'barnacle_attack_b'], frameRate: 5 },
-    'slime':    { frames: ['slime_spike_walk_a', 'slime_spike_walk_b'], frameRate: 5 },
-    'worm':     { frames: ['worm_ring_move_a', 'worm_ring_move_b'], frameRate: 5 }
+    'barnacle': { frames: ['barnacle_attack_a', 'barnacle_attack_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
+    'slime':    { frames: ['slime_spike_walk_a', 'slime_spike_walk_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
+    'worm':     { frames: ['worm_ring_move_a', 'worm_ring_move_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
+    'obs_1':    { frames: ['enemy_obs1_a', 'enemy_obs1_b'], frameRate: 5 } // Frames are direct image keys
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
@@ -32,9 +33,17 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         if (animConfig) {
             const animKey = `${this.enemyType}_anim`;
             if (!this.scene.anims.exists(animKey)) {
+                let frameObjects;
+                if (animConfig.spritesheet) {
+                    // Frames are part of a spritesheet
+                    frameObjects = animConfig.frames.map(frameName => ({ key: animConfig.spritesheet, frame: frameName }));
+                } else {
+                    // Frames are individual image keys
+                    frameObjects = animConfig.frames.map(imageKey => ({ key: imageKey }));
+                }
                 this.scene.anims.create({
                     key: animKey,
-                    frames: animConfig.frames.map(frame => ({ key: 'enemies_spritesheet', frame: frame })),
+                    frames: frameObjects,
                     frameRate: animConfig.frameRate,
                     repeat: -1
                 });

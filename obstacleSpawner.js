@@ -3,9 +3,10 @@ import Enemy from './enemy.js';
 // import { gameSpeed } from './main.js';
 
 const ENEMY_TYPES = [
-    { type: 'barnacle', baseFrame: 'barnacle_attack_a' },
-    { type: 'slime',    baseFrame: 'slime_spike_walk_a' },
-    { type: 'worm',     baseFrame: 'worm_ring_move_a' }
+    { type: 'barnacle', textureKey: 'enemies_spritesheet', baseFrame: 'barnacle_attack_a' },
+    { type: 'slime',    textureKey: 'enemies_spritesheet', baseFrame: 'slime_spike_walk_a' },
+    { type: 'worm',     textureKey: 'enemies_spritesheet', baseFrame: 'worm_ring_move_a' },
+    { type: 'obs_1',    textureKey: 'enemy_obs1_a',        baseFrame: null } // baseFrame is null as textureKey is the full image
 ];
 
 export class ObstacleSpawner {
@@ -23,7 +24,7 @@ export class ObstacleSpawner {
         do {
             enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
         } while (enemyTypeData.type === this.lastEnemyType && ENEMY_TYPES.length > 1);
-        const textureKey = 'enemies_spritesheet'; // Assuming all enemy sprites are in this atlas
+        // const textureKey = 'enemies_spritesheet'; // No longer hardcoded
 
         const baseScale = 0.7;
         let chosenScale;
@@ -35,7 +36,7 @@ export class ObstacleSpawner {
 
         // Create a temporary sprite to get its dimensions for positioning
         // This sprite is not added to the scene or group yet.
-        const tempSprite = this.scene.make.sprite({ key: textureKey, frame: enemyTypeData.baseFrame }, false);
+        const tempSprite = this.scene.make.sprite({ key: enemyTypeData.textureKey, frame: enemyTypeData.baseFrame }, false);
         // Apply the chosen scale to get accurate dimensions for positioning
         tempSprite.setScale(chosenScale);
         const spriteHeight = tempSprite.displayHeight;
@@ -52,8 +53,8 @@ export class ObstacleSpawner {
             this.scene,
             this.scene.sys.game.config.width + spriteWidth, // Initial X position (off-screen to the right)
             yPos,
-            textureKey,
-            enemyTypeData.baseFrame,
+            enemyTypeData.textureKey, // Use the textureKey from ENEMY_TYPES
+            enemyTypeData.baseFrame,  // Use the baseFrame from ENEMY_TYPES (can be null)
             enemyTypeData.type, // Pass the enemy type for animation handling
             chosenScale         // Pass the chosen scale
         );
