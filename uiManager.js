@@ -76,18 +76,18 @@ export function createGameUI() {
         fontSize: '48px',
         fill: '#FF0000', // Strong Red
         fontStyle: 'bold',
-        stroke: '#FFFFFF',
-        strokeThickness: 6,
-        shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, stroke: true, fill: true },
+        // stroke: '#FFFFFF', // Removed for flat style
+        // strokeThickness: 6, // Removed for flat style
+        // shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, stroke: true, fill: true }, // Removed for flat style
         align: 'center'
     }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
 
     restartText = scene.add.text(0, 0, 'Click / Tap to Restart', { // Position will be set in showGameOverScreen
         fontSize: '24px',
-        fill: '#DDDDDD', // Light grey/white for contrast on dark box
+        fill: '#000000', // Black for contrast on white background
         fontStyle: 'normal',
-        stroke: '#000000',
-        strokeThickness: 3,
+        // stroke: '#000000', // Removed for flat style
+        // strokeThickness: 3, // Removed for flat style
         align: 'center'
     }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
 }
@@ -334,9 +334,9 @@ export function showGameOverScreen() {
         gameOverTextBackground.destroy(); // Destroy if already exists
     }
     gameOverTextBackground = scene.add.graphics({ x: boxX, y: boxY });
-    gameOverTextBackground.fillStyle(0x000000, 0.65); // Semi-transparent black background
+    gameOverTextBackground.fillStyle(0xffffff, 0.8); // White background with 80% opacity
     gameOverTextBackground.fillRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
-    gameOverTextBackground.lineStyle(BORDER_W, 0xffffff, 1); // White border
+    gameOverTextBackground.lineStyle(BORDER_W, 0x000000, 1); // Black border
     gameOverTextBackground.strokeRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
     gameOverTextBackground.setDepth(200); // Background behind text
 
