@@ -232,7 +232,7 @@ function startGame() {
                 UIManager.displayMessage(trapToDeactivate.getData('message_disarmed'));
             }
 
-            scene.sound.play('yay', { volume: 0.6 }); // Play "yay" sound
+            scene.sound.play('yay', { volume: 0.1 }); // Play "yay" sound
 
             score += 10;
             UIManager.updateScoreText(score);
