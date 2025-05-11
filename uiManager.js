@@ -244,28 +244,42 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
 
     if (disarmButtonIcon) {
         if (isEnabled && iconKey) {
+            const borderScale = (BORDER_TOTAL + 10) / BORDER_TOTAL;          // enlarge by 5 px per side
+            /* ---------- prepare icon ---------- */
             disarmButtonIcon.setTexture(iconKey)
-                             .setDisplaySize(UI_SIZE + 10, UI_SIZE + 10) // enlarge by 5 px per side
-                             .setAlpha(0.5);                               // start semi-transparent
+                             .setDisplaySize(UI_SIZE + 10, UI_SIZE + 10)      // enlarge by 5 px per side
+                             .setAlpha(0)                                     // start invisible
+                             .setScale(0.9);                                  // pop-in effect – grow to 1
             disarmButtonIcon.setInteractive({ useHandCursor: true });
 
+            /* ---------- prepare border ---------- */
             if (disarmButtonBorder) {
-                const borderScale = (BORDER_TOTAL + 10) / BORDER_TOTAL;   // enlarge by 5 px per side
                 disarmButtonBorder
-                    .setAlpha(0.5)                                        // start semi-transparent
-                    .setScale(borderScale);                               // enlarge border + bg
-                if (disarmButtonBorder.input) {                           // Set cursor for active border
+                    .setAlpha(0)                                             // start invisible
+                    .setScale(borderScale * 0.9);                            // pop-in effect – grow to full
+                if (disarmButtonBorder.input) {
                     disarmButtonBorder.input.cursor = 'hand';
                 }
             }
 
-            // Start flashing tween
-            // Targets will tween from their current alpha (1) to 0.5, then yoyo back to 1, repeatedly.
-            disarmButtonFlashTween = scene.tweens.add({
+            /* ---------- fade-in & grow ---------- */
+            scene.tweens.add({
                 targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
-                alpha: { from: 0.5, to: 1 }, // fade in
-                duration: 500,
-                repeat: -1                   // loop continuously
+                alpha : { from: 0, to: 1 },
+                // Scale each target to its final value
+                scale : (target) => (target === disarmButtonBorder ? borderScale : 1),
+                duration: 250,
+                ease    : 'Power1',
+                onComplete: () => {
+                    /* after fade-in start subtle flashing */
+                    disarmButtonFlashTween = scene.tweens.add({
+                        targets : [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
+                        alpha   : { from: 0.75, to: 1 },
+                        duration: 500,
+                        yoyo    : true,
+                        repeat  : -1
+                    });
+                }
             });
         } else {
             // Logic for when isEnabled is false (button is disabled)
