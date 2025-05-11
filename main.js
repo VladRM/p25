@@ -451,8 +451,8 @@ function update(time, delta) {
         // Scale the booth to be proportionally correct with the player.
         // Previous height was 180 (a bit too tall), previous width was implicitly scaled (much too wide).
         // New dimensions:
-        votingBooth.displayHeight = 160;
-        votingBooth.displayWidth = 90;
+        votingBooth.displayHeight = 128;
+        votingBooth.displayWidth = 100;
 
         // The physics body should automatically adjust to displaySize.
         // If collision issues arise, we might need to explicitly call:
