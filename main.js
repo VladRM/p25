@@ -448,11 +448,16 @@ function update(time, delta) {
             'voting_booth_img'
         ).setOrigin(0.5, 1); // Origin at bottom-center for correct ground placement
 
-        // Scale the booth to have a display height of 180px (like the old rectangle)
-        // This will also scale its width proportionally to maintain aspect ratio.
-        votingBooth.displayHeight = 180;
-        // The physics body should scale with the sprite. If issues arise,
-        // we might need to explicitly call votingBooth.body.setSize(votingBooth.displayWidth, votingBooth.displayHeight);
+        // Scale the booth to be proportionally correct with the player.
+        // Previous height was 180 (a bit too tall), previous width was implicitly scaled (much too wide).
+        // New dimensions:
+        votingBooth.displayHeight = 160;
+        votingBooth.displayWidth = 90;
+
+        // The physics body should automatically adjust to displaySize.
+        // If collision issues arise, we might need to explicitly call:
+        // votingBooth.body.setSize(votingBooth.displayWidth, votingBooth.displayHeight);
+        // and potentially .setOffset() if the origin is not centered on the new body.
 
         votingBooth.body.setAllowGravity(false);
         votingBooth.body.setVelocityX(-effectiveSpeed);
