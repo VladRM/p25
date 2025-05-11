@@ -6,7 +6,7 @@ const ENEMY_TYPES = [
     { type: 'barnacle', textureKey: 'enemies_spritesheet', baseFrame: 'barnacle_attack_a' },
     { type: 'slime',    textureKey: 'enemies_spritesheet', baseFrame: 'slime_spike_walk_a' },
     { type: 'worm',     textureKey: 'enemies_spritesheet', baseFrame: 'worm_ring_move_a' },
-    { type: 'obs_1',    textureKey: 'enemy_obs1_a',        baseFrame: null } // baseFrame is null as textureKey is the full image
+    { type: 'enemy_1',  textureKey: 'enemy_1_a',           baseFrame: null } // baseFrame is null as textureKey is the full image
 ];
 
 export class ObstacleSpawner {

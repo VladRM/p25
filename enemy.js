@@ -4,7 +4,7 @@ const ENEMY_ANIMATIONS = {
     'barnacle': { frames: ['barnacle_attack_a', 'barnacle_attack_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
     'slime':    { frames: ['slime_spike_walk_a', 'slime_spike_walk_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
     'worm':     { frames: ['worm_ring_move_a', 'worm_ring_move_b'], frameRate: 5, spritesheet: 'enemies_spritesheet' },
-    'obs_1':    { frames: ['enemy_obs1_a', 'enemy_obs1_b'], frameRate: 5 } // Frames are direct image keys
+    'enemy_1':  { frames: ['enemy_1_a', 'enemy_1_b'], frameRate: 5 } // Frames are direct image keys
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
