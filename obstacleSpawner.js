@@ -3,10 +3,8 @@ import Enemy from './enemy.js';
 // import { gameSpeed } from './main.js';
 
 const ENEMY_TYPES = [
-    { type: 'barnacle', textureKey: 'enemies_spritesheet', baseFrame: 'barnacle_attack_a' },
-    { type: 'slime',    textureKey: 'enemies_spritesheet', baseFrame: 'slime_spike_walk_a' },
-    { type: 'worm',     textureKey: 'enemies_spritesheet', baseFrame: 'worm_ring_move_a' },
-    { type: 'enemy_1',  textureKey: 'enemy_1_a',           baseFrame: null } // baseFrame is null as textureKey is the full image
+    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null }, // baseFrame is null as textureKey is the full image
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null }  // baseFrame is null as textureKey is the full image
 ];
 
 export class ObstacleSpawner {

@@ -80,9 +80,11 @@ function preload() {
     this.load.image('icon_brain', 'res/img/player/brain.png');
     this.load.image('voting_booth_img', 'res/img/voting-booth.png');
 
-    // New enemy images
-    this.load.image('enemy_1_a', 'res/img/enemies/1_a.jpg');
-    this.load.image('enemy_1_b', 'res/img/enemies/1_b.jpg');
+    // Enemy images
+    this.load.image('enemy_1_a', 'res/img/enemies/1_a.png');
+    this.load.image('enemy_1_b', 'res/img/enemies/1_b.png');
+    this.load.image('enemy_2_a', 'res/img/enemies/2_a.png');
+    this.load.image('enemy_2_b', 'res/img/enemies/2_b.png');
 
     // Foot-step sounds
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
