@@ -362,7 +362,11 @@ export function showWinScreen(freedCharactersCount = 0) { // Add parameter with 
 
     let winMessageString = 'Felicitari, ai evitat propaganda si ajuns cu bine la vot!';
     if (freedCharactersCount > 0) {
-        winMessageString += `\nAi eliberat ${freedCharactersCount} votanti din capcanele populismului si dezinformarii`;
+        winMessageString += `\nAi eliberat ${freedCharactersCount} votanti din capcanele populismului si dezinformarii!`;
+        winMessageString += `\nCu ajutorul tau, democratia este mai puternica!`;
+    } else {
+        winMessageString += `\nDin pacate nu ai eliberat niciun votant din capcanele propagandei`;
+        winMessageString += `\nData viitoare i-ai si pe ei cu tine!`;
     }
 
     const textStyle = {
