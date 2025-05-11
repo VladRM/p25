@@ -59,9 +59,11 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // console.log('[Enemy] initializePhysics called.'); // Removed log
 
         // Set body size based on displayed sprite size, adjust as necessary
-        // Make hitbox smaller and offset to be more forgiving
-        this.body.setSize(this.displayWidth * 0.6, this.displayHeight * 0.6);
-        this.body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.3);
+        // Hitbox will be 80% of the sprite's area, centered.
+        // Scale factor for dimensions to achieve 80% area: sqrt(0.8) ~= 0.8944
+        // Offset factor to center: (1 - 0.8944) / 2 ~= 0.0528
+        this.body.setSize(this.displayWidth * 0.8944, this.displayHeight * 0.8944);
+        this.body.setOffset(this.displayWidth * 0.0528, this.displayHeight * 0.0528);
 
 
         this.body.setAllowGravity(false);
