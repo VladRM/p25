@@ -128,24 +128,28 @@ function create() {
     // this.input.keyboard.once('keydown-SPACE', startGame, this);
 
     // Character animations
-    this.anims.create({
-        key: 'adventurer_cheer_anim',
-        frames: [
-            { key: 'adventurer_cheer1' },
-            { key: 'adventurer_cheer2' }
-        ],
-        frameRate: 5,
-        repeat: -1
-    });
-    this.anims.create({
-        key: 'female_cheer_anim',
-        frames: [
-            { key: 'female_cheer1' },
-            { key: 'female_cheer2' }
-        ],
-        frameRate: 5,
-        repeat: -1
-    });
+    if (!this.anims.exists('adventurer_cheer_anim')) {
+        this.anims.create({
+            key: 'adventurer_cheer_anim',
+            frames: [
+                { key: 'adventurer_cheer1' },
+                { key: 'adventurer_cheer2' }
+            ],
+            frameRate: 5,
+            repeat: -1
+        });
+    }
+    if (!this.anims.exists('female_cheer_anim')) {
+        this.anims.create({
+            key: 'female_cheer_anim',
+            frames: [
+                { key: 'female_cheer1' },
+                { key: 'female_cheer2' }
+            ],
+            frameRate: 5,
+            repeat: -1
+        });
+    }
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
