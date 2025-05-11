@@ -85,6 +85,8 @@ function preload() {
     this.load.image('enemy_2_b', 'res/img/enemies/2_b.png');
     this.load.image('enemy_3_a', 'res/img/enemies/3_a.png');
     this.load.image('enemy_3_b', 'res/img/enemies/3_b.png');
+    this.load.image('enemy_4_a', 'res/img/enemies/4_a.png');
+    this.load.image('enemy_4_b', 'res/img/enemies/4_b.png');
 
     // Foot-step sounds
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
