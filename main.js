@@ -1,14 +1,14 @@
 import * as UIManager from './uiManager.js';
 import { createStaticLayers } from './staticLayers.js';
 import { createPlayer, registerPlayerControls } from './player.js';
-import { ObstacleSpawner } from './obstacleSpawner.js';
+import { EnemySpawner } from './enemySpawner.js';
 import { TrapSpawner } from './trapSpawner.js';
 import {
     GAME_WIDTH,
     GAME_HEIGHT,
     DISPLAYED_GROUND_HEIGHT,
     GAME_SPEED,
-    OBSTACLE_SPAWN_DELAY,
+    ENEMY_SPAWN_DELAY,
     MAX_LEVELS,
     LEVEL_DURATION_MS,
     ENEMY_TO_TRAP_RATIO
@@ -46,12 +46,12 @@ let votingBooth;                    // Rectangle that appears after level 5
 // scoreText managed by UIManager
 let gameOver = false;
 // gameOverText and restartText managed by UIManager
-let obstacleSpawner;
+let enemySpawner;
 let trapSpawner;
 let combinedSpawnerTimer; // New timer for combined spawning
 let layers;
 let trapsGroup;
-let obstaclesGroup;
+let enemiesGroup;
 let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
 // Scene properties for the dynamic disarm button
 // disarmButtonBorder, disarmButtonIcon are now managed by UIManager
@@ -213,10 +213,10 @@ function startGame() {
 
     // this.uiButtons for game over handling is now managed internally by UIManager's uiButtonsCollection
 
-    obstaclesGroup = this.physics.add.group();
+    enemiesGroup = this.physics.add.group();
     trapsGroup = this.physics.add.group();
 
-    obstacleSpawner = new ObstacleSpawner(this, obstaclesGroup, {
+    enemySpawner = new EnemySpawner(this, enemiesGroup, {
         groundTopY: layers.groundTopY
     });
     trapSpawner = new TrapSpawner(this, trapsGroup, {
@@ -226,14 +226,14 @@ function startGame() {
     const spawnNext = () => {
         const enemyProbability = ENEMY_TO_TRAP_RATIO / (ENEMY_TO_TRAP_RATIO + 1);
         if (Math.random() < enemyProbability) {
-            obstacleSpawner.spawnObstacle();
+            enemySpawner.spawnEnemy();
         } else {
             trapSpawner.spawnTrap();
         }
     };
 
     combinedSpawnerTimer = this.time.addEvent({
-        delay: OBSTACLE_SPAWN_DELAY,
+        delay: ENEMY_SPAWN_DELAY,
         callback: spawnNext,
         loop: true
     });
@@ -241,7 +241,7 @@ function startGame() {
     // Make deactivateNearestTrap available on the scene if UIManager's button was set up to call scene.deactivateNearestTrap
     // This is already handled by passing `this.deactivateNearestTrap` to `UIManager.createDisarmButton`.
 
-    this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
+    this.physics.add.overlap(player, enemiesGroup, hitEnemy, null, this);
 
     gameStarted = true; // Game is officially started only after all initializations
 }
@@ -258,7 +258,7 @@ function update(time, delta) {
     layers.groundTile.tilePositionX +=  effectiveSpeed      * dt;
 
     /* Keep all dynamic objects in sync with current speed */
-    if (obstacleSpawner && obstacleSpawner.group) obstacleSpawner.group.setVelocityX(-effectiveSpeed);
+    if (enemySpawner && enemySpawner.group) enemySpawner.group.setVelocityX(-effectiveSpeed);
     if (trapSpawner && trapSpawner.group) {
         // Active traps move at full speed, de-activated traps at half speed
         trapSpawner.group.getChildren().forEach(trap => {
@@ -269,7 +269,7 @@ function update(time, delta) {
     }
     if (votingBooth && votingBooth.body)       votingBooth.body.setVelocityX(-effectiveSpeed);
 
-    const gained = obstacleSpawner.update(dt, player);
+    const gained = enemySpawner.update(dt, player);
     trapSpawner.update(dt, player);
     if (gained) {
         score += gained;
@@ -278,7 +278,7 @@ function update(time, delta) {
 
     /* Spawn the voting booth once the play-field is clear */
     if (spawnVotingBoothPending &&
-        obstaclesGroup.getChildren().length === 0 &&
+        enemiesGroup.getChildren().length === 0 &&
         trapsGroup.getChildren().length === 0) {
 
         spawnVotingBoothPending = false;
@@ -339,12 +339,12 @@ function update(time, delta) {
     }
 }
 
-function hitObstacle(playerGO, obstacleGO) {
+function hitEnemy(playerGO, enemyGO) {
     if (gameOver) return;
 
     // Display message for hitting enemy using UIManager
-    if (obstacleGO.message_hit) {
-        UIManager.displayMessage(obstacleGO.message_hit);
+    if (enemyGO.message_hit) {
+        UIManager.displayMessage(enemyGO.message_hit);
     }
 
     gameOver = true;
@@ -362,7 +362,7 @@ function hitObstacle(playerGO, obstacleGO) {
 
     if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
     if (levelTimer) levelTimer.remove(false);
-    // obstacleSpawner.stop(); // No longer needed as timer is external
+    // enemySpawner.stop(); // No longer needed as timer is external
     // trapSpawner.stop(); // No longer needed as timer is external
 }
 

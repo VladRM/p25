@@ -11,7 +11,7 @@ const ENEMY_TYPES = [
     { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: "Enemy 4 avoided placeholder", message_hit: "Enemy 4 hit placeholder" }
 ];
 
-export class ObstacleSpawner {
+export class EnemySpawner {
     constructor (scene, group, { groundTopY }) {
         this.scene      = scene;
         this.group      = group;
@@ -19,7 +19,7 @@ export class ObstacleSpawner {
         this.lastEnemyType = null;  // Track last spawned enemy to avoid repeats
     }
 
-    spawnObstacle () {
+    spawnEnemy () {
         let enemyTypeData;
         do {
             enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
@@ -29,32 +29,32 @@ export class ObstacleSpawner {
         const tempSprite = this.scene.make.sprite({ key: enemyTypeData.textureKey, frame: enemyTypeData.baseFrame }, false);
         const originalWidth = tempSprite.width;
         const originalHeight = tempSprite.height;
-        console.log(`[ObstacleSpawner] spawnObstacle: enemyType=${enemyTypeData.type}, textureKey=${enemyTypeData.textureKey}`);
-        console.log(`[ObstacleSpawner] spawnObstacle: originalWidth=${originalWidth}, originalHeight=${originalHeight}`);
+        console.log(`[EnemySpawner] spawnEnemy: enemyType=${enemyTypeData.type}, textureKey=${enemyTypeData.textureKey}`);
+        console.log(`[EnemySpawner] spawnEnemy: originalWidth=${originalWidth}, originalHeight=${originalHeight}`);
 
         // Calculate scale to fit within a 128x128 box while maintaining aspect ratio
         const maxDim = 96;
-        console.log(`[ObstacleSpawner] spawnObstacle: target maxDim=${maxDim}`);
+        console.log(`[EnemySpawner] spawnEnemy: target maxDim=${maxDim}`);
         let chosenScale = 1; // Default scale if dimensions are 0
         if (originalWidth > 0 && originalHeight > 0) {
             const scaleX = maxDim / originalWidth;
             const scaleY = maxDim / originalHeight;
             chosenScale = Math.min(scaleX, scaleY);
-            console.log(`[ObstacleSpawner] spawnObstacle: calculated scaleX=${scaleX}, scaleY=${scaleY}, chosenScale=${chosenScale}`);
+            console.log(`[EnemySpawner] spawnEnemy: calculated scaleX=${scaleX}, scaleY=${scaleY}, chosenScale=${chosenScale}`);
         } else {
-            console.log(`[ObstacleSpawner] spawnObstacle: originalWidth or originalHeight is 0, using default chosenScale=${chosenScale}`);
+            console.log(`[EnemySpawner] spawnEnemy: originalWidth or originalHeight is 0, using default chosenScale=${chosenScale}`);
         }
         
         // Apply the calculated scale to get accurate dimensions for positioning
         tempSprite.setScale(chosenScale);
         const spriteHeight = tempSprite.displayHeight;
         const spriteWidth = tempSprite.displayWidth;
-        console.log(`[ObstacleSpawner] spawnObstacle: after scaling tempSprite, displayWidth=${spriteWidth}, displayHeight=${spriteHeight}`);
+        console.log(`[EnemySpawner] spawnEnemy: after scaling tempSprite, displayWidth=${spriteWidth}, displayHeight=${spriteHeight}`);
         tempSprite.destroy(); // Clean up temporary sprite
 
         let yPos = this.groundTopY - spriteHeight / 2; // Position based on sprite's center
         if (typeof this.groundTopY !== 'number' || isNaN(this.groundTopY)) {
-            // console.warn(`[ObstacleSpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for obstacle.`); // Removed log
+            // console.warn(`[EnemySpawner] groundTopY is invalid: ${this.groundTopY}. Defaulting Y position for enemy.`); // Removed log
             yPos = this.scene.sys.game.config.height - 20 - spriteHeight / 2; // Default based on game height
         }
 
