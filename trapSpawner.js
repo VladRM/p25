@@ -1,3 +1,5 @@
+import { displayMessage } from './uiManager.js';
+
 export class TrapSpawner {
     constructor(scene, group, { groundTopY }) {
         this.scene = scene;
@@ -66,8 +68,8 @@ export class TrapSpawner {
             if (trap.getData('active') && !trap.getData('passed_by_message_shown')) {
                 // Consider trap passed if player's center is beyond trap's center
                 if (player.x > trap.x + trap.width / 2) {
-                    if (this.scene.displayGameMessage && trap.getData('message_passed_by')) {
-                        this.scene.displayGameMessage(trap.getData('message_passed_by'));
+                    if (trap.getData('message_passed_by')) {
+                        displayMessage(trap.getData('message_passed_by'));
                     }
                     trap.setData('passed_by_message_shown', true); // Prevent multiple messages
                 }
