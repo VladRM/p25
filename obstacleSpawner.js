@@ -4,7 +4,8 @@ import Enemy from './enemy.js';
 
 const ENEMY_TYPES = [
     { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null }, // baseFrame is null as textureKey is the full image
-    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null }  // baseFrame is null as textureKey is the full image
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null },  // baseFrame is null as textureKey is the full image
+    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null }  // baseFrame is null as textureKey is the full image
 ];
 
 export class ObstacleSpawner {

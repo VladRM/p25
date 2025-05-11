@@ -2,7 +2,8 @@ import { GAME_SPEED } from './gameConfig.js';
 
 const ENEMY_ANIMATIONS = {
     'enemy_1':  { frames: ['enemy_1_a', 'enemy_1_b'], frameRate: 5 }, // Frames are direct image keys
-    'enemy_2':  { frames: ['enemy_2_a', 'enemy_2_b'], frameRate: 5 }  // Frames are direct image keys
+    'enemy_2':  { frames: ['enemy_2_a', 'enemy_2_b'], frameRate: 5 },  // Frames are direct image keys
+    'enemy_3':  { frames: ['enemy_3_a', 'enemy_3_b'], frameRate: 5 }  // Frames are direct image keys
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
