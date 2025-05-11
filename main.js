@@ -61,6 +61,10 @@ let freedCharactersCount = 0; // Add this line
 let currentTargetableTrap; // This remains as it's game logic state
 // messageDisplay and messageTimers are now managed by UIManager
 
+// Progress bar related variables
+let totalGameDuration; // Total milliseconds for MAX_LEVELS
+let elapsedGameTime;   // Elapsed milliseconds in the current game for progress bar
+
 
 new Phaser.Game(config);
 
@@ -168,13 +172,19 @@ function startGame() {
     currentSpeedScale = 1; // Reset speed scale
     consecutiveEnemiesSpawned = 0;
     consecutiveTrapsSpawned = 0;
+    // freedCharactersCount = 0; // Reset if you track this per game
+
+    // Initialize for progress bar
+    totalGameDuration = MAX_LEVELS * LEVEL_DURATION_MS;
+    elapsedGameTime = 0;
 
     player = createPlayer(this, layers.groundTopY);
     this.physics.add.collider(player, layers.ground);
     registerPlayerControls(this, player);
 
-    UIManager.createGameUI(); // Creates score, level, and hidden game over/restart texts
-    UIManager.resetUIForNewGame(); // Clears messages, resets texts to default
+    // Important: Reset UI from any previous game state *before* creating new UI
+    UIManager.resetUIForNewGame(); // Clears messages, old texts, old progress bar
+    UIManager.createGameUI();      // Creates new score, level, progress bar, and hidden game over/restart texts
     
     // scene.displayGameMessage is no longer needed here, call UIManager.displayMessage directly.
 
@@ -315,6 +325,23 @@ function startGame() {
 
 function update(time, delta) {
     if (!gameStarted || gameOver) return;
+
+    // Update progress bar based on elapsed time
+    if (!gameOver) { // Ensure progress bar doesn't update after game over is true
+        if (level <= MAX_LEVELS) {
+            elapsedGameTime += delta; // delta is already in milliseconds
+            let progress = 0;
+            if (totalGameDuration > 0) {
+                progress = Math.min(elapsedGameTime / totalGameDuration, 1);
+            } else {
+                progress = 1; // Instantly full if total duration is 0 or less
+            }
+            UIManager.updateProgressBar(progress);
+        } else {
+            // After MAX_LEVELS are completed (e.g., voting booth phase), keep progress bar full.
+            UIManager.updateProgressBar(1);
+        }
+    }
 
     const dt = delta / 1000;
 

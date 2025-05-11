@@ -10,7 +10,17 @@ const UI_PAD = 10;
 
 // Message display constants
 const MESSAGE_X_CENTER = GAME_WIDTH / 2;
-const MESSAGE_Y_BOTTOM = 30;
+const MESSAGE_Y_BOTTOM = 30; // Note: Messages appear 30px from bottom. Progress bar will be below this area.
+
+// Progress Bar Constants
+const PROGRESS_BAR_HEIGHT = 10;
+const PROGRESS_BAR_PADDING_X = 20; // Padding from left/right edges of the screen
+const PROGRESS_BAR_PADDING_Y_BOTTOM = 5; // Padding from the absolute bottom edge of the screen
+const PROGRESS_BAR_BG_COLOR = 0x333333; // Dark grey for background
+const PROGRESS_BAR_FG_COLOR = 0x4CAF50; // Green for foreground (progress fill)
+const PROGRESS_BAR_BORDER_COLOR = 0xCCCCCC; // Light grey for border
+const PROGRESS_BAR_BORDER_THICKNESS = 1;
+const PROGRESS_BAR_DEPTH = 100; // Render depth
 const MESSAGE_Y_TOP = 10;
 const MESSAGE_Y_SPACING = MESSAGE_Y_BOTTOM - MESSAGE_Y_TOP;
 const MESSAGE_FADE_IN_DURATION = 250;
@@ -29,6 +39,7 @@ let disarmButtonBorder, disarmButtonIcon;
 let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
 let uiButtonsCollection = []; // To store buttons that need to be hidden/disabled on game over
+let progressBarBg, progressBarFg; // Graphics objects for the progress bar
 
 
 export function initUIManager(sceneContext) {
@@ -70,6 +81,8 @@ export function createGameUI() {
 
     scoreText = scene.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000000' });
     levelText = scene.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
+
+    createProgressBar(); // Initialize the progress bar
 
     // Initialize gameOverText and restartText (hidden by default)
     gameOverText = scene.add.text(0, 0, 'Game Over!', { // Position will be set in showGameOverScreen
@@ -423,6 +436,14 @@ export function hideGameplayUIDuringEnd() {
     // Optionally hide score/level text too, or leave them visible
     // if (scoreText) scoreText.setVisible(false);
     // if (levelText) levelText.setVisible(false);
+
+    // Hide progress bar elements
+    if (progressBarBg && progressBarBg.scene) {
+        progressBarBg.setVisible(false);
+    }
+    if (progressBarFg && progressBarFg.scene) {
+        progressBarFg.setVisible(false);
+    }
 }
 
 function clearAllMessages() {
@@ -456,6 +477,16 @@ export function resetUIForNewGame() {
     
     clearAllMessages();
 
+    // Destroy and nullify progress bar elements
+    if (progressBarBg && progressBarBg.scene) {
+        progressBarBg.destroy();
+    }
+    progressBarBg = null;
+    if (progressBarFg && progressBarFg.scene) {
+        progressBarFg.destroy();
+    }
+    progressBarFg = null;
+
     // Reset button collection for the new game (they will be recreated)
     uiButtonsCollection = [];
     // Ensure disarm button elements are reset if they persist across scenes/restarts
@@ -467,4 +498,52 @@ export function resetUIForNewGame() {
         }
     }
     if (disarmButtonBorder) disarmButtonBorder.setAlpha(0.5);
+}
+
+// --- Progress Bar Functions ---
+
+export function createProgressBar() {
+    const scene = getScene();
+    if (!scene) return;
+
+    // Destroy existing progress bar elements if they were somehow not cleaned up by resetUIForNewGame
+    if (progressBarBg) progressBarBg.destroy();
+    if (progressBarFg) progressBarFg.destroy();
+
+    const barWidth = GAME_WIDTH - 2 * PROGRESS_BAR_PADDING_X;
+    const barY = GAME_HEIGHT - PROGRESS_BAR_HEIGHT - PROGRESS_BAR_PADDING_Y_BOTTOM;
+
+    // Background of the progress bar
+    progressBarBg = scene.add.graphics();
+    progressBarBg.fillStyle(PROGRESS_BAR_BG_COLOR, 0.8); // Semi-transparent background
+    progressBarBg.fillRect(PROGRESS_BAR_PADDING_X, barY, barWidth, PROGRESS_BAR_HEIGHT);
+
+    // Border for the background
+    progressBarBg.lineStyle(PROGRESS_BAR_BORDER_THICKNESS, PROGRESS_BAR_BORDER_COLOR, 1);
+    progressBarBg.strokeRect(PROGRESS_BAR_PADDING_X, barY, barWidth, PROGRESS_BAR_HEIGHT);
+    progressBarBg.setDepth(PROGRESS_BAR_DEPTH);
+    progressBarBg.setScrollFactor(0); // Keep it static on screen
+
+    // Foreground (the actual progress fill)
+    progressBarFg = scene.add.graphics();
+    // Initial fill will be drawn by the first call to updateProgressBar
+    progressBarFg.setDepth(PROGRESS_BAR_DEPTH + 1); // Ensure FG is on top of BG
+    progressBarFg.setScrollFactor(0); // Keep it static on screen
+}
+
+export function updateProgressBar(progressPercent) { // progressPercent is a value from 0.0 to 1.0
+    const scene = getScene();
+    // Ensure elements exist and scene is valid; progressBarBg is used for dimensions/position reference
+    if (!scene || !progressBarFg || !progressBarBg || !progressBarBg.scene) return;
+
+    const barTotalWidth = GAME_WIDTH - 2 * PROGRESS_BAR_PADDING_X;
+    const barY = GAME_HEIGHT - PROGRESS_BAR_HEIGHT - PROGRESS_BAR_PADDING_Y_BOTTOM;
+    
+    // Clamp progressPercent between 0 and 1
+    const clampedProgress = Math.max(0, Math.min(progressPercent, 1));
+    const currentProgressWidth = barTotalWidth * clampedProgress;
+
+    progressBarFg.clear(); // Clear previous drawing of the foreground
+    progressBarFg.fillStyle(PROGRESS_BAR_FG_COLOR, 1);
+    progressBarFg.fillRect(PROGRESS_BAR_PADDING_X, barY, currentProgressWidth, PROGRESS_BAR_HEIGHT);
 }
