@@ -64,7 +64,7 @@ export function createStartScreen() {
         .setDepth(50);
 
     mainTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, 'La Vot!', {
-        fontSize: '48px', fill: '#FFFF00', fontStyle: 'bold', align: 'center'
+        fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center'
     }).setOrigin(0.5).setDepth(51);
 
     subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evita propaganda, elibereaza votanti si ajungi la cabina de vot.', {
