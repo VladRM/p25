@@ -15,7 +15,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
     /* --- Ground (closest) --- */
     const groundTile = scene.add.tileSprite(
         width / 2,
-        (height - displayedGroundHeight) + displayedGroundHeight / 2,
+        height - displayedGroundHeight / 2 - 40, // Adjusted Y position
         width, displayedGroundHeight,
         'ground_tile_top'
     );
@@ -42,7 +42,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         canvas.refresh();
     }
 
-    const groundTopY = height - displayedGroundHeight;
+    const groundTopY = height - displayedGroundHeight - 40; // Adjusted groundTopY
     const HILLS_TRIM_TOP = 40;   // píxeles a ocultar por arriba
     const hills = scene.add.tileSprite(
         width / 2, groundTopY + 40,     // misma posición
