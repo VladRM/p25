@@ -234,31 +234,36 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
 
     if (disarmButtonIcon) {
         if (isEnabled && iconKey) {
-            disarmButtonIcon.setTexture(iconKey);
+            disarmButtonIcon.setTexture(iconKey).setAlpha(1); // Ensure icon is visible and at full alpha
             disarmButtonIcon.setInteractive({ useHandCursor: true });
+
+            if (disarmButtonBorder) {
+                disarmButtonBorder.setAlpha(1); // Ensure border is visible and at full alpha
+                if (disarmButtonBorder.input) { // Set cursor for active border
+                    disarmButtonBorder.input.cursor = 'hand';
+                }
+            }
+
             // Start flashing tween
+            // Targets will tween from their current alpha (1) to 0.5, then yoyo back to 1, repeatedly.
             disarmButtonFlashTween = scene.tweens.add({
-                targets: [disarmButtonIcon, disarmButtonBorder],
-                alpha: { start: 1, to: 0.5 },
+                targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean), // Use valid targets
+                alpha: 0.5, // Target alpha for the tween (will yoyo back from this to current alpha)
                 duration: 500,
                 yoyo: true,
                 repeat: -1
             });
         } else {
-            disarmButtonIcon.setAlpha(0); // Icon transparent
-            disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
-        }
-    }
-    if (disarmButtonBorder) {
-        if (isEnabled) {
-            // Alpha is handled by the tween
-            if (disarmButtonBorder.input) {
-                disarmButtonBorder.input.cursor = 'hand';
-            }
-        } else {
-            disarmButtonBorder.setAlpha(0.5);
-            if (disarmButtonBorder.input) { // Ensure input is initialized
-                disarmButtonBorder.input.cursor = '';
+            // Logic for when isEnabled is false (button is disabled)
+            // The disarmButtonFlashTween was already stopped at the beginning of this function.
+            disarmButtonIcon.setAlpha(0); // Make icon transparent
+            disarmButtonIcon.setInteractive(); // Remove hand cursor, default interaction
+
+            if (disarmButtonBorder) {
+                disarmButtonBorder.setAlpha(0.5); // Set border to its 'disabled' alpha
+                if (disarmButtonBorder.input) { // Reset cursor for inactive border
+                    disarmButtonBorder.input.cursor = '';
+                }
             }
         }
     }
