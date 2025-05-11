@@ -58,12 +58,26 @@ export class TrapSpawner {
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
-            // if (trap.body) {  // Removed log
-                // console.log(`[TrapSpawner Update] Trap ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}, Body X: ${trap.body.x.toFixed(2)}, Velocity X: ${trap.body.velocity.x.toFixed(2)}, Visible: ${trap.visible}, Active: ${trap.active}`);
-            // } // Removed log
-            if (trap.getBounds().right < 0) {
-                // console.log(`[TrapSpawner Update] Removing trap that went off-screen left. ID: ${trap.name || 'N/A'}, X: ${trap.x.toFixed(2)}`); // Removed log
+            if (!trap.body) { // If trap somehow lost its body, remove it
                 this.group.remove(trap, true, true);
+                return;
+            }
+
+            // Check if trap is off-screen to the left
+            if (trap.getBounds().right < 0) {
+                this.group.remove(trap, true, true);
+                return;
+            }
+
+            // Check for "passed by" condition if trap is active and message not yet shown
+            if (trap.getData('active') && !trap.getData('passed_by_message_shown')) {
+                // Consider trap passed if player's center is beyond trap's center
+                if (player.x > trap.x + trap.width / 2) {
+                    if (this.scene.displayGameMessage && trap.getData('message_passed_by')) {
+                        this.scene.displayGameMessage(trap.getData('message_passed_by'));
+                    }
+                    trap.setData('passed_by_message_shown', true); // Prevent multiple messages
+                }
             }
         });
     }
