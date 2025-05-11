@@ -191,6 +191,7 @@ function startGame() {
 
             const charactersInTrap = trapToDeactivate.getData('characters');
             if (charactersInTrap && Array.isArray(charactersInTrap)) {
+                freedCharactersCount += charactersInTrap.length; // Increment count here
                 charactersInTrap.forEach(charData => {
                     if (charData.sprite) {
                         charData.sprite.clearTint();
