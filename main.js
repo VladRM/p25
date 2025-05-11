@@ -85,6 +85,14 @@ function preload() {
     this.load.image('enemy_4_a', 'res/img/enemies/4_a.png');
     this.load.image('enemy_4_b', 'res/img/enemies/4_b.png');
 
+    // Character images
+    this.load.image('adventurer_hurt', 'res/img/characters/adventurer_hurt.png');
+    this.load.image('adventurer_cheer1', 'res/img/characters/adventurer_cheer1.png');
+    this.load.image('adventurer_cheer2', 'res/img/characters/adventurer_cheer2.png');
+    this.load.image('female_hurt', 'res/img/characters/female_hurt.png');
+    this.load.image('female_cheer1', 'res/img/characters/female_cheer1.png');
+    this.load.image('female_cheer2', 'res/img/characters/female_cheer2.png');
+
     // Foot-step sounds
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
     this.load.audio('footstep_b', 'res/snd/footstep_grass_004.ogg');
@@ -115,6 +123,26 @@ function create() {
     this.input.once('pointerdown', startGame, this);
     // Keyboard input for starting the game can also be added here if desired, e.g., spacebar
     // this.input.keyboard.once('keydown-SPACE', startGame, this);
+
+    // Character animations
+    this.anims.create({
+        key: 'adventurer_cheer_anim',
+        frames: [
+            { key: 'adventurer_cheer1' },
+            { key: 'adventurer_cheer2' }
+        ],
+        frameRate: 5,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'female_cheer_anim',
+        frames: [
+            { key: 'female_cheer1' },
+            { key: 'female_cheer2' }
+        ],
+        frameRate: 5,
+        repeat: -1
+    });
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
@@ -150,6 +178,16 @@ function startGame() {
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
                 trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
+            }
+
+            const adventurerChar = trapToDeactivate.getData('adventurerChar');
+            const femaleChar = trapToDeactivate.getData('femaleChar');
+
+            if (adventurerChar) {
+                adventurerChar.clearTint().play('adventurer_cheer_anim');
+            }
+            if (femaleChar) {
+                femaleChar.clearTint().play('female_cheer_anim');
             }
 
             const trapTypeData = trapToDeactivate.getData('trapType');

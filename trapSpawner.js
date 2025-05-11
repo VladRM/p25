@@ -38,6 +38,21 @@ export class TrapSpawner {
         trap.setData('trapType', selectedTrapType.name); // Store the trap type
         trap.setData('message_disarmed', selectedTrapType.message_disarmed); // Store disarmed message
         trap.setData('message_passed_by', selectedTrapType.message_passed_by); // Store passed by message
+
+        // Add characters inside the trap
+        const charScale = 0.5;
+        const charYOffset = 0; // Adjust if needed
+        const adventurerChar = this.scene.add.sprite(trap.x - 25, trap.y + charYOffset, 'adventurer_hurt')
+            .setScale(charScale)
+            .setTint(0xaaaaaa)
+            .setDepth(trap.depth + 1);
+        const femaleChar = this.scene.add.sprite(trap.x + 25, trap.y + charYOffset, 'female_hurt')
+            .setScale(charScale)
+            .setTint(0xaaaaaa)
+            .setDepth(trap.depth + 1);
+
+        trap.setData('adventurerChar', adventurerChar);
+        trap.setData('femaleChar', femaleChar);
         
         if (trap.body) {
             trap.body.setAllowGravity(false);
@@ -53,13 +68,30 @@ export class TrapSpawner {
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
+            const adventurerChar = trap.getData('adventurerChar');
+            const femaleChar = trap.getData('femaleChar');
+
             if (!trap.body) { // If trap somehow lost its body, remove it
+                if (adventurerChar) adventurerChar.destroy();
+                if (femaleChar) femaleChar.destroy();
                 this.group.remove(trap, true, true);
                 return;
             }
 
+            // Update character positions to follow the trap
+            if (adventurerChar) {
+                adventurerChar.x = trap.x - 25;
+                adventurerChar.y = trap.y; // Assuming charYOffset was 0 or handled by sprite's origin
+            }
+            if (femaleChar) {
+                femaleChar.x = trap.x + 25;
+                femaleChar.y = trap.y; // Assuming charYOffset was 0 or handled by sprite's origin
+            }
+
             // Check if trap is off-screen to the left
             if (trap.getBounds().right < 0) {
+                if (adventurerChar) adventurerChar.destroy();
+                if (femaleChar) femaleChar.destroy();
                 this.group.remove(trap, true, true);
                 return;
             }
