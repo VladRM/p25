@@ -36,6 +36,7 @@ let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal, winTextBackground; // Added background for win text
 let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween;
+let disarmButtonState = { enabled: false, iconKey: null }; // Track current state to avoid restarting tween every frame
 let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
 let uiButtonsCollection = []; // To store buttons that need to be hidden/disabled on game over
@@ -226,7 +227,16 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
     const scene = getScene();
     if (!scene) return;
 
-    // Stop any existing tween
+    // If nothing changed, keep current visuals/tween
+    if (isEnabled === disarmButtonState.enabled && iconKey === disarmButtonState.iconKey) {
+        return;
+    }
+
+    // Persist the new state
+    disarmButtonState.enabled = isEnabled;
+    disarmButtonState.iconKey = iconKey;
+
+    // Stop any existing tween – we'll recreate it only when needed
     if (disarmButtonFlashTween) {
         disarmButtonFlashTween.stop();
         disarmButtonFlashTween = null;
@@ -561,6 +571,9 @@ export function resetUIForNewGame() {
         }
     }
     if (disarmButtonBorder) disarmButtonBorder.setAlpha(0.5);
+
+    // Reset cached button state for the next game
+    disarmButtonState = { enabled: false, iconKey: null };
 }
 
 // --- Progress Bar Functions ---
