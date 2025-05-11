@@ -24,23 +24,25 @@ export class ObstacleSpawner {
         do {
             enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
         } while (enemyTypeData.type === this.lastEnemyType && ENEMY_TYPES.length > 1);
-        // const textureKey = 'enemies_spritesheet'; // No longer hardcoded
 
-        const baseScale = 0.7;
-        let chosenScale;
-        if (Phaser.Math.Between(0, 1) === 0) { // Randomly pick one of the two scales
-            chosenScale = baseScale;
-        } else {
-            chosenScale = baseScale * 1.5;
-        }
-
-        // Create a temporary sprite to get its dimensions for positioning
-        // This sprite is not added to the scene or group yet.
+        // Create a temporary sprite to get its original dimensions
         const tempSprite = this.scene.make.sprite({ key: enemyTypeData.textureKey, frame: enemyTypeData.baseFrame }, false);
-        // Apply the chosen scale to get accurate dimensions for positioning
+        const originalWidth = tempSprite.width;
+        const originalHeight = tempSprite.height;
+
+        // Calculate scale to fit within a 128x128 box while maintaining aspect ratio
+        const maxDim = 128;
+        let chosenScale = 1; // Default scale if dimensions are 0
+        if (originalWidth > 0 && originalHeight > 0) {
+            const scaleX = maxDim / originalWidth;
+            const scaleY = maxDim / originalHeight;
+            chosenScale = Math.min(scaleX, scaleY);
+        }
+        
+        // Apply the calculated scale to get accurate dimensions for positioning
         tempSprite.setScale(chosenScale);
         const spriteHeight = tempSprite.displayHeight;
-        const spriteWidth = tempSprite.displayWidth; 
+        const spriteWidth = tempSprite.displayWidth;
         tempSprite.destroy(); // Clean up temporary sprite
 
         let yPos = this.groundTopY - spriteHeight / 2; // Position based on sprite's center
