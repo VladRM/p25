@@ -138,6 +138,48 @@ function startGame() {
     
     // scene.displayGameMessage is no longer needed here, call UIManager.displayMessage directly.
 
+    // Assign to this context for the UIManager callback
+    this.deactivateNearestTrap = () => {
+        // Ensure the target is still valid
+        if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
+            const trapToDeactivate = scene.currentTargetableTrap;
+            trapToDeactivate.setFillStyle(0x888888); // Change color
+            trapToDeactivate.setData('active', false); // Mark as inactive
+            if (trapToDeactivate.body) {
+                trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
+            }
+
+            const trapTypeData = trapToDeactivate.getData('trapType');
+            let iconKey = '';
+            if (typeof trapTypeData === 'string') {
+                const lowerTrapType = trapTypeData.toLowerCase();
+                if (lowerTrapType === 'populist') iconKey = 'icon_brain';
+                else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
+                else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+            }
+
+            if (iconKey) {
+                UIManager.playTrapDisarmAnimation(trapToDeactivate, iconKey);
+            }
+
+            if (trapToDeactivate.getData('message_disarmed')) {
+                UIManager.displayMessage(trapToDeactivate.getData('message_disarmed'));
+            }
+
+            score += 10;
+            UIManager.updateScoreText(score);
+
+            scene.currentTargetableTrap = null; // Game logic state
+            UIManager.updateDisarmButtonState(null, false); // Update UI
+        } else {
+            // Target became invalid
+            if (scene.currentTargetableTrap) {
+                scene.currentTargetableTrap = null;
+            }
+            UIManager.updateDisarmButtonState(null, false); // Ensure button is reset
+        }
+    };
+
     /* Level-up timer */
     levelTimer = this.time.addEvent({
         delay   : LEVEL_DURATION_MS,
@@ -193,47 +235,6 @@ function startGame() {
         loop: true
     });
 
-    // Assign to this context for the UIManager callback
-    this.deactivateNearestTrap = () => {
-        // Ensure the target is still valid
-        if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
-            const trapToDeactivate = scene.currentTargetableTrap;
-            trapToDeactivate.setFillStyle(0x888888); // Change color
-            trapToDeactivate.setData('active', false); // Mark as inactive
-            if (trapToDeactivate.body) {
-                trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
-            }
-
-            const trapTypeData = trapToDeactivate.getData('trapType');
-            let iconKey = '';
-            if (typeof trapTypeData === 'string') {
-                const lowerTrapType = trapTypeData.toLowerCase();
-                if (lowerTrapType === 'populist') iconKey = 'icon_brain';
-                else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
-                else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
-            }
-
-            if (iconKey) {
-                UIManager.playTrapDisarmAnimation(trapToDeactivate, iconKey);
-            }
-
-            if (trapToDeactivate.getData('message_disarmed')) {
-                UIManager.displayMessage(trapToDeactivate.getData('message_disarmed'));
-            }
-
-            score += 10;
-            UIManager.updateScoreText(score);
-
-            scene.currentTargetableTrap = null; // Game logic state
-            UIManager.updateDisarmButtonState(null, false); // Update UI
-        } else {
-            // Target became invalid
-            if (scene.currentTargetableTrap) {
-                scene.currentTargetableTrap = null;
-            }
-            UIManager.updateDisarmButtonState(null, false); // Ensure button is reset
-        }
-    };
     // Make deactivateNearestTrap available on the scene if UIManager's button was set up to call scene.deactivateNearestTrap
     // This is already handled by passing `this.deactivateNearestTrap` to `UIManager.createDisarmButton`.
 
