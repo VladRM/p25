@@ -171,7 +171,7 @@ function startGame() {
 
                 levelTimer.remove(false);
                 if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
-                spawnVotingBoothPending = true;   // defer booth until screen clear
+                // spawnVotingBoothPending = true;   // defer booth until screen clear (Disabled for testing)
             }
             // No action if level is already > MAX_LEVELS (should not happen if timer is removed)
         }
@@ -403,6 +403,22 @@ function startGame() {
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
     this.physics.add.overlap(player, trapsGroup, hitTrap, null, this); // Added overlap for traps
+
+    // --- Add voting booth at the start for testing ---
+    votingBooth = scene.physics.add.sprite(
+        GAME_WIDTH * 0.75, // Positioned on screen for testing
+        layers.groundTopY,
+        'voting_booth_img'
+    ).setOrigin(0.5, 1); // Origin at bottom-center
+
+    votingBooth.displayHeight = 128;
+    votingBooth.displayWidth = 100;
+
+    votingBooth.body.setAllowGravity(false);
+    votingBooth.body.setVelocityX(0); // Stationary for testing
+
+    scene.physics.add.overlap(player, votingBooth, winGame, null, scene);
+    // --- End voting booth for testing ---
 }
 
 
