@@ -28,20 +28,27 @@ export class ObstacleSpawner {
         const tempSprite = this.scene.make.sprite({ key: enemyTypeData.textureKey, frame: enemyTypeData.baseFrame }, false);
         const originalWidth = tempSprite.width;
         const originalHeight = tempSprite.height;
+        console.log(`[ObstacleSpawner] spawnObstacle: enemyType=${enemyTypeData.type}, textureKey=${enemyTypeData.textureKey}`);
+        console.log(`[ObstacleSpawner] spawnObstacle: originalWidth=${originalWidth}, originalHeight=${originalHeight}`);
 
         // Calculate scale to fit within a 128x128 box while maintaining aspect ratio
         const maxDim = 96;
+        console.log(`[ObstacleSpawner] spawnObstacle: target maxDim=${maxDim}`);
         let chosenScale = 1; // Default scale if dimensions are 0
         if (originalWidth > 0 && originalHeight > 0) {
             const scaleX = maxDim / originalWidth;
             const scaleY = maxDim / originalHeight;
             chosenScale = Math.min(scaleX, scaleY);
+            console.log(`[ObstacleSpawner] spawnObstacle: calculated scaleX=${scaleX}, scaleY=${scaleY}, chosenScale=${chosenScale}`);
+        } else {
+            console.log(`[ObstacleSpawner] spawnObstacle: originalWidth or originalHeight is 0, using default chosenScale=${chosenScale}`);
         }
         
         // Apply the calculated scale to get accurate dimensions for positioning
         tempSprite.setScale(chosenScale);
         const spriteHeight = tempSprite.displayHeight;
         const spriteWidth = tempSprite.displayWidth;
+        console.log(`[ObstacleSpawner] spawnObstacle: after scaling tempSprite, displayWidth=${spriteWidth}, displayHeight=${spriteHeight}`);
         tempSprite.destroy(); // Clean up temporary sprite
 
         let yPos = this.groundTopY - spriteHeight / 2; // Position based on sprite's center
