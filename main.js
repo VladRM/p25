@@ -174,7 +174,7 @@ function startGame() {
         // Ensure the target is still valid
         if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
             const trapToDeactivate = scene.currentTargetableTrap;
-            trapToDeactivate.setFillStyle(0x888888); // Change color
+            // trapToDeactivate.setFillStyle(0x888888); // Change color - REMOVED
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
                 trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
@@ -184,10 +184,10 @@ function startGame() {
             const femaleChar = trapToDeactivate.getData('femaleChar');
 
             if (adventurerChar) {
-                adventurerChar.setVisible(false);
+                adventurerChar.clearTint().play('adventurer_cheer_anim');
             }
             if (femaleChar) {
-                femaleChar.setVisible(false);
+                femaleChar.clearTint().play('female_cheer_anim');
             }
 
             const trapTypeData = trapToDeactivate.getData('trapType');
