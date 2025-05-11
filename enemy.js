@@ -1,9 +1,26 @@
 import { GAME_SPEED } from './gameConfig.js';
 
 const ENEMY_ANIMATIONS = {
-    'enemy_1':  { frames: ['enemy_1_a', 'enemy_1_b'], frameRate: 5 }, // Frames are direct image keys
-    'enemy_2':  { frames: ['enemy_2_a', 'enemy_2_b'], frameRate: 5 },  // Frames are direct image keys
-    'enemy_3':  { frames: ['enemy_3_a', 'enemy_3_b'], frameRate: 5 }  // Frames are direct image keys
+    // Example: You would need to find the actual max dimensions for your enemy frames
+    // and populate maxFrameWidth and maxFrameHeight accordingly.
+    'enemy_1':  { 
+        frames: ['enemy_1_a', 'enemy_1_b'], 
+        frameRate: 5,
+        // maxFrameWidth: 64, // Example: unscaled width of the largest frame for enemy_1
+        // maxFrameHeight: 64 // Example: unscaled height of the largest frame for enemy_1
+    }, 
+    'enemy_2':  { 
+        frames: ['enemy_2_a', 'enemy_2_b'], 
+        frameRate: 5
+        // maxFrameWidth: 70, // Example
+        // maxFrameHeight: 70  // Example
+    },  
+    'enemy_3':  { 
+        frames: ['enemy_3_a', 'enemy_3_b'], 
+        frameRate: 5
+        // maxFrameWidth: 60, // Example
+        // maxFrameHeight: 60  // Example
+    }  
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
@@ -64,7 +81,21 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // This results in a hitbox area of 0.8 * 0.8 = 0.64 (64%) of the sprite's area.
         // Phaser.Physics.Arcade.Body.setSize() by default centers the new body on the sprite's origin.
         // Assuming the sprite's origin is (0.5, 0.5), this will correctly center the hitbox on the sprite.
-        this.body.setSize(this.displayWidth * 0.8, this.displayHeight * 0.8);
+        
+        const animConfig = ENEMY_ANIMATIONS[this.enemyType];
+        let bodyWidth, bodyHeight;
+
+        if (animConfig && animConfig.maxFrameWidth && animConfig.maxFrameHeight) {
+            // Use defined max frame dimensions if available
+            bodyWidth = animConfig.maxFrameWidth * this.scaleX * 0.8;
+            bodyHeight = animConfig.maxFrameHeight * this.scaleY * 0.8;
+        } else {
+            // Fallback to current display dimensions (based on the first animation frame)
+            bodyWidth = this.displayWidth * 0.8;
+            bodyHeight = this.displayHeight * 0.8;
+        }
+        
+        this.body.setSize(bodyWidth, bodyHeight);
         // No explicit setOffset is needed if the sprite origin is (0.5, 0.5) and setSize's default centering is used.
 
 
