@@ -315,7 +315,7 @@ function startGame() {
             }
 
             if (iconKey) {
-                const iconDisplayHeight = 32; // Desired display size for the animation icon
+                const iconDisplayHeight = 48; // Desired display size for the animation icon
                 const gap = 5; // Gap in pixels between trap top and icon bottom
                 const iconX = trapToDeactivate.x;
                 // Trap's origin is (0.5, 1), so trapToDeactivate.y is its bottom edge.
