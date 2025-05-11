@@ -53,6 +53,8 @@ let layers;
 let trapsGroup;
 let enemiesGroup;
 let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
+let consecutiveEnemiesSpawned = 0;
+let consecutiveTrapsSpawned = 0;
 // Scene properties for the dynamic disarm button
 // disarmButtonBorder, disarmButtonIcon are now managed by UIManager
 let currentTargetableTrap; // This remains as it's game logic state
@@ -159,6 +161,8 @@ function startGame() {
     gameOver = false;
     level = 1; // Reset level
     currentSpeedScale = 1; // Reset speed scale
+    consecutiveEnemiesSpawned = 0;
+    consecutiveTrapsSpawned = 0;
 
     player = createPlayer(this, layers.groundTopY);
     this.physics.add.collider(player, layers.ground);
@@ -266,11 +270,25 @@ function startGame() {
     });
 
     const spawnNext = () => {
-        const enemyProbability = ENEMY_TO_TRAP_RATIO / (ENEMY_TO_TRAP_RATIO + 1);
-        if (Math.random() < enemyProbability) {
-            enemySpawner.spawnEnemy();
-        } else {
+        if (consecutiveEnemiesSpawned >= 3) {
             trapSpawner.spawnTrap();
+            consecutiveTrapsSpawned++;
+            consecutiveEnemiesSpawned = 0;
+        } else if (consecutiveTrapsSpawned >= 2) {
+            enemySpawner.spawnEnemy();
+            consecutiveEnemiesSpawned++;
+            consecutiveTrapsSpawned = 0;
+        } else {
+            const enemyProbability = ENEMY_TO_TRAP_RATIO / (ENEMY_TO_TRAP_RATIO + 1);
+            if (Math.random() < enemyProbability) {
+                enemySpawner.spawnEnemy();
+                consecutiveEnemiesSpawned++;
+                consecutiveTrapsSpawned = 0;
+            } else {
+                trapSpawner.spawnTrap();
+                consecutiveTrapsSpawned++;
+                consecutiveEnemiesSpawned = 0;
+            }
         }
     };
 
