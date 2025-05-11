@@ -454,7 +454,7 @@ function winGame(playerGO, boothGO) {
             scene.physics.pause(); // Now pause all physics
 
             // UIManager handles clearing messages and showing win screen
-            UIManager.showWinScreen();
+            UIManager.showWinScreen(freedCharactersCount);
             UIManager.hideGameplayUIDuringEnd(); // Hide buttons etc.
 
             if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
