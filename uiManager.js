@@ -360,9 +360,9 @@ export function showWinScreen() {
     // Clear any active game messages first
     clearAllMessages();
 
-    const winMessageString = 'Felicitari, ai ajuns cu bine la vot!';
+    const winMessageString = 'Felicitari, ai evitat propaganda si ajuns cu bine la vot!';
     const textStyle = {
-        fontSize: '28px', // Reduced font size
+        fontSize: '20px', // Reduced font size
         fill: '#006400', // Dark Green
         fontStyle: 'bold',
         // Removed stroke and shadow
