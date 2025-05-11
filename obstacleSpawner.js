@@ -93,6 +93,10 @@ export class ObstacleSpawner {
             } else if (ob.getData('isScorable') && (ob.x + ob.width / 2) < player.x) {
                 gained += 1;
                 ob.setData('isScorable', false);
+                // Display message for avoiding enemy
+                if (this.scene.displayGameMessage && ob.message_avoided) {
+                    this.scene.displayGameMessage(ob.message_avoided);
+                }
             }
         });
         return gained;

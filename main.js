@@ -60,6 +60,8 @@ let obstaclesGroup;
 let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
 // Scene properties for the dynamic disarm button
 let disarmButtonBorder, disarmButtonIcon, currentTargetableTrap;
+let messageDisplay = [null, null]; // [bottomText, topText]
+let messageTimers = [null, null]; // Timers for [bottomText, topText]
 
 
 new Phaser.Game(config);
@@ -133,6 +135,106 @@ function create() {
     this.input.on('pointerdown', () => { if (gameOver && !gameStarted) { /* Do nothing if start screen is active */ } else if (gameOver) { this.scene.restart(); } });
 }
 
+// Function to display game event messages
+function displayGameMessage(text) {
+    if (!scene || !gameStarted || gameOver) return; // Don't display messages if scene not ready, game not started, or game over
+
+    const MESSAGE_X_CENTER = GAME_WIDTH / 2;
+    const MESSAGE_Y_BOTTOM = 30; // Y for the newest (bottom) message
+    const MESSAGE_Y_TOP = 10;    // Y for the older (top) message
+    const MESSAGE_Y_SPACING = MESSAGE_Y_BOTTOM - MESSAGE_Y_TOP;
+    const MESSAGE_FADE_IN_DURATION = 250;
+    const MESSAGE_FADE_OUT_DURATION = 500;
+    const MESSAGE_SCROLL_UP_DURATION = 250;
+    const MESSAGE_VISIBLE_DURATION = 3000; // How long a message stays if not pushed out
+
+    // Clear existing timers for the slots that will be affected
+    if (messageTimers[1]) { // Top message timer
+        messageTimers[1].remove(false);
+        messageTimers[1] = null;
+    }
+    if (messageTimers[0]) { // Bottom message timer
+        messageTimers[0].remove(false);
+        messageTimers[0] = null;
+    }
+
+    // 1. Handle the current top message (messageDisplay[1])
+    if (messageDisplay[1]) {
+        const oldTopMessage = messageDisplay[1];
+        scene.tweens.add({
+            targets: oldTopMessage,
+            y: oldTopMessage.y - MESSAGE_Y_SPACING, // Scroll further up
+            alpha: 0,
+            duration: MESSAGE_FADE_OUT_DURATION,
+            ease: 'Power1',
+            onComplete: () => {
+                if (oldTopMessage && oldTopMessage.scene) oldTopMessage.destroy();
+            }
+        });
+    }
+    messageDisplay[1] = null;
+
+    // 2. Handle the current bottom message (messageDisplay[0]) - move it to top
+    if (messageDisplay[0]) {
+        const oldBottomMessage = messageDisplay[0];
+        messageDisplay[1] = oldBottomMessage; // Move to top slot
+
+        scene.tweens.add({
+            targets: oldBottomMessage,
+            y: MESSAGE_Y_TOP,
+            duration: MESSAGE_SCROLL_UP_DURATION,
+            ease: 'Power1'
+        });
+
+        messageTimers[1] = scene.time.delayedCall(MESSAGE_VISIBLE_DURATION, () => {
+            if (messageDisplay[1] === oldBottomMessage && oldBottomMessage.scene) {
+                scene.tweens.add({
+                    targets: oldBottomMessage,
+                    alpha: 0,
+                    duration: MESSAGE_FADE_OUT_DURATION,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        if (oldBottomMessage && oldBottomMessage.scene) oldBottomMessage.destroy();
+                        if (messageDisplay[1] === oldBottomMessage) messageDisplay[1] = null;
+                    }
+                });
+            }
+        });
+    }
+    messageDisplay[0] = null;
+
+    // 3. Create and display the new message in the bottom slot
+    const newMessage = scene.add.text(MESSAGE_X_CENTER, MESSAGE_Y_BOTTOM, text, {
+        fontSize: '18px', fill: '#FFFFFF', fontStyle: 'bold',
+        stroke: '#000000', strokeThickness: 4,
+        align: 'center'
+    }).setOrigin(0.5, 0.5).setAlpha(0).setDepth(200); // High depth, above game elements
+
+    messageDisplay[0] = newMessage;
+
+    scene.tweens.add({
+        targets: newMessage,
+        alpha: 1,
+        duration: MESSAGE_FADE_IN_DURATION,
+        ease: 'Power1'
+    });
+
+    messageTimers[0] = scene.time.delayedCall(MESSAGE_VISIBLE_DURATION, () => {
+        if (messageDisplay[0] === newMessage && newMessage.scene) {
+            scene.tweens.add({
+                targets: newMessage,
+                alpha: 0,
+                duration: MESSAGE_FADE_OUT_DURATION,
+                ease: 'Power1',
+                onComplete: () => {
+                    if (newMessage && newMessage.scene) newMessage.destroy();
+                    if (messageDisplay[0] === newMessage) messageDisplay[0] = null;
+                }
+            });
+        }
+    });
+}
+
 function startGame() {
     gameStarted = true;
     if (startScreenText) startScreenText.destroy();
@@ -159,6 +261,17 @@ function startGame() {
     // gameOverText and restartText are already created in create(), just ensure they are hidden initially if not already.
     gameOverText.setVisible(false);
     restartText.setVisible(false);
+
+    // Clear any existing messages from a previous game session
+    messageDisplay.forEach(msg => {
+        if (msg && msg.scene) msg.destroy();
+    });
+    messageDisplay = [null, null];
+    messageTimers.forEach(timer => {
+        if (timer) timer.remove(false);
+    });
+    messageTimers = [null, null];
+    scene.displayGameMessage = displayGameMessage; // Make it accessible via scene
 
 
     /* Level-up timer */
@@ -381,6 +494,11 @@ function startGame() {
             }
             // --- End disarm animation ---
 
+            // Display message for disarming trap
+            if (trapToDeactivate.getData('message_disarmed')) {
+                displayGameMessage(trapToDeactivate.getData('message_disarmed'));
+            }
+
             score += 10;
             scoreText.setText('Score: ' + score);
 
@@ -531,15 +649,30 @@ function update(time, delta) {
 function hitObstacle(playerGO, obstacleGO) {
     if (gameOver) return;
 
+    // Display message for hitting enemy
+    if (obstacleGO.message_hit) {
+        displayGameMessage(obstacleGO.message_hit);
+    }
+
     gameOver = true;
     scene.sound.play('game_over', { volume: 0.7 });
     scene.physics.pause();
 
+    // Clear any active game messages
+    messageDisplay.forEach(msg => {
+        if (msg && msg.scene) msg.destroy();
+    });
+    messageDisplay = [null, null];
+    messageTimers.forEach(timer => {
+        if (timer) timer.remove(false);
+    });
+    messageTimers = [null, null];
+
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();
 
-    gameOverText.setVisible(true).setDepth(100); // Set a high depth
-    restartText.setVisible(true).setDepth(100); // Set a high depth
+    gameOverText.setVisible(true).setDepth(201); // Ensure above game messages
+    restartText.setVisible(true).setDepth(201); // Ensure above game messages
 
     // Bring to top as well, though depth is usually sufficient
     scene.children.bringToTop(gameOverText);
@@ -555,9 +688,13 @@ function hitObstacle(playerGO, obstacleGO) {
 }
 
 function hitTrap(playerGO, trapGO) {
-    // Player passes through traps without consequence.
-    // The trap's state (active, color, speed) is only changed by deactivateNearestTrap.
-    // This function is now a no-op regarding game state changes from collision.
+    // Player passes through traps. If it's active and message not shown, show "passed by" message.
+    if (trapGO.getData('active') && !trapGO.getData('passed_by_message_shown')) {
+        if (trapGO.getData('message_passed_by')) {
+            displayGameMessage(trapGO.getData('message_passed_by'));
+        }
+        trapGO.setData('passed_by_message_shown', true); // Prevent multiple messages for same trap
+    }
 }
 
 /* ---------------- WIN CONDITION ---------------- */
@@ -586,10 +723,20 @@ function winGame(playerGO, boothGO) {
         scene.time.delayedCall(2000, () => {
             scene.physics.pause(); // Now pause all physics
 
+            // Clear any active game messages
+            messageDisplay.forEach(msg => {
+                if (msg && msg.scene) msg.destroy();
+            });
+            messageDisplay = [null, null];
+            messageTimers.forEach(timer => {
+                if (timer) timer.remove(false);
+            });
+            messageTimers = [null, null];
+
             const winText = scene.add.text(
                 GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
                 { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
-            ).setOrigin(0.5);
+            ).setOrigin(0.5).setDepth(201); // Ensure above game messages
 
             if (scene.uiButtons)
                 scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
