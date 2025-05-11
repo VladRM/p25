@@ -5,10 +5,10 @@ import { displayMessage } from './uiManager.js';
 
 const ENEMY_TYPES = [
     // IMPORTANT: Replace animMaxUnscaledWidth/Height with actual max dimensions from your art assets
-    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350, message_avoided: "Enemy 1 avoided placeholder", message_hit: "Enemy 1 hit placeholder" },
-    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320, message_avoided: "Enemy 2 avoided placeholder", message_hit: "Enemy 2 hit placeholder" },
-    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: "Enemy 3 avoided placeholder", message_hit: "Enemy 3 hit placeholder" },
-    { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: "Enemy 4 avoided placeholder", message_hit: "Enemy 4 hit placeholder" }
+    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350, message_avoided: 'Ai mirosit propaganda mascata in tricolor. Bravo!', message_hit: 'Te-au vrajit cu patriotismul fals...' },
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320, message_avoided: 'Nu privim in urma. Mergem spre urna!', message_hit: 'Priveste inainte, alege cu cap!' },
+    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: 'N-ai muscat din "marketing". Bun reflex!', message_hit: 'Ai ales "casa ieftina"? O sa platim scump!' },
+    { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: 'Nu alimentam minciunile! Cu viteza la vot!', message_hit: 'Ai vrut benzina la 1 leu? O sa platim scump!' }
 ];
 
 export class EnemySpawner {
