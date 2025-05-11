@@ -250,8 +250,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             disarmButtonIcon.setInteractive({ useHandCursor: true });
 
             if (disarmButtonBorder) {
-                disarmButtonBorder.setScale(1.1)                         // roughly +5 px per side
-                                   .setAlpha(0.5);                       // start semi-transparent
+                disarmButtonBorder.setAlpha(0.5);                       // start semi-transparent
                 if (disarmButtonBorder.input) {                          // Set cursor for active border
                     disarmButtonBorder.input.cursor = 'hand';
                 }
@@ -273,8 +272,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             disarmButtonIcon.setInteractive();                  // Remove hand cursor
 
             if (disarmButtonBorder) {
-                disarmButtonBorder.setAlpha(0.5)                // disabled look
-                                   .setScale(1);                // restore default size
+                disarmButtonBorder.setAlpha(0.5);                // disabled look
                 if (disarmButtonBorder.input) {                 // Reset cursor for inactive border
                     disarmButtonBorder.input.cursor = '';
                 }
