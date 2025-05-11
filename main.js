@@ -78,6 +78,7 @@ function preload() {
     this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
     this.load.image('icon_compass', 'res/img/player/compass.png');
     this.load.image('icon_brain', 'res/img/player/brain.png');
+    this.load.image('voting_booth_img', 'res/img/voting-booth.png');
 
     // Foot-step sounds
     this.load.audio('footstep_a', 'res/snd/footstep_grass_000.ogg');
@@ -441,12 +442,18 @@ function update(time, delta) {
 
         spawnVotingBoothPending = false;
 
-        votingBooth = scene.add.rectangle(
-            GAME_WIDTH + 120,
+        votingBooth = scene.physics.add.sprite(
+            GAME_WIDTH + 120, // Initial X position off-screen
             layers.groundTopY,
-            120, 180, 0x000000
-        ).setOrigin(0.5, 1);
-        scene.physics.add.existing(votingBooth);
+            'voting_booth_img'
+        ).setOrigin(0.5, 1); // Origin at bottom-center for correct ground placement
+
+        // Scale the booth to have a display height of 180px (like the old rectangle)
+        // This will also scale its width proportionally to maintain aspect ratio.
+        votingBooth.displayHeight = 180;
+        // The physics body should scale with the sprite. If issues arise,
+        // we might need to explicitly call votingBooth.body.setSize(votingBooth.displayWidth, votingBooth.displayHeight);
+
         votingBooth.body.setAllowGravity(false);
         votingBooth.body.setVelocityX(-effectiveSpeed);
 
