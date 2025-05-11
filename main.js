@@ -67,10 +67,7 @@ new Phaser.Game(config);
 function preload() {
     scene = this;
 
-    this.load.atlasXML('tiles_spritesheet', 'res/img/spritesheet-tiles-default.png', 'res/img/spritesheet-tiles-default.xml');
     this.load.atlasXML('backgrounds_spritesheet', 'res/img/spritesheet-backgrounds-default.png', 'res/img/spritesheet-backgrounds-default.xml');
-    this.load.atlasXML('characters_spritesheet', 'res/img/spritesheet-characters-default.png', 'res/img/spritesheet-characters-default.xml');
-    this.load.atlasXML('enemies_spritesheet', 'res/img/spritesheet-enemies-default.png', 'res/img/spritesheet-enemies-default.xml');
 
     this.load.image('player_walk1', 'res/img/player/player_walk1.png');
     this.load.image('player_walk2', 'res/img/player/player_walk2.png');
