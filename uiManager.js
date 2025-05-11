@@ -317,7 +317,21 @@ export function showWinScreen() {
 
     winTextInternal = scene.add.text(
         GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Felicitari, ai ajuns cu bine la vot!',
-        { fontSize: '32px', fill: '#00AA00', fontStyle: 'bold' }
+        {
+            fontSize: '40px',
+            fill: '#28a745', // A vibrant green
+            fontStyle: 'bold',
+            stroke: '#FFFFFF',
+            strokeThickness: 6,
+            shadow: {
+                offsetX: 2,
+                offsetY: 2,
+                color: '#000000',
+                blur: 4,
+                stroke: true,
+                fill: true
+            }
+        }
     ).setOrigin(0.5).setDepth(201);
     scene.children.bringToTop(winTextInternal);
 }
