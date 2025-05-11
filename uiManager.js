@@ -91,8 +91,18 @@ export function createGameUI() {
     const scene = getScene();
     if (!scene) return;
 
-    scoreText = scene.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000000' });
-    levelText = scene.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
+    scoreText = scene.add.text(16, 16, 'Score: 0', { 
+        fontSize: '24px', 
+        fill: '#FFFFFF', 
+        stroke: '#000000',
+        strokeThickness: 3 
+    });
+    levelText = scene.add.text(16, 40, 'Level: 1', { 
+        fontSize: '20px', 
+        fill: '#FFFFFF',
+        stroke: '#000000',
+        strokeThickness: 3
+    });
 
     createProgressBar(); // Initialize the progress bar
 
