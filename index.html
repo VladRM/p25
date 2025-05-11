@@ -34,25 +34,9 @@
             align-items: center;
             text-align: center;
             font-family: "Arial Black", Gadget, sans-serif; /* Game-like font */
-            font-size: 2em; /* Further increased font size */
-            padding: 20px;
+            font-size: 3em; /* Further increased font size */
+            padding: 80px;
             box-sizing: border-box;
-        }
-        #orientation-message::before { /* Unicode character for a rotation icon */
-            content: "🔄"; 
-            font-size: 4em; /* Slightly larger icon */
-            margin-bottom: 20px;
-        }
-        .orientation-custom-images {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px; /* Space between images and text */
-        }
-        .orientation-theme-image {
-            max-height: 120px; /* Increased image size */
-            margin: 0 20px; /* Increased spacing between images */
-            opacity: 0.85;
         }
     </style>
 </head>
@@ -60,10 +44,9 @@
     <div id="orientation-message">
         <!-- The ::before pseudo-element will display the rotation icon here -->
         <div class="orientation-custom-images">
-            <img src="res/img/player/player_walk1.png" alt="Game character" class="orientation-theme-image">
-            <img src="res/img/voting-booth.png" alt="Voting booth" class="orientation-theme-image">
+            <img src="res/img/rotate-landscape.png" alt="Rotate">
         </div>
-        <p>For the best experience, please rotate your device to landscape mode.</p>
+        <p>Please rotate your device to landscape mode.</p>
     </div>
     <script src="orientation.js" defer></script>
     <script type="module" src="main.js"></script>

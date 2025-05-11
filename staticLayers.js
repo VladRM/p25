@@ -23,7 +23,6 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
 
     /* --- Hills / Trees (mid) --- */
     const hillFrame  = scene.textures.getFrame('backgrounds_spritesheet', 'background_color_hills');
-    const treeFrame  = scene.textures.getFrame('backgrounds_spritesheet', 'background_color_trees');
     const frameW     = hillFrame.width;
     const frameH     = hillFrame.height;
 
@@ -48,7 +47,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         width / 2, groundTopY + 40,     // Lower hills by 40px relative to groundTopY
         width, frameH - HILLS_TRIM_TOP, // altura visible sin los 100 px superiores
         patternTexKey
-    ).setOrigin(0.5, 1).setAlpha(0.8);
+    ).setOrigin(0.5, 1).setAlpha(0.5);
 
     // Oculta los 100 px superiores desplazando la textura
     hills.tilePositionY = HILLS_TRIM_TOP;
