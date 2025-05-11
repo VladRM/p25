@@ -26,7 +26,7 @@ export class TrapSpawner {
         const y = this.groundTopY - height / 2;
 
         const trapId = `trap_${Date.now()}_${Phaser.Math.Between(1000,9999)}`;
-        const trap = this.scene.add.rectangle(x, y, width, height, color)
+        const trap = this.scene.add.rectangle(x, y, width, height, color, 0) // Set fillAlpha to 0 to make it invisible
             .setOrigin(0.5)
             .setDepth(9) // Set depth similar to enemies, but slightly less to be distinct if needed
             .setName(trapId); // Give it a unique name for logging
