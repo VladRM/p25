@@ -60,11 +60,12 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
         // Set body size based on displayed sprite size, adjust as necessary
         // Hitbox will be 80% of the sprite's area, centered.
-        // Scale factor for dimensions to achieve 80% area: sqrt(0.8) ~= 0.8944
-        // setSize by default re-centers the physics body on the game object's origin.
-        this.body.setSize(this.displayWidth * 0.8944, this.displayHeight * 0.8944);
-        // For a sprite with origin (0.5, 0.5), setOffset(0,0) keeps the body centered on the sprite.
-        this.body.setOffset(0, 0);
+        // Set hitbox to 80% of the sprite's displayed width and 80% of its displayed height.
+        // This results in a hitbox area of 0.8 * 0.8 = 0.64 (64%) of the sprite's area.
+        // Phaser.Physics.Arcade.Body.setSize() by default centers the new body on the sprite's origin.
+        // Assuming the sprite's origin is (0.5, 0.5), this will correctly center the hitbox on the sprite.
+        this.body.setSize(this.displayWidth * 0.8, this.displayHeight * 0.8);
+        // No explicit setOffset is needed if the sprite origin is (0.5, 0.5) and setSize's default centering is used.
 
 
         this.body.setAllowGravity(false);
