@@ -248,8 +248,8 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             // Targets will tween from their current alpha (1) to 0.5, then yoyo back to 1, repeatedly.
             disarmButtonFlashTween = scene.tweens.add({
                 targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean), // Use valid targets
-                alpha: 0.5, // Target alpha for the tween (will yoyo back from this to current alpha)
-                duration: 100, // Made flash faster for testing
+                alpha: 0.2, // Target alpha for the tween (will yoyo back from this to current alpha) - More pronounced
+                duration: 300, // Slightly slower flash for better observation
                 yoyo: true,
                 repeat: -1
             });
