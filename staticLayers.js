@@ -48,7 +48,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         width / 2, groundTopY + 40,     // Lower hills by 40px relative to groundTopY
         width, frameH - HILLS_TRIM_TOP, // altura visible sin los 100 px superiores
         patternTexKey
-    ).setOrigin(0.5, 1);
+    ).setOrigin(0.5, 1).setAlpha(0.8);
 
     // Oculta los 100 px superiores desplazando la textura
     hills.tilePositionY = HILLS_TRIM_TOP;
