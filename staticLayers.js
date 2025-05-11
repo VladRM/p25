@@ -17,7 +17,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
         width / 2,
         (height - displayedGroundHeight) + displayedGroundHeight / 2,
         width, displayedGroundHeight,
-        'tiles_spritesheet', 'terrain_grass_horizontal_middle'
+        'ground_tile_top'
     );
     const ground = scene.physics.add.existing(groundTile, true);
 
