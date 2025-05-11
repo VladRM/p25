@@ -63,12 +63,12 @@ export function createStartScreen() {
         .setOrigin(0, 0)
         .setDepth(50);
 
-    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Click / Tap to Start', {
+    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Click / Tap pentru a incepe jocul', {
         fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(51);
 
-    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click or Press SPACE to Jump\nPress the button on the top right to free voters', {
-        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center'
+    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Cum se joaca\nClick / Tap sau SPACE pentru a sari\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
+        fontSize: '18px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center'
     }).setOrigin(0.5).setDepth(51);
 }
 
