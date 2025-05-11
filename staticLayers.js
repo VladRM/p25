@@ -45,7 +45,7 @@ export function createStaticLayers (scene, { width, height, displayedGroundHeigh
     const groundTopY = height - displayedGroundHeight; // Ground top is now lower
     const HILLS_TRIM_TOP = 40;   // píxeles a ocultar por arriba
     const hills = scene.add.tileSprite(
-        width / 2, groundTopY,     // Hills sit on the new groundTopY
+        width / 2, groundTopY + 40,     // Lower hills by 40px relative to groundTopY
         width, frameH - HILLS_TRIM_TOP, // altura visible sin los 100 px superiores
         patternTexKey
     ).setOrigin(0.5, 1);
