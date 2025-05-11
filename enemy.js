@@ -82,8 +82,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         const maxScaledWidth = this.animMaxUnscaledWidth * this.scaleX;
         const maxScaledHeight = this.animMaxUnscaledHeight * this.scaleY;
         
-        const bodyWidth = maxScaledWidth * 0.95; // Increased from 0.8 to 0.95
-        const bodyHeight = maxScaledHeight * 0.95; // Increased from 0.8 to 0.95
+        const bodyWidth = maxScaledWidth * 1.25; // Increased from 0.8 to 0.95
+        const bodyHeight = maxScaledHeight * 1.25; // Increased from 0.8 to 0.95
         
         console.log(`[Enemy] initializePhysics: maxScaledWidth=${maxScaledWidth}, maxScaledHeight=${maxScaledHeight}`);
         console.log(`[Enemy] initializePhysics: calculated bodyWidth=${bodyWidth}, bodyHeight=${bodyHeight}`);
