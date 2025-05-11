@@ -8,9 +8,9 @@ export class TrapSpawner {
 
     spawnTrap() {
         const TRAP_TYPES = [
-            { name: 'populist', color: 0xff69b4 }, // Pink
-            { name: 'obedience', color: 0x1e90ff }, // Blue
-            { name: 'darkweb', color: 0xffd700 }  // Yellow (Dark Web of Lies)
+            { name: 'populist', color: 0xff69b4, message_disarmed: "Populist trap disarmed placeholder", message_passed_by: "Populist trap passed by placeholder" }, // Pink
+            { name: 'obedience', color: 0x1e90ff, message_disarmed: "Obedience trap disarmed placeholder", message_passed_by: "Obedience trap passed by placeholder" }, // Blue
+            { name: 'darkweb', color: 0xffd700, message_disarmed: "Darkweb trap disarmed placeholder", message_passed_by: "Darkweb trap passed by placeholder" }  // Yellow (Dark Web of Lies)
         ];
         let selectedTrapType;
         do {
@@ -34,6 +34,8 @@ export class TrapSpawner {
         this.lastTrapType = selectedTrapType.name; // Remember last trap type
         trap.setData('active', true);
         trap.setData('trapType', selectedTrapType.name); // Store the trap type
+        trap.setData('message_disarmed', selectedTrapType.message_disarmed); // Store disarmed message
+        trap.setData('message_passed_by', selectedTrapType.message_passed_by); // Store passed by message
         
         if (trap.body) {
             trap.body.setAllowGravity(false);
