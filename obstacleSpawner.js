@@ -4,10 +4,10 @@ import Enemy from './enemy.js';
 
 const ENEMY_TYPES = [
     // IMPORTANT: Replace animMaxUnscaledWidth/Height with actual max dimensions from your art assets
-    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350 }, // Example: if 1_b is taller due to sign
-    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320 }, // Example: if 2_b is taller due to flags
-    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256 },  // Example: if 3_a and 3_b are same size
-    { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256 }  // Placeholder dimensions for new enemy
+    { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350, message_avoided: "Enemy 1 avoided placeholder", message_hit: "Enemy 1 hit placeholder" },
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320, message_avoided: "Enemy 2 avoided placeholder", message_hit: "Enemy 2 hit placeholder" },
+    { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: "Enemy 3 avoided placeholder", message_hit: "Enemy 3 hit placeholder" },
+    { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: "Enemy 4 avoided placeholder", message_hit: "Enemy 4 hit placeholder" }
 ];
 
 export class ObstacleSpawner {
@@ -68,7 +68,9 @@ export class ObstacleSpawner {
             enemyTypeData.type,       // Pass the enemy type for animation handling
             chosenScale,              // Pass the chosen scale
             enemyTypeData.animMaxUnscaledWidth, // Pass the max unscaled width for hitbox calculation
-            enemyTypeData.animMaxUnscaledHeight // Pass the max unscaled height for hitbox calculation
+            enemyTypeData.animMaxUnscaledHeight, // Pass the max unscaled height for hitbox calculation
+            enemyTypeData.message_avoided, // Pass the avoided message
+            enemyTypeData.message_hit      // Pass the hit message
         );
         this.group.add(enemy);
         this.lastEnemyType = enemyTypeData.type; // Remember last enemy type

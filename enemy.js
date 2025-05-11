@@ -8,7 +8,7 @@ const ENEMY_ANIMATIONS = {
 };
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
-    constructor (scene, x, y, texture, frame, enemyType, scale, animMaxUnscaledWidth, animMaxUnscaledHeight) {
+    constructor (scene, x, y, texture, frame, enemyType, scale, animMaxUnscaledWidth, animMaxUnscaledHeight, message_avoided, message_hit) {
         super(scene, x, y, texture, frame);
         // console.log(`[Enemy] Constructor: x:${x}, y:${y}, texture:${texture}, frame:${frame}, enemyType:${enemyType}, scale:${scale}`); // Removed log
         
@@ -17,6 +17,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.enemyType = enemyType; // Store the type to select animation
         this.animMaxUnscaledWidth = animMaxUnscaledWidth || this.width; // Fallback to current frame's width if not provided
         this.animMaxUnscaledHeight = animMaxUnscaledHeight || this.height; // Fallback to current frame's height if not provided
+        this.message_avoided = message_avoided;
+        this.message_hit = message_hit;
 
 
         // Set GameObject properties
