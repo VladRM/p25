@@ -249,7 +249,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             disarmButtonFlashTween = scene.tweens.add({
                 targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean), // Use valid targets
                 alpha: 0.5, // Target alpha for the tween (will yoyo back from this to current alpha)
-                duration: 500,
+                duration: 100, // Made flash faster for testing
                 yoyo: true,
                 repeat: -1
             });
