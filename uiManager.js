@@ -35,7 +35,7 @@ let mainTitleText, subTitleText, startScreenText, startScreenOverlay, howToPlayT
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal, winTextBackground; // Added background for win text
-let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween;
+let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween, disarmButtonTransitionTween; // Added disarmButtonTransitionTween
 let disarmButtonState = { enabled: false, iconKey: null }; // Track current state to avoid restarting tween every frame
 let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
@@ -236,7 +236,12 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
     disarmButtonState.enabled = isEnabled;
     disarmButtonState.iconKey = iconKey;
 
-    // Stop any existing tween – we'll recreate it only when needed
+    // Stop any existing transition tween before applying a new state or starting a new tween
+    if (disarmButtonTransitionTween) {
+        disarmButtonTransitionTween.stop();
+        disarmButtonTransitionTween = null;
+    }
+    // Stop any existing flash tween (this might be specific and separate)
     if (disarmButtonFlashTween) {
         disarmButtonFlashTween.stop();
         disarmButtonFlashTween = null;
@@ -263,16 +268,19 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             }
 
             /* ---------- fade-in & grow ---------- */
-            scene.tweens.add({
+            // Store the new tween and set it to null on completion or stop
+            disarmButtonTransitionTween = scene.tweens.add({
                 targets : [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
                 alpha   : { from: 0, to: 1 },
                 scale   : 1,                                                 // both reach natural size
                 duration: 250,
-                ease    : 'Power1'
+                ease    : 'Power1',
+                onComplete: () => { disarmButtonTransitionTween = null; },
+                onStop: () => { disarmButtonTransitionTween = null; }
             });
         } else {
             // Logic for when isEnabled is false (button is disabled)
-            // The disarmButtonFlashTween was already stopped at the beginning of this function.
+            // Any active transition tween (e.g., fade-in) would have been stopped above.
             disarmButtonIcon.setAlpha(0)                        // hide icon
                             .setDisplaySize(UI_SIZE, UI_SIZE);  // restore default size
             disarmButtonIcon.setInteractive();                  // Remove hand cursor
@@ -570,6 +578,10 @@ export function resetUIForNewGame() {
     uiButtonsCollection = [];
     // Ensure disarm button elements are reset if they persist across scenes/restarts
     // (though they are typically recreated in startGame)
+    if (disarmButtonTransitionTween) { // Stop transition tween first
+        disarmButtonTransitionTween.stop();
+        disarmButtonTransitionTween = null;
+    }
     if (disarmButtonFlashTween) {
         disarmButtonFlashTween.stop();
         disarmButtonFlashTween = null;
