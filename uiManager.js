@@ -23,7 +23,7 @@ let sceneRef; // Reference to the main game scene
 // UI Element References
 let startScreenText, startScreenOverlay;
 let scoreText, levelText;
-let gameOverText, restartText;
+let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal; // Renamed to avoid conflict if main.js had a 'winText'
 let disarmButtonBorder, disarmButtonIcon;
 let messageDisplay = [null, null]; // [bottomText, topText]
@@ -410,6 +410,10 @@ function clearAllMessages() {
 
 
 export function resetUIForNewGame() {
+    if (gameOverTextBackground && gameOverTextBackground.scene) {
+        gameOverTextBackground.destroy();
+        gameOverTextBackground = null;
+    }
     if (gameOverText) gameOverText.setVisible(false);
     if (restartText) restartText.setVisible(false);
     if (winTextInternal && winTextInternal.scene) {
