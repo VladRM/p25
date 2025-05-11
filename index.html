@@ -33,81 +33,38 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1.5em; /* Increased font size */
             padding: 20px;
             box-sizing: border-box;
         }
         #orientation-message::before { /* Unicode character for a rotation icon */
             content: "🔄"; 
-            font-size: 3em;
+            font-size: 4em; /* Slightly larger icon */
             margin-bottom: 20px;
+        }
+        .orientation-custom-images {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px; /* Space between images and text */
+        }
+        .orientation-theme-image {
+            max-height: 80px; /* Adjust size as needed */
+            margin: 0 15px; /* Spacing between images */
+            opacity: 0.85;
         }
     </style>
 </head>
 <body>
     <div id="orientation-message">
+        <!-- The ::before pseudo-element will display the rotation icon here -->
+        <div class="orientation-custom-images">
+            <img src="res/img/player/player_walk1.png" alt="Game character" class="orientation-theme-image">
+            <img src="res/img/voting-booth.png" alt="Voting booth" class="orientation-theme-image">
+        </div>
         <p>For the best experience, please rotate your device to landscape mode.</p>
     </div>
-    <script>
-        (function() {
-            const orientationMessage = document.getElementById('orientation-message');
-
-            function checkOrientationAndScroll() {
-                const gameCanvas = document.querySelector('canvas');
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-
-                if (isMobile) {
-                    // Using screen.orientation for modern browsers, fallback to window.matchMedia
-                    const isPortrait = screen.orientation ? screen.orientation.type.includes('portrait') : window.matchMedia("(orientation: portrait)").matches;
-
-                    if (isPortrait) {
-                        orientationMessage.style.display = 'flex';
-                        if (gameCanvas) {
-                            gameCanvas.style.display = 'none'; // Hide canvas if in portrait
-                        }
-                    } else { // Landscape
-                        orientationMessage.style.display = 'none';
-                        if (gameCanvas) {
-                            gameCanvas.style.display = 'block'; // Ensure canvas is visible
-                            // Scroll the canvas into view
-                            gameCanvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    }
-                } else { // Not mobile
-                    orientationMessage.style.display = 'none';
-                    if (gameCanvas) {
-                        gameCanvas.style.display = 'block'; // Ensure canvas is visible
-                    }
-                }
-            }
-
-            // Listen for orientation changes
-            if (screen.orientation) {
-                screen.orientation.addEventListener('change', checkOrientationAndScroll);
-            } else {
-                window.addEventListener('orientationchange', checkOrientationAndScroll);
-            }
-            
-            // Also check on resize as a fallback for some devices/browsers
-            window.addEventListener('resize', checkOrientationAndScroll);
-            
-            // Initial check when the page loads
-            // window.onload ensures that main.js (and thus the canvas) should be loaded
-            window.addEventListener('load', checkOrientationAndScroll);
-            
-            // Fallback for initial display of message if canvas isn't ready yet on 'load' for some reason
-            // This will show the message quickly if portrait, then 'load' will refine
-            document.addEventListener('DOMContentLoaded', function() {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-                if (isMobile) {
-                    const isPortrait = screen.orientation ? screen.orientation.type.includes('portrait') : window.matchMedia("(orientation: portrait)").matches;
-                    if (isPortrait) {
-                        orientationMessage.style.display = 'flex';
-                    }
-                }
-            });
-        })();
-    </script>
+    <script src="orientation.js" defer></script>
     <script type="module" src="main.js"></script>
 </body>
 </html>
