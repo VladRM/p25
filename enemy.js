@@ -68,8 +68,15 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // Set hitbox to 80% of the sprite's current displayed width and height.
         // When initializePhysics is called, this will be based on the scaled dimensions of the first frame of the animation.
         // If subsequent animation frames have different dimensions, the hitbox will not resize with them.
+        console.log(`[Enemy] initializePhysics: enemyType=${this.enemyType}, texture=${this.texture.key}, frame=${this.frame.name}`);
+        console.log(`[Enemy] initializePhysics: scaleX=${this.scaleX}, scaleY=${this.scaleY}`);
+        console.log(`[Enemy] initializePhysics: width=${this.width}, height=${this.height}`);
+        console.log(`[Enemy] initializePhysics: displayWidth=${this.displayWidth}, displayHeight=${this.displayHeight}`);
+        
         const bodyWidth = this.displayWidth * 0.8;
         const bodyHeight = this.displayHeight * 0.8;
+        
+        console.log(`[Enemy] initializePhysics: calculated bodyWidth=${bodyWidth}, bodyHeight=${bodyHeight}`);
         
         this.body.setSize(bodyWidth, bodyHeight);
         // No explicit setOffset is needed if the sprite origin is (0.5, 0.5) 
