@@ -1,7 +1,7 @@
 import { GAME_WIDTH, GAME_HEIGHT } from './gameConfig.js'; // Assuming these are needed for positioning
 
 // UI Constants (moved from main.js)
-const UI_SIZE = 64;
+const UI_SIZE = 74; // Increased by 10 for a larger button
 const BORDER_W = 2;
 const UI_BORDER_PAD = 6;
 const BORDER_RADIUS = 8;
