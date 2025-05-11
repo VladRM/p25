@@ -81,7 +81,8 @@ export class TrapSpawner {
             charactersInTrap.push({
                 sprite: charSprite,
                 xOffset: xPosOffset,    // Store original xOffset relative to trap center
-                yOffset: charYPosOffset // Store yOffset relative to trap center (for vertical alignment)
+                yOffset: charYPosOffset, // Store yOffset relative to trap center (for vertical alignment)
+                charTypeKey: charTypeKey // Store the original character type key
             });
         }
         trap.setData('characters', charactersInTrap);
