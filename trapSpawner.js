@@ -40,33 +40,51 @@ export class TrapSpawner {
         trap.setData('message_passed_by', selectedTrapType.message_passed_by); // Store passed by message
 
         // Add characters inside the trap
+        const numCharacters = Phaser.Math.Between(1, 4);
+        const charactersInTrap = [];
+        const charTypes = ['adventurer_hurt', 'female_hurt'];
         const charScale = 0.5;
         const trapRectangleHeight = height; // Height of the invisible trap rectangle
 
-        const adventurerChar = this.scene.add.sprite(trap.x - 25, trap.y, 'adventurer_hurt') // Initial Y centered with trap
-            .setScale(charScale)
-            .setTint(0xaaaaaa)
-            .setDepth(trap.depth + 1);
-        // Calculate Y offset for the adventurer character to place its feet on the ground.
-        // The character's sprite origin is (0.5, 0.5).
-        // groundTopY = trap.y + trapRectangleHeight / 2. Feet should be at groundTopY.
-        // So, target adventurerChar.y = groundTopY - adventurerChar.displayHeight / 2.
-        // Expressed relative to trap.y: adventurerChar.y = trap.y + (trapRectangleHeight / 2 - adventurerChar.displayHeight / 2).
-        const adventurerYOffset = (trapRectangleHeight / 2) - (adventurerChar.displayHeight / 2);
-        adventurerChar.y = trap.y + adventurerYOffset; // Apply the calculated Y position
-        trap.setData('adventurerYOffset', adventurerYOffset); // Store offset for updates
+        let xOffsets = [];
+        switch (numCharacters) {
+            case 1:
+                xOffsets = [0];
+                break;
+            case 2:
+                xOffsets = [-25, 25]; // Original spacing for two characters
+                break;
+            case 3:
+                xOffsets = [-35, 0, 35]; // Spaced for three characters
+                break;
+            case 4:
+                xOffsets = [-45, -15, 15, 45]; // Spaced for four characters
+                break;
+        }
 
-        const femaleChar = this.scene.add.sprite(trap.x + 25, trap.y, 'female_hurt') // Initial Y centered with trap
-            .setScale(charScale)
-            .setTint(0xaaaaaa)
-            .setDepth(trap.depth + 1);
-        // Calculate Y offset similarly for the female character.
-        const femaleYOffset = (trapRectangleHeight / 2) - (femaleChar.displayHeight / 2);
-        femaleChar.y = trap.y + femaleYOffset; // Apply the calculated Y position
-        trap.setData('femaleYOffset', femaleYOffset); // Store offset for updates
+        for (let i = 0; i < numCharacters; i++) {
+            const charTypeKey = charTypes[i % charTypes.length]; // Alternate character types
+            const xPosOffset = xOffsets[i];
 
-        trap.setData('adventurerChar', adventurerChar);
-        trap.setData('femaleChar', femaleChar);
+            const charSprite = this.scene.add.sprite(trap.x + xPosOffset, trap.y, charTypeKey)
+                .setScale(charScale)
+                .setTint(0xaaaaaa)
+                .setDepth(trap.depth + 1);
+
+            // Calculate Y offset for the character to place its feet on the ground.
+            // Origin is (0.5, 0.5). trap.y is the center of the trap rectangle.
+            // trapRectangleHeight / 2 is distance from trap center to its edge (ground).
+            // charSprite.displayHeight / 2 is distance from char sprite center to its feet.
+            const charYPosOffset = (trapRectangleHeight / 2) - (charSprite.displayHeight / 2);
+            charSprite.y = trap.y + charYPosOffset; // Apply the calculated Y position
+
+            charactersInTrap.push({
+                sprite: charSprite,
+                xOffset: xPosOffset,    // Store original xOffset relative to trap center
+                yOffset: charYPosOffset // Store yOffset relative to trap center (for vertical alignment)
+            });
+        }
+        trap.setData('characters', charactersInTrap);
         
         if (trap.body) {
             trap.body.setAllowGravity(false);
@@ -82,34 +100,36 @@ export class TrapSpawner {
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
-            const adventurerChar = trap.getData('adventurerChar');
-            const femaleChar = trap.getData('femaleChar');
+            const charactersInTrap = trap.getData('characters');
 
             if (!trap.body) { // If trap somehow lost its body, remove it
-                if (adventurerChar) adventurerChar.destroy();
-                if (femaleChar) femaleChar.destroy();
+                if (charactersInTrap) {
+                    charactersInTrap.forEach(charData => {
+                        if (charData.sprite) charData.sprite.destroy();
+                    });
+                }
                 this.group.remove(trap, true, true);
                 return;
             }
 
             // Update character positions to follow the trap
-            if (adventurerChar) {
-                adventurerChar.x = trap.x - 25;
-                const adventurerYOffset = trap.getData('adventurerYOffset');
-                // Ensure offset is a number; default to 0 if not found (should always be found).
-                adventurerChar.y = trap.y + (typeof adventurerYOffset === 'number' ? adventurerYOffset : 0);
-            }
-            if (femaleChar) {
-                femaleChar.x = trap.x + 25;
-                const femaleYOffset = trap.getData('femaleYOffset');
-                // Ensure offset is a number; default to 0 if not found.
-                femaleChar.y = trap.y + (typeof femaleYOffset === 'number' ? femaleYOffset : 0);
+            if (charactersInTrap) {
+                charactersInTrap.forEach(charData => {
+                    if (charData.sprite) {
+                        charData.sprite.x = trap.x + charData.xOffset;
+                        // charData.yOffset was calculated to align sprite's feet with ground relative to trap.y
+                        charData.sprite.y = trap.y + charData.yOffset;
+                    }
+                });
             }
 
             // Check if trap is off-screen to the left
             if (trap.getBounds().right < 0) {
-                if (adventurerChar) adventurerChar.destroy();
-                if (femaleChar) femaleChar.destroy();
+                if (charactersInTrap) {
+                    charactersInTrap.forEach(charData => {
+                        if (charData.sprite) charData.sprite.destroy();
+                    });
+                }
                 this.group.remove(trap, true, true);
                 return;
             }
