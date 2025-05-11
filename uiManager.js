@@ -268,17 +268,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
                 alpha   : { from: 0, to: 1 },
                 scale   : 1,                                                 // both reach natural size
                 duration: 250,
-                ease    : 'Power1',
-                onComplete: () => {
-                    /* after fade-in start subtle flashing */
-                    disarmButtonFlashTween = scene.tweens.add({
-                        targets : [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
-                        alpha   : { from: 0.75, to: 1 },
-                        duration: 500,
-                        yoyo    : true,
-                        repeat  : -1
-                    });
-                }
+                ease    : 'Power1'
             });
         } else {
             // Logic for when isEnabled is false (button is disabled)
