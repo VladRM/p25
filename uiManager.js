@@ -244,12 +244,15 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
 
     if (disarmButtonIcon) {
         if (isEnabled && iconKey) {
-            disarmButtonIcon.setTexture(iconKey).setAlpha(1); // Ensure icon is visible and at full alpha
+            disarmButtonIcon.setTexture(iconKey)
+                             .setDisplaySize(UI_SIZE + 10, UI_SIZE + 10) // enlarge by 5 px per side
+                             .setAlpha(0.5);                               // start semi-transparent
             disarmButtonIcon.setInteractive({ useHandCursor: true });
 
             if (disarmButtonBorder) {
-                disarmButtonBorder.setAlpha(1); // Ensure border is visible and at full alpha
-                if (disarmButtonBorder.input) { // Set cursor for active border
+                disarmButtonBorder.setScale(1.1)                         // roughly +5 px per side
+                                   .setAlpha(0.5);                       // start semi-transparent
+                if (disarmButtonBorder.input) {                          // Set cursor for active border
                     disarmButtonBorder.input.cursor = 'hand';
                 }
             }
@@ -257,21 +260,22 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             // Start flashing tween
             // Targets will tween from their current alpha (1) to 0.5, then yoyo back to 1, repeatedly.
             disarmButtonFlashTween = scene.tweens.add({
-                targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean), // Use valid targets
-                alpha: 0.2, // Target alpha for the tween (will yoyo back from this to current alpha) - More pronounced
-                duration: 300, // Slightly slower flash for better observation
-                yoyo: true,
-                repeat: -1
+                targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
+                alpha: { from: 0.5, to: 1 }, // fade in
+                duration: 500,
+                repeat: -1                   // loop continuously
             });
         } else {
             // Logic for when isEnabled is false (button is disabled)
             // The disarmButtonFlashTween was already stopped at the beginning of this function.
-            disarmButtonIcon.setAlpha(0); // Make icon transparent
-            disarmButtonIcon.setInteractive(); // Remove hand cursor, default interaction
+            disarmButtonIcon.setAlpha(0)                        // hide icon
+                            .setDisplaySize(UI_SIZE, UI_SIZE);  // restore default size
+            disarmButtonIcon.setInteractive();                  // Remove hand cursor
 
             if (disarmButtonBorder) {
-                disarmButtonBorder.setAlpha(0.5); // Set border to its 'disabled' alpha
-                if (disarmButtonBorder.input) { // Reset cursor for inactive border
+                disarmButtonBorder.setAlpha(0.5)                // disabled look
+                                   .setScale(1);                // restore default size
+                if (disarmButtonBorder.input) {                 // Reset cursor for inactive border
                     disarmButtonBorder.input.cursor = '';
                 }
             }
