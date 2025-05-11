@@ -91,13 +91,13 @@ export function createGameUI() {
     const scene = getScene();
     if (!scene) return;
 
-    scoreText = scene.add.text(16, 16, 'Score: 0', { 
+    scoreText = scene.add.text(16, 16, 'Scor: 0', { 
         fontSize: '24px', 
         fill: '#FFFFFF', 
         stroke: '#000000',
         strokeThickness: 3 
     });
-    levelText = scene.add.text(16, 40, 'Level: 1', { 
+    levelText = scene.add.text(16, 40, 'Nivel: 1', { 
         fontSize: '20px', 
         fill: '#FFFFFF',
         stroke: '#000000',
