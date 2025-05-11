@@ -95,6 +95,9 @@ function preload() {
 }
 
 function create() {
+    gameStarted = false;
+    gameOver = false;
+
     // Initialize UIManager
     UIManager.initUIManager(this);
 
