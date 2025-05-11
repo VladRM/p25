@@ -316,7 +316,7 @@ export function showWinScreen() {
     clearAllMessages();
 
     winTextInternal = scene.add.text(
-        GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
+        GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Felicitari, ai ajuns cu bine la vot!',
         { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
     ).setOrigin(0.5).setDepth(201);
     scene.children.bringToTop(winTextInternal);
