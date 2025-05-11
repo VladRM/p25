@@ -468,7 +468,7 @@ function startGame() {
                         targets: animIcon,
                         alpha: 0,
                         y: animIcon.y - 20, // Move upwards by 20 pixels
-                        duration: 750,      // Animation duration in ms
+                        duration: 1500,      // Animation duration in ms
                         ease: 'Power1',
                         onComplete: () => {
                             // Ensure icon still exists and is part of the scene before destroying
@@ -483,7 +483,7 @@ function startGame() {
                     scene.tweens.add({
                         targets: animIcon,
                         alpha: 0,
-                        duration: 750,
+                        duration: 1500,
                         ease: 'Power1',
                         onComplete: () => {
                             if (animIcon && animIcon.scene) {
