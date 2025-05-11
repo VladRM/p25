@@ -31,7 +31,7 @@ const MESSAGE_VISIBLE_DURATION = 3000;
 let sceneRef; // Reference to the main game scene
 
 // UI Element References
-let startScreenText, startScreenOverlay;
+let startScreenText, startScreenOverlay, startScreenInstructionsText;
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal, winTextBackground; // Added background for win text
@@ -63,16 +63,22 @@ export function createStartScreen() {
         .setOrigin(0, 0)
         .setDepth(50);
 
-    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Click / Tap to Start', {
+    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Click / Tap to Start', {
         fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
+    }).setOrigin(0.5).setDepth(51);
+
+    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click or Press SPACE to Jump\nPress the button on the top right to free voters', {
+        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center'
     }).setOrigin(0.5).setDepth(51);
 }
 
 export function destroyStartScreen() {
     if (startScreenText) startScreenText.destroy();
     if (startScreenOverlay) startScreenOverlay.destroy();
+    if (startScreenInstructionsText) startScreenInstructionsText.destroy();
     startScreenText = null;
     startScreenOverlay = null;
+    startScreenInstructionsText = null;
 }
 
 export function createGameUI() {
