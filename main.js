@@ -55,6 +55,7 @@ let enemiesGroup;
 let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
 let consecutiveEnemiesSpawned = 0;
 let consecutiveTrapsSpawned = 0;
+let freedCharactersCount = 0; // Add this line
 // Scene properties for the dynamic disarm button
 // disarmButtonBorder, disarmButtonIcon are now managed by UIManager
 let currentTargetableTrap; // This remains as it's game logic state
