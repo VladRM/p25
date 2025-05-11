@@ -363,18 +363,9 @@ export function showWinScreen() {
     const winMessageString = 'Felicitari, ai ajuns cu bine la vot!';
     const textStyle = {
         fontSize: '28px', // Reduced font size
-        fill: '#28a745', // A vibrant green
+        fill: '#006400', // Dark Green
         fontStyle: 'bold',
-        stroke: '#FFFFFF',
-        strokeThickness: 6,
-        shadow: {
-            offsetX: 2,
-            offsetY: 2,
-            color: '#000000',
-            blur: 4,
-            stroke: true,
-            fill: true
-        },
+        // Removed stroke and shadow
         align: 'center' // Ensure text is centered if it wraps
     };
 
@@ -395,9 +386,9 @@ export function showWinScreen() {
         winTextBackground.destroy(); // Destroy if already exists
     }
     winTextBackground = scene.add.graphics({ x: boxX, y: boxY });
-    winTextBackground.fillStyle(0x000000, 0.65); // Semi-transparent black background
+    winTextBackground.fillStyle(0xffffff, 0.8); // White background with 80% opacity
     winTextBackground.fillRoundedRect(0, 0, boxWidth, boxHeight, BORDER_RADIUS);
-    winTextBackground.lineStyle(BORDER_W, 0xffffff, 1); // White border
+    winTextBackground.lineStyle(BORDER_W, 0x000000, 1); // Black border
     winTextBackground.strokeRoundedRect(0, 0, boxWidth, boxHeight, BORDER_RADIUS);
     winTextBackground.setDepth(200); // Background behind text
 
