@@ -41,15 +41,29 @@ export class TrapSpawner {
 
         // Add characters inside the trap
         const charScale = 0.5;
-        const charYOffset = 0; // Adjust if needed
-        const adventurerChar = this.scene.add.sprite(trap.x - 25, trap.y + charYOffset, 'adventurer_hurt')
+        const trapRectangleHeight = height; // Height of the invisible trap rectangle
+
+        const adventurerChar = this.scene.add.sprite(trap.x - 25, trap.y, 'adventurer_hurt') // Initial Y centered with trap
             .setScale(charScale)
             .setTint(0xaaaaaa)
             .setDepth(trap.depth + 1);
-        const femaleChar = this.scene.add.sprite(trap.x + 25, trap.y + charYOffset, 'female_hurt')
+        // Calculate Y offset for the adventurer character to place its feet on the ground.
+        // The character's sprite origin is (0.5, 0.5).
+        // groundTopY = trap.y + trapRectangleHeight / 2. Feet should be at groundTopY.
+        // So, target adventurerChar.y = groundTopY - adventurerChar.displayHeight / 2.
+        // Expressed relative to trap.y: adventurerChar.y = trap.y + (trapRectangleHeight / 2 - adventurerChar.displayHeight / 2).
+        const adventurerYOffset = (trapRectangleHeight / 2) - (adventurerChar.displayHeight / 2);
+        adventurerChar.y = trap.y + adventurerYOffset; // Apply the calculated Y position
+        trap.setData('adventurerYOffset', adventurerYOffset); // Store offset for updates
+
+        const femaleChar = this.scene.add.sprite(trap.x + 25, trap.y, 'female_hurt') // Initial Y centered with trap
             .setScale(charScale)
             .setTint(0xaaaaaa)
             .setDepth(trap.depth + 1);
+        // Calculate Y offset similarly for the female character.
+        const femaleYOffset = (trapRectangleHeight / 2) - (femaleChar.displayHeight / 2);
+        femaleChar.y = trap.y + femaleYOffset; // Apply the calculated Y position
+        trap.setData('femaleYOffset', femaleYOffset); // Store offset for updates
 
         trap.setData('adventurerChar', adventurerChar);
         trap.setData('femaleChar', femaleChar);
@@ -81,11 +95,15 @@ export class TrapSpawner {
             // Update character positions to follow the trap
             if (adventurerChar) {
                 adventurerChar.x = trap.x - 25;
-                adventurerChar.y = trap.y; // Assuming charYOffset was 0 or handled by sprite's origin
+                const adventurerYOffset = trap.getData('adventurerYOffset');
+                // Ensure offset is a number; default to 0 if not found (should always be found).
+                adventurerChar.y = trap.y + (typeof adventurerYOffset === 'number' ? adventurerYOffset : 0);
             }
             if (femaleChar) {
                 femaleChar.x = trap.x + 25;
-                femaleChar.y = trap.y; // Assuming charYOffset was 0 or handled by sprite's origin
+                const femaleYOffset = trap.getData('femaleYOffset');
+                // Ensure offset is a number; default to 0 if not found.
+                femaleChar.y = trap.y + (typeof femaleYOffset === 'number' ? femaleYOffset : 0);
             }
 
             // Check if trap is off-screen to the left
