@@ -28,7 +28,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 2074 },
-            debug: false //true
+            debug: true //false
         }
     },
     scene: { preload, create, update }
