@@ -1,4 +1,5 @@
 import Enemy from './enemy.js';
+import { displayMessage } from './uiManager.js';
 // gameSpeed is not directly used in this file anymore for enemy velocity, it's handled in Enemy.js
 // import { gameSpeed } from './main.js';
 
@@ -87,8 +88,8 @@ export class ObstacleSpawner {
                 gained += 1;
                 ob.setData('isScorable', false);
                 // Display message for avoiding enemy
-                if (this.scene.displayGameMessage && ob.message_avoided) {
-                    this.scene.displayGameMessage(ob.message_avoided);
+                if (ob.message_avoided) {
+                    displayMessage(ob.message_avoided);
                 }
             }
         });
