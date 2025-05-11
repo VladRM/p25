@@ -10,7 +10,7 @@ const UI_PAD = 10;
 
 // Message display constants
 const MESSAGE_X_CENTER = GAME_WIDTH / 2;
-const MESSAGE_Y_BOTTOM = 30; // Note: Messages appear 30px from bottom. Progress bar will be below this area.
+const MESSAGE_Y_BOTTOM = 50; // Note: Messages appear 50px from bottom. Progress bar will be below this area. // Increased by 20
 
 // Progress Bar Constants
 const PROGRESS_BAR_HEIGHT = 8;
@@ -21,7 +21,7 @@ const PROGRESS_BAR_FG_COLOR = 0x006400; // Dark Green, same as win text
 const PROGRESS_BAR_BORDER_COLOR = 0xAAAAAA; // Medium grey for border (used for BG border)
 const PROGRESS_BAR_BORDER_THICKNESS = 1; // Thickness for borders
 const PROGRESS_BAR_DEPTH = 100; // Render depth
-const MESSAGE_Y_TOP = 10;
+const MESSAGE_Y_TOP = 30; // Increased by 20
 const MESSAGE_Y_SPACING = MESSAGE_Y_BOTTOM - MESSAGE_Y_TOP;
 const MESSAGE_FADE_IN_DURATION = 250;
 const MESSAGE_FADE_OUT_DURATION = 500;
@@ -389,7 +389,7 @@ export function displayMessage(text) {
 
     // Create and display new message
     const newMessage = scene.add.text(MESSAGE_X_CENTER, MESSAGE_Y_BOTTOM, text, {
-        fontSize: '18px', fill: '#FFFFFF', fontStyle: 'bold',
+        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'bold', // Increased fontSize
         stroke: '#000000', strokeThickness: 4, align: 'center'
     }).setOrigin(0.5, 0.5).setAlpha(0).setDepth(200);
     messageDisplay[0] = newMessage;
