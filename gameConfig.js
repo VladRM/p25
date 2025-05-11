@@ -1,6 +1,6 @@
 export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 360;
-export const DISPLAYED_GROUND_HEIGHT = 20;
+export const DISPLAYED_GROUND_HEIGHT = 40;
 export const GAME_SPEED = 250; // Base speed of the game
 export const ENEMY_SPAWN_DELAY = 1750; // Delay for combined spawner
 export const MAX_LEVELS = 5; // Number of levels before the voting booth appears
