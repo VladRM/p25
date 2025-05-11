@@ -400,7 +400,7 @@ export function showWinScreen(freedCharactersCount = 0) { // Add parameter with 
     const boxWidth = winTextInternal.width + 2 * textPadding;
     const boxHeight = winTextInternal.height + 2 * textPadding;
     const boxX = GAME_WIDTH / 2 - boxWidth / 2;
-    const boxY = (GAME_HEIGHT / 2 - 80) - boxHeight / 2; // Adjusted Y position for the box
+    const boxY = (GAME_HEIGHT / 2 - 60) - boxHeight / 2; // Adjusted Y position for the box
 
     // Create background graphics object
     if (winTextBackground) {
@@ -414,7 +414,7 @@ export function showWinScreen(freedCharactersCount = 0) { // Add parameter with 
     winTextBackground.setDepth(200); // Background behind text
 
     // Position the text in the center of the screen (which is also the center of the box)
-    winTextInternal.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80); // Adjusted Y position for the text
+    winTextInternal.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 60); // Adjusted Y position for the text
     winTextInternal.setVisible(true); // Make text visible now that background is drawn
 
     // Ensure text is on top of the new background
