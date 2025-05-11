@@ -10,9 +10,9 @@ export class TrapSpawner {
 
     spawnTrap() {
         const TRAP_TYPES = [
-            { name: 'populist', color: 0xff69b4, message_disarmed: "Populist trap disarmed placeholder", message_passed_by: "Populist trap passed by placeholder" }, // Pink
-            { name: 'obedience', color: 0x1e90ff, message_disarmed: "Obedience trap disarmed placeholder", message_passed_by: "Obedience trap passed by placeholder" }, // Blue
-            { name: 'darkweb', color: 0xffd700, message_disarmed: "Darkweb trap disarmed placeholder", message_passed_by: "Darkweb trap passed by placeholder" }  // Yellow (Dark Web of Lies)
+            { name: 'populist', color: 0xff69b4, message_disarmed: "Ai folosit gandirea critica!", message_passed_by: "Nu trece nepasator pe langa cei nehotarati!" }, // Pink
+            { name: 'obedience', color: 0x1e90ff, message_disarmed: "Bravo, le-ai aratat directia!", message_passed_by: "Ajuta-i pe cei dezorientati sa gaseasca calea!" }, // Blue
+            { name: 'darkweb', color: 0xffd700, message_disarmed: "Felicitari! Ai facut lumina si i-ai ajutat sa se decida!", message_passed_by: "Nu-i lasa pe apropiati in intuneric!" }  // Yellow (Dark Web of Lies)
         ];
         let selectedTrapType;
         do {
