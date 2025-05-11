@@ -35,7 +35,7 @@ let mainTitleText, subTitleText, startScreenText, startScreenOverlay, howToPlayT
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal, winTextBackground; // Added background for win text
-let disarmButtonBorder, disarmButtonIcon;
+let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween;
 let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
 let uiButtonsCollection = []; // To store buttons that need to be hidden/disabled on game over
@@ -223,19 +223,43 @@ export function createDisarmButton(onClickCallback) {
 }
 
 export function updateDisarmButtonState(iconKey, isEnabled) {
+    const scene = getScene();
+    if (!scene) return;
+
+    // Stop any existing tween
+    if (disarmButtonFlashTween) {
+        disarmButtonFlashTween.stop();
+        disarmButtonFlashTween = null;
+    }
+
     if (disarmButtonIcon) {
         if (isEnabled && iconKey) {
-            disarmButtonIcon.setTexture(iconKey).setAlpha(1);
+            disarmButtonIcon.setTexture(iconKey);
             disarmButtonIcon.setInteractive({ useHandCursor: true });
+            // Start flashing tween
+            disarmButtonFlashTween = scene.tweens.add({
+                targets: [disarmButtonIcon, disarmButtonBorder],
+                alpha: { start: 1, to: 0.5 },
+                duration: 500,
+                yoyo: true,
+                repeat: -1
+            });
         } else {
             disarmButtonIcon.setAlpha(0); // Icon transparent
             disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
         }
     }
     if (disarmButtonBorder) {
-        disarmButtonBorder.setAlpha(isEnabled ? 1 : 0.5);
-        if (disarmButtonBorder.input) { // Ensure input is initialized
-            disarmButtonBorder.input.cursor = isEnabled ? 'hand' : '';
+        if (isEnabled) {
+            // Alpha is handled by the tween
+            if (disarmButtonBorder.input) {
+                disarmButtonBorder.input.cursor = 'hand';
+            }
+        } else {
+            disarmButtonBorder.setAlpha(0.5);
+            if (disarmButtonBorder.input) { // Ensure input is initialized
+                disarmButtonBorder.input.cursor = '';
+            }
         }
     }
 }
@@ -521,6 +545,10 @@ export function resetUIForNewGame() {
     uiButtonsCollection = [];
     // Ensure disarm button elements are reset if they persist across scenes/restarts
     // (though they are typically recreated in startGame)
+    if (disarmButtonFlashTween) {
+        disarmButtonFlashTween.stop();
+        disarmButtonFlashTween = null;
+    }
     if (disarmButtonIcon) {
         disarmButtonIcon.setAlpha(0);
         if (disarmButtonIcon.scene) { // Only call setInteractive if part of a scene
