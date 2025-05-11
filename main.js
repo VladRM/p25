@@ -184,10 +184,10 @@ function startGame() {
             const femaleChar = trapToDeactivate.getData('femaleChar');
 
             if (adventurerChar) {
-                adventurerChar.clearTint().play('adventurer_cheer_anim');
+                adventurerChar.setVisible(false);
             }
             if (femaleChar) {
-                femaleChar.clearTint().play('female_cheer_anim');
+                femaleChar.setVisible(false);
             }
 
             const trapTypeData = trapToDeactivate.getData('trapType');
