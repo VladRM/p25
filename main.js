@@ -182,6 +182,7 @@ function displayGameMessage(text) {
         scene.tweens.add({
             targets: oldBottomMessage,
             y: MESSAGE_Y_TOP,
+            alpha: 0.5, // Fade to 50% alpha
             duration: MESSAGE_SCROLL_UP_DURATION,
             ease: 'Power1'
         });
