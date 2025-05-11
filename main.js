@@ -180,14 +180,18 @@ function startGame() {
                 trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
             }
 
-            const adventurerChar = trapToDeactivate.getData('adventurerChar');
-            const femaleChar = trapToDeactivate.getData('femaleChar');
-
-            if (adventurerChar) {
-                adventurerChar.clearTint().play('adventurer_cheer_anim');
-            }
-            if (femaleChar) {
-                femaleChar.clearTint().play('female_cheer_anim');
+            const charactersInTrap = trapToDeactivate.getData('characters');
+            if (charactersInTrap && Array.isArray(charactersInTrap)) {
+                charactersInTrap.forEach(charData => {
+                    if (charData.sprite) {
+                        charData.sprite.clearTint();
+                        if (charData.charTypeKey === 'adventurer_hurt') {
+                            charData.sprite.play('adventurer_cheer_anim');
+                        } else if (charData.charTypeKey === 'female_hurt') {
+                            charData.sprite.play('female_cheer_anim');
+                        }
+                    }
+                });
             }
 
             const trapTypeData = trapToDeactivate.getData('trapType');
