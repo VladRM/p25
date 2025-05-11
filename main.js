@@ -107,6 +107,7 @@ function preload() {
     this.load.audio('level_up',    'res/snd/next-level.mp3');
     this.load.audio('game_win',    'res/snd/game-win.mp3');
     this.load.audio('game_over',   'res/snd/game-over.mp3');
+    this.load.audio('yay',         'res/snd/yay.mp3'); // Assuming 'yay.mp3' is the sound file
 }
 
 function create() {
@@ -230,6 +231,8 @@ function startGame() {
             if (trapToDeactivate.getData('message_disarmed')) {
                 UIManager.displayMessage(trapToDeactivate.getData('message_disarmed'));
             }
+
+            scene.sound.play('yay', { volume: 0.6 }); // Play "yay" sound
 
             score += 10;
             UIManager.updateScoreText(score);
