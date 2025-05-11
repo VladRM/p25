@@ -24,7 +24,7 @@ let sceneRef; // Reference to the main game scene
 let startScreenText, startScreenOverlay;
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
-let winTextInternal; // Renamed to avoid conflict if main.js had a 'winText'
+let winTextInternal, winTextBackground; // Added background for win text
 let disarmButtonBorder, disarmButtonIcon;
 let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
@@ -360,24 +360,53 @@ export function showWinScreen() {
     // Clear any active game messages first
     clearAllMessages();
 
-    winTextInternal = scene.add.text(
-        GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Felicitari, ai ajuns cu bine la vot!',
-        {
-            fontSize: '40px',
-            fill: '#28a745', // A vibrant green
-            fontStyle: 'bold',
-            stroke: '#FFFFFF',
-            strokeThickness: 6,
-            shadow: {
-                offsetX: 2,
-                offsetY: 2,
-                color: '#000000',
-                blur: 4,
-                stroke: true,
-                fill: true
-            }
-        }
-    ).setOrigin(0.5).setDepth(201);
+    const winMessageString = 'Felicitari, ai ajuns cu bine la vot!';
+    const textStyle = {
+        fontSize: '28px', // Reduced font size
+        fill: '#28a745', // A vibrant green
+        fontStyle: 'bold',
+        stroke: '#FFFFFF',
+        strokeThickness: 6,
+        shadow: {
+            offsetX: 2,
+            offsetY: 2,
+            color: '#000000',
+            blur: 4,
+            stroke: true,
+            fill: true
+        },
+        align: 'center' // Ensure text is centered if it wraps
+    };
+
+    // Create text first to get its dimensions, initially invisible
+    winTextInternal = scene.add.text(0, 0, winMessageString, textStyle)
+        .setOrigin(0.5)
+        .setDepth(201) // Text on top of its background
+        .setVisible(false);
+
+    const textPadding = 20; // Padding around the text inside the box
+    const boxWidth = winTextInternal.width + 2 * textPadding;
+    const boxHeight = winTextInternal.height + 2 * textPadding;
+    const boxX = GAME_WIDTH / 2 - boxWidth / 2;
+    const boxY = GAME_HEIGHT / 2 - boxHeight / 2;
+
+    // Create background graphics object
+    if (winTextBackground) {
+        winTextBackground.destroy(); // Destroy if already exists
+    }
+    winTextBackground = scene.add.graphics({ x: boxX, y: boxY });
+    winTextBackground.fillStyle(0x000000, 0.65); // Semi-transparent black background
+    winTextBackground.fillRoundedRect(0, 0, boxWidth, boxHeight, BORDER_RADIUS);
+    winTextBackground.lineStyle(BORDER_W, 0xffffff, 1); // White border
+    winTextBackground.strokeRoundedRect(0, 0, boxWidth, boxHeight, BORDER_RADIUS);
+    winTextBackground.setDepth(200); // Background behind text
+
+    // Position the text in the center of the screen (which is also the center of the box)
+    winTextInternal.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    winTextInternal.setVisible(true); // Make text visible now that background is drawn
+
+    // Ensure text is on top of the new background
+    scene.children.bringToTop(winTextBackground); // Should be redundant due to setDepth
     scene.children.bringToTop(winTextInternal);
 }
 
@@ -416,6 +445,11 @@ export function resetUIForNewGame() {
     }
     if (gameOverText) gameOverText.setVisible(false);
     if (restartText) restartText.setVisible(false);
+
+    if (winTextBackground && winTextBackground.scene) {
+        winTextBackground.destroy();
+        winTextBackground = null;
+    }
     if (winTextInternal && winTextInternal.scene) {
         winTextInternal.destroy();
         winTextInternal = null;
