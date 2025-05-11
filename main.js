@@ -303,6 +303,75 @@ function startGame() {
             if (trapToDeactivate.body) {
                 trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down (half of current speed)
             }
+
+            // --- Add disarm animation ---
+            const trapTypeData = trapToDeactivate.getData('trapType');
+            let iconKey = '';
+            if (typeof trapTypeData === 'string') {
+                const lowerTrapType = trapTypeData.toLowerCase();
+                if (lowerTrapType === 'populist') iconKey = 'icon_brain';
+                else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
+                else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+            }
+
+            if (iconKey) {
+                const iconDisplayHeight = 32; // Desired display size for the animation icon
+                const gap = 5; // Gap in pixels between trap top and icon bottom
+                const iconX = trapToDeactivate.x;
+                // Trap's origin is (0.5, 1), so trapToDeactivate.y is its bottom edge.
+                // trapToDeactivate.height is its actual height.
+                // Icon's origin is (0.5, 0.5) by default.
+                // Position icon's center iconDisplayHeight/2 + gap pixels above the trap's top edge.
+                const iconY = (trapToDeactivate.y - trapToDeactivate.height) - (iconDisplayHeight / 2) - gap;
+
+                const animIcon = scene.add.image(iconX, iconY, iconKey)
+                    .setDisplaySize(iconDisplayHeight, iconDisplayHeight)
+                    .setDepth(10); // Ensure icon is rendered on top of the trap
+
+                scene.physics.add.existing(animIcon);
+
+                if (animIcon.body) {
+                    animIcon.body.setAllowGravity(false);
+                    // Match the trap's (new, slower) horizontal velocity
+                    if (trapToDeactivate.body) {
+                        animIcon.body.setVelocityX(trapToDeactivate.body.velocity.x);
+                    } else {
+                        // Should not happen, but as a fallback, don't move horizontally
+                        animIcon.body.setVelocityX(0);
+                    }
+
+                    // Tween to fade out, move up, and then destroy
+                    scene.tweens.add({
+                        targets: animIcon,
+                        alpha: 0,
+                        y: animIcon.y - 20, // Move upwards by 20 pixels
+                        duration: 750,      // Animation duration in ms
+                        ease: 'Power1',
+                        onComplete: () => {
+                            // Ensure icon still exists and is part of the scene before destroying
+                            if (animIcon && animIcon.scene) {
+                                animIcon.destroy();
+                            }
+                        }
+                    });
+                } else {
+                    // Fallback if physics body couldn't be added (e.g. scene shutting down)
+                    // Just fade out and destroy without physics-based movement
+                    scene.tweens.add({
+                        targets: animIcon,
+                        alpha: 0,
+                        duration: 750,
+                        ease: 'Power1',
+                        onComplete: () => {
+                            if (animIcon && animIcon.scene) {
+                                animIcon.destroy();
+                            }
+                        }
+                    });
+                }
+            }
+            // --- End disarm animation ---
+
             score += 10;
             scoreText.setText('Score: ' + score);
 
