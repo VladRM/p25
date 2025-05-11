@@ -17,9 +17,9 @@ const PROGRESS_BAR_HEIGHT = 8;
 const PROGRESS_BAR_PADDING_X = 20; // Padding from left/right edges of the screen
 const PROGRESS_BAR_PADDING_Y_BOTTOM = 5; // Padding from the absolute bottom edge of the screen
 const PROGRESS_BAR_BG_COLOR = 0x222222; // Darker grey for background
-const PROGRESS_BAR_FG_COLOR = 0x00FF00; // Brighter green for foreground (progress fill)
-const PROGRESS_BAR_BORDER_COLOR = 0xAAAAAA; // Medium grey for border
-const PROGRESS_BAR_BORDER_THICKNESS = 1;
+const PROGRESS_BAR_FG_COLOR = 0x006400; // Dark Green, same as win text
+const PROGRESS_BAR_BORDER_COLOR = 0xAAAAAA; // Medium grey for border (used for BG border)
+const PROGRESS_BAR_BORDER_THICKNESS = 1; // Thickness for borders
 const PROGRESS_BAR_DEPTH = 100; // Render depth
 const MESSAGE_Y_TOP = 10;
 const MESSAGE_Y_SPACING = MESSAGE_Y_BOTTOM - MESSAGE_Y_TOP;
@@ -546,4 +546,10 @@ export function updateProgressBar(progressPercent) { // progressPercent is a val
     progressBarFg.clear(); // Clear previous drawing of the foreground
     progressBarFg.fillStyle(PROGRESS_BAR_FG_COLOR, 1);
     progressBarFg.fillRect(PROGRESS_BAR_PADDING_X, barY, currentProgressWidth, PROGRESS_BAR_HEIGHT);
+
+    // Add a black border to the foreground fill
+    if (currentProgressWidth > 0) { // Only draw border if there's progress
+        progressBarFg.lineStyle(PROGRESS_BAR_BORDER_THICKNESS, 0x000000, 1); // Black border, 1px thick
+        progressBarFg.strokeRect(PROGRESS_BAR_PADDING_X, barY, currentProgressWidth, PROGRESS_BAR_HEIGHT);
+    }
 }
