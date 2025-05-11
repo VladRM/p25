@@ -244,19 +244,19 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
 
     if (disarmButtonIcon) {
         if (isEnabled && iconKey) {
-            const borderScale = (BORDER_TOTAL + 10) / BORDER_TOTAL;          // enlarge by 5 px per side
+            const BORDER_POP_SCALE_START = 0.9;                               // start slightly smaller
             /* ---------- prepare icon ---------- */
             disarmButtonIcon.setTexture(iconKey)
                              .setDisplaySize(UI_SIZE + 10, UI_SIZE + 10)      // enlarge by 5 px per side
                              .setAlpha(0)                                     // start invisible
-                             .setScale(0.9);                                  // pop-in effect – grow to 1
+                             .setScale(BORDER_POP_SCALE_START);               // pop-in effect – grow to 1
             disarmButtonIcon.setInteractive({ useHandCursor: true });
 
             /* ---------- prepare border ---------- */
             if (disarmButtonBorder) {
                 disarmButtonBorder
                     .setAlpha(0)                                             // start invisible
-                    .setScale(borderScale * 0.9);                            // pop-in effect – grow to full
+                    .setScale(BORDER_POP_SCALE_START);                       // pop-in effect – grow to 1
                 if (disarmButtonBorder.input) {
                     disarmButtonBorder.input.cursor = 'hand';
                 }
@@ -264,10 +264,9 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
 
             /* ---------- fade-in & grow ---------- */
             scene.tweens.add({
-                targets: [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
-                alpha : { from: 0, to: 1 },
-                // Scale each target to its final value
-                scale : (target) => (target === disarmButtonBorder ? borderScale : 1),
+                targets : [disarmButtonIcon, disarmButtonBorder].filter(Boolean),
+                alpha   : { from: 0, to: 1 },
+                scale   : 1,                                                 // both reach natural size
                 duration: 250,
                 ease    : 'Power1',
                 onComplete: () => {
