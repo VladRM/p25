@@ -59,28 +59,24 @@ export function createStartScreen() {
     const scene = getScene();
     if (!scene) return;
 
-    startScreenOverlay = scene.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5)
+    startScreenOverlay = scene.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.25)
         .setOrigin(0, 0)
         .setDepth(50);
 
     mainTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, 'La Vot!', {
-        fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center'
+        fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evita propaganda, elibereaza votanti si ajungi la cabina de vot.', {
-        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'italic', align: 'center'
+    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evita propaganda, elibereaza votanti si mergi la vot.', {
+        fontSize: '24px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
     startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 'Click / Tap pentru a incepe jocul', {
-        fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
+        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    howToPlayTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, 'Cum se joaca', {
-        fontSize: '22px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center'
-    }).setOrigin(0.5).setDepth(51);
-
-    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 75, 'Click / Tap sau SPACE pentru a sari\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
-        fontSize: '18px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center'
+    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 75, 'Click / Tap sau SPACE pentru a sari\n\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
+        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 }
 
