@@ -31,7 +31,7 @@ export class ObstacleSpawner {
         const originalHeight = tempSprite.height;
 
         // Calculate scale to fit within a 128x128 box while maintaining aspect ratio
-        const maxDim = 128;
+        const maxDim = 96;
         let chosenScale = 1; // Default scale if dimensions are 0
         if (originalWidth > 0 && originalHeight > 0) {
             const scaleX = maxDim / originalWidth;
