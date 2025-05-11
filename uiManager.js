@@ -72,12 +72,24 @@ export function createGameUI() {
     levelText = scene.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
 
     // Initialize gameOverText and restartText (hidden by default)
-    gameOverText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
-        fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
-    }).setOrigin(0.5).setVisible(false).setDepth(201);
-    restartText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click / Tap to Restart', {
-        fontSize: '24px', fill: '#000000'
-    }).setOrigin(0.5).setVisible(false).setDepth(201);
+    gameOverText = scene.add.text(0, 0, 'Game Over!', { // Position will be set in showGameOverScreen
+        fontSize: '48px',
+        fill: '#FF0000', // Strong Red
+        fontStyle: 'bold',
+        stroke: '#FFFFFF',
+        strokeThickness: 6,
+        shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, stroke: true, fill: true },
+        align: 'center'
+    }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
+
+    restartText = scene.add.text(0, 0, 'Click / Tap to Restart', { // Position will be set in showGameOverScreen
+        fontSize: '24px',
+        fill: '#DDDDDD', // Light grey/white for contrast on dark box
+        fontStyle: 'normal',
+        stroke: '#000000',
+        strokeThickness: 3,
+        align: 'center'
+    }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
 }
 
 export function updateScoreText(newScore) {
@@ -299,13 +311,46 @@ export function displayMessage(text) {
 }
 
 export function showGameOverScreen() {
-    if (gameOverText && restartText) {
-        gameOverText.setVisible(true);
-        sceneRef.children.bringToTop(gameOverText);
-        restartText.setVisible(true);
-        sceneRef.children.bringToTop(restartText);
-    }
+    const scene = getScene();
+    if (!scene || !gameOverText || !restartText) return;
+
     clearAllMessages();
+
+    // Ensure texts are visible to get correct dimensions if not already set by style
+    // (though dimensions are primarily from font style)
+    gameOverText.setVisible(true);
+    restartText.setVisible(true);
+
+    const textPadding = 20; // Padding around the text inside the box
+    const lineSpacing = 10; // Space between "Game Over!" and "Restart"
+
+    const requiredWidth = Math.max(gameOverText.width, restartText.width) + 2 * textPadding;
+    const requiredHeight = gameOverText.height + restartText.height + lineSpacing + 2 * textPadding;
+
+    const boxX = GAME_WIDTH / 2 - requiredWidth / 2;
+    const boxY = GAME_HEIGHT / 2 - requiredHeight / 2;
+
+    if (gameOverTextBackground) {
+        gameOverTextBackground.destroy(); // Destroy if already exists
+    }
+    gameOverTextBackground = scene.add.graphics({ x: boxX, y: boxY });
+    gameOverTextBackground.fillStyle(0x000000, 0.65); // Semi-transparent black background
+    gameOverTextBackground.fillRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
+    gameOverTextBackground.lineStyle(BORDER_W, 0xffffff, 1); // White border
+    gameOverTextBackground.strokeRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
+    gameOverTextBackground.setDepth(200); // Background behind text
+
+    // Position texts within the box
+    const gameOverY = boxY + textPadding + gameOverText.height / 2;
+    const restartY = gameOverY + gameOverText.height / 2 + lineSpacing + restartText.height / 2;
+
+    gameOverText.setPosition(GAME_WIDTH / 2, gameOverY);
+    restartText.setPosition(GAME_WIDTH / 2, restartY);
+
+    // Ensure texts are on top of the new background
+    scene.children.bringToTop(gameOverTextBackground); // Should be redundant due to setDepth
+    scene.children.bringToTop(gameOverText);
+    scene.children.bringToTop(restartText);
 }
 
 export function showWinScreen() {
