@@ -180,7 +180,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
     if (disarmButtonBorder) {
         disarmButtonBorder.setAlpha(isEnabled ? 1 : 0.5);
         if (disarmButtonBorder.input) { // Ensure input is initialized
-            disarmButtonBorder.input.cursor = isEnabled ? 'pointer' : '';
+            disarmButtonBorder.input.cursor = isEnabled ? 'hand' : '';
         }
     }
 }
