@@ -104,7 +104,7 @@ export function createGameUI() {
     if (!scene) return;
 
     scoreText = scene.add.text(10, 10, 'Scor: 0', { 
-        fontSize: '22px', 
+        fontSize: '18px', 
         fill: '#FFFFFF', 
         stroke: '#000000',
         strokeThickness: 3 
