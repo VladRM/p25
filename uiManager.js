@@ -31,7 +31,7 @@ const MESSAGE_VISIBLE_DURATION = 3000;
 let sceneRef; // Reference to the main game scene
 
 // UI Element References
-let startScreenText, startScreenOverlay, startScreenInstructionsText;
+let startScreenText, startScreenOverlay, howToPlayTitleText, startScreenInstructionsText;
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground;
 let winTextInternal, winTextBackground; // Added background for win text
@@ -63,11 +63,15 @@ export function createStartScreen() {
         .setOrigin(0, 0)
         .setDepth(50);
 
-    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Click / Tap pentru a incepe jocul', {
+    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Click / Tap pentru a incepe jocul', {
         fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(51);
 
-    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Cum se joaca\nClick / Tap sau SPACE pentru a sari\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
+    howToPlayTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, 'Cum se joaca', {
+        fontSize: '22px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center'
+    }).setOrigin(0.5).setDepth(51);
+
+    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 45, 'Click / Tap sau SPACE pentru a sari\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
         fontSize: '18px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center'
     }).setOrigin(0.5).setDepth(51);
 }
@@ -75,9 +79,11 @@ export function createStartScreen() {
 export function destroyStartScreen() {
     if (startScreenText) startScreenText.destroy();
     if (startScreenOverlay) startScreenOverlay.destroy();
+    if (howToPlayTitleText) howToPlayTitleText.destroy();
     if (startScreenInstructionsText) startScreenInstructionsText.destroy();
     startScreenText = null;
     startScreenOverlay = null;
+    howToPlayTitleText = null;
     startScreenInstructionsText = null;
 }
 
