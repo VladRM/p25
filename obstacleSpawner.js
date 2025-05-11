@@ -19,8 +19,6 @@ export class ObstacleSpawner {
     }
 
     spawnObstacle () {
-        // console.log(`[ObstacleSpawner] spawnObstacle called. groundTopY: ${this.groundTopY}`); // Removed log
-        
         let enemyTypeData;
         do {
             enemyTypeData = Phaser.Utils.Array.GetRandom(ENEMY_TYPES);
@@ -75,13 +73,6 @@ export class ObstacleSpawner {
         this.group.add(enemy);
         this.lastEnemyType = enemyTypeData.type; // Remember last enemy type
         enemy.initializePhysics();
-
-        // console.log(`[ObstacleSpawner] Enemy ${enemyTypeData.type} added: parentContainer=${enemy.parentContainer ? enemy.parentContainer.constructor.name : 'null'}, group.length=${this.group.getLength()}`); // Removed log
-        if (enemy.body) {
-             // console.log(`[ObstacleSpawner] Enemy body in group: pos=(${enemy.body.x.toFixed(2)}, ${enemy.body.y.toFixed(2)}), size=(${enemy.body.width}x${enemy.body.height}), velX=${enemy.body.velocity.x}`); // Removed log
-        } else {
-             // console.error('[ObstacleSpawner] Enemy added to group but has NO BODY? This should not happen if group is a physics group.'); // Removed log
-        }
     }
 
     /* update returns score gained this frame */

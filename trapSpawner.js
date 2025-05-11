@@ -47,13 +47,6 @@ export class TrapSpawner {
         } else {
             // console.error('[TrapSpawner] Trap added to group but has NO BODY! Cannot configure physics.'); // Removed log
         }
-
-        // console.log(`[TrapSpawner] Trap created: x=${trap.x}, y=${trap.y}, width=${trap.width}, height=${trap.height}, color=${trap.fillColor.toString(16)}, visible=${trap.visible}, depth=${trap.depth}, active=${trap.getData('active')}`); // Removed log
-        if (trap.body) {
-            // console.log(`[TrapSpawner] Trap body (final): x=${trap.body.x}, y=${trap.body.y}, width=${trap.body.width}, height=${trap.body.height}, velocityX=${trap.body.velocity.x}`); // Removed log
-        } else {
-            // console.error('[TrapSpawner] Trap has no physics body after being added to group!'); // Removed log
-        }
     }
 
     update(dt, player) {

@@ -529,7 +529,6 @@ function startGame() {
     };
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
-    this.physics.add.overlap(player, trapsGroup, hitTrap, null, this); // Added overlap for traps
 }
 
 
@@ -575,17 +574,8 @@ function update(time, delta) {
             'voting_booth_img'
         ).setOrigin(0.5, 1); // Origin at bottom-center for correct ground placement
 
-        // Scale the booth to be proportionally correct with the player.
-        // Previous height was 180 (a bit too tall), previous width was implicitly scaled (much too wide).
-        // New dimensions:
         votingBooth.displayHeight = 128;
         votingBooth.displayWidth = 100;
-
-        // The physics body should automatically adjust to displaySize.
-        // If collision issues arise, we might need to explicitly call:
-        // votingBooth.body.setSize(votingBooth.displayWidth, votingBooth.displayHeight);
-        // and potentially .setOffset() if the origin is not centered on the new body.
-
         votingBooth.body.setAllowGravity(false);
         votingBooth.body.setVelocityX(-effectiveSpeed);
 
@@ -688,12 +678,6 @@ function hitObstacle(playerGO, obstacleGO) {
     // trapSpawner.stop(); // No longer needed as timer is external
 }
 
-function hitTrap(playerGO, trapGO) {
-    // This function is called when the player's physics body overlaps with a trap's physics body.
-    // Currently, player-trap collision itself has no direct game consequence (e.g., damage).
-    // The "trap passed by" message is now handled exclusively by trapSpawner.js's update method
-    // to ensure it's only shown when the trap has truly passed the player.
-}
 
 /* ---------------- WIN CONDITION ---------------- */
 function winGame(playerGO, boothGO) {
