@@ -1,3 +1,4 @@
+import * as UIManager from './uiManager.js';
 import { createStaticLayers } from './staticLayers.js';
 import { createPlayer, registerPlayerControls } from './player.js';
 import { ObstacleSpawner } from './obstacleSpawner.js';
@@ -13,11 +14,7 @@ import {
     ENEMY_TO_TRAP_RATIO
 } from './gameConfig.js';
 
-const UI_SIZE = 64;
-const BORDER_W = 2;
-const UI_BORDER_PAD = 6;
-const BORDER_RADIUS = 8;
-const BORDER_TOTAL = UI_SIZE + (BORDER_W + UI_BORDER_PAD) * 2;
+// UI Constants are now in uiManager.js
 
 const config = {
     type: Phaser.AUTO,
@@ -38,19 +35,17 @@ let scene;
 let player;
 let score = 0;
 let gameStarted = false;
-let startScreenText;
-let startScreenOverlay;
+// startScreenText and startScreenOverlay are now managed by UIManager
 
 /* ----- Level / speed management ----- */
 let level = 1;
 let currentSpeedScale = 1;          // 1.0 = base speed (level 1)
 let levelTimer;                     // 30-second timer for level-ups
-let levelText;
+// levelText managed by UIManager
 let votingBooth;                    // Rectangle that appears after level 5
-let scoreText;
+// scoreText managed by UIManager
 let gameOver = false;
-let gameOverText;
-let restartText;
+// gameOverText and restartText managed by UIManager
 let obstacleSpawner;
 let trapSpawner;
 let combinedSpawnerTimer; // New timer for combined spawning
@@ -59,15 +54,15 @@ let trapsGroup;
 let obstaclesGroup;
 let spawnVotingBoothPending = false;   // flag to add booth once enemies & traps are gone
 // Scene properties for the dynamic disarm button
-let disarmButtonBorder, disarmButtonIcon, currentTargetableTrap;
-let messageDisplay = [null, null]; // [bottomText, topText]
-let messageTimers = [null, null]; // Timers for [bottomText, topText]
+// disarmButtonBorder, disarmButtonIcon are now managed by UIManager
+let currentTargetableTrap; // This remains as it's game logic state
+// messageDisplay and messageTimers are now managed by UIManager
 
 
 new Phaser.Game(config);
 
 function preload() {
-    scene = this;
+    scene = this; // Keep scene reference for UIManager and other modules if they don't manage it themselves
 
     this.load.atlasXML('backgrounds_spritesheet', 'res/img/spritesheet-backgrounds-default.png', 'res/img/spritesheet-backgrounds-default.xml');
 
@@ -100,6 +95,9 @@ function preload() {
 }
 
 function create() {
+    // Initialize UIManager
+    UIManager.initUIManager(this);
+
     // Create static background layers first
     layers = createStaticLayers(this, {
         width: GAME_WIDTH,
@@ -107,173 +105,38 @@ function create() {
         displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
     });
 
-    // Add a semi-transparent overlay for the start screen
-    startScreenOverlay = this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5)
-        .setOrigin(0, 0)
-        .setDepth(50); // Ensure it's above background but below UI text
-
-    // Display Start Screen Text on top of the overlay
-    startScreenText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Click / Tap to Start', {
-        fontSize: '32px', fill: '#FFFFFF', fontStyle: 'bold'
-    }).setOrigin(0.5).setDepth(51); // Ensure text is above overlay
+    // Display Start Screen using UIManager
+    UIManager.createStartScreen();
+    // Game over and restart text will be created by UIManager when needed, or in its createGameUI.
 
     this.input.once('pointerdown', startGame, this);
     // Keyboard input for starting the game can also be added here if desired, e.g., spacebar
     // this.input.keyboard.once('keydown-SPACE', startGame, this);
-
-    // Initialize gameOverText and restartText here so they exist, but keep them invisible.
-    // They are made visible in hitObstacle.
-    gameOverText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Game Over!', {
-        fontSize: '48px', fill: '#FF0000', fontStyle: 'bold'
-    }).setOrigin(0.5).setVisible(false);
-    restartText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'Click / Tap to Restart', {
-        fontSize: '24px', fill: '#000000'
-    }).setOrigin(0.5).setVisible(false);
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
     this.input.on('pointerdown', () => { if (gameOver && !gameStarted) { /* Do nothing if start screen is active */ } else if (gameOver) { this.scene.restart(); } });
 }
 
-// Function to display game event messages
-function displayGameMessage(text) {
-    if (!scene || !gameStarted || gameOver) return; // Don't display messages if scene not ready, game not started, or game over
-
-    const MESSAGE_X_CENTER = GAME_WIDTH / 2;
-    const MESSAGE_Y_BOTTOM = 30; // Y for the newest (bottom) message
-    const MESSAGE_Y_TOP = 10;    // Y for the older (top) message
-    const MESSAGE_Y_SPACING = MESSAGE_Y_BOTTOM - MESSAGE_Y_TOP;
-    const MESSAGE_FADE_IN_DURATION = 250;
-    const MESSAGE_FADE_OUT_DURATION = 500;
-    const MESSAGE_SCROLL_UP_DURATION = 250;
-    const MESSAGE_VISIBLE_DURATION = 3000; // How long a message stays if not pushed out
-
-    // Clear existing timers for the slots that will be affected
-    if (messageTimers[1]) { // Top message timer
-        messageTimers[1].remove(false);
-        messageTimers[1] = null;
-    }
-    if (messageTimers[0]) { // Bottom message timer
-        messageTimers[0].remove(false);
-        messageTimers[0] = null;
-    }
-
-    // 1. Handle the current top message (messageDisplay[1])
-    if (messageDisplay[1]) {
-        const oldTopMessage = messageDisplay[1];
-        scene.tweens.add({
-            targets: oldTopMessage,
-            y: oldTopMessage.y - MESSAGE_Y_SPACING, // Scroll further up
-            alpha: 0,
-            duration: MESSAGE_FADE_OUT_DURATION,
-            ease: 'Power1',
-            onComplete: () => {
-                if (oldTopMessage && oldTopMessage.scene) oldTopMessage.destroy();
-            }
-        });
-    }
-    messageDisplay[1] = null;
-
-    // 2. Handle the current bottom message (messageDisplay[0]) - move it to top
-    if (messageDisplay[0]) {
-        const oldBottomMessage = messageDisplay[0];
-        messageDisplay[1] = oldBottomMessage; // Move to top slot
-
-        scene.tweens.add({
-            targets: oldBottomMessage,
-            y: MESSAGE_Y_TOP,
-            alpha: 0.5, // Fade to 50% alpha
-            duration: MESSAGE_SCROLL_UP_DURATION,
-            ease: 'Power1'
-        });
-
-        messageTimers[1] = scene.time.delayedCall(MESSAGE_VISIBLE_DURATION, () => {
-            if (messageDisplay[1] === oldBottomMessage && oldBottomMessage.scene) {
-                scene.tweens.add({
-                    targets: oldBottomMessage,
-                    alpha: 0,
-                    duration: MESSAGE_FADE_OUT_DURATION,
-                    ease: 'Power1',
-                    onComplete: () => {
-                        if (oldBottomMessage && oldBottomMessage.scene) oldBottomMessage.destroy();
-                        if (messageDisplay[1] === oldBottomMessage) messageDisplay[1] = null;
-                    }
-                });
-            }
-        });
-    }
-    messageDisplay[0] = null;
-
-    // 3. Create and display the new message in the bottom slot
-    const newMessage = scene.add.text(MESSAGE_X_CENTER, MESSAGE_Y_BOTTOM, text, {
-        fontSize: '18px', fill: '#FFFFFF', fontStyle: 'bold',
-        stroke: '#000000', strokeThickness: 4,
-        align: 'center'
-    }).setOrigin(0.5, 0.5).setAlpha(0).setDepth(200); // High depth, above game elements
-
-    messageDisplay[0] = newMessage;
-
-    scene.tweens.add({
-        targets: newMessage,
-        alpha: 1,
-        duration: MESSAGE_FADE_IN_DURATION,
-        ease: 'Power1'
-    });
-
-    messageTimers[0] = scene.time.delayedCall(MESSAGE_VISIBLE_DURATION, () => {
-        if (messageDisplay[0] === newMessage && newMessage.scene) {
-            scene.tweens.add({
-                targets: newMessage,
-                alpha: 0,
-                duration: MESSAGE_FADE_OUT_DURATION,
-                ease: 'Power1',
-                onComplete: () => {
-                    if (newMessage && newMessage.scene) newMessage.destroy();
-                    if (messageDisplay[0] === newMessage) messageDisplay[0] = null;
-                }
-            });
-        }
-    });
-}
+// displayGameMessage function is now in UIManager.js
 
 function startGame() {
     gameStarted = true;
-    if (startScreenText) startScreenText.destroy();
-    if (startScreenOverlay) startScreenOverlay.destroy(); // Remove the overlay
+    UIManager.destroyStartScreen();
 
     score = 0;
     gameOver = false;
     level = 1; // Reset level
     currentSpeedScale = 1; // Reset speed scale
 
-    // Static layers are already created in create(), no need to recreate
-    // layers = createStaticLayers(this, {
-    //     width: GAME_WIDTH,
-    //     height: GAME_HEIGHT,
-    //     displayedGroundHeight: DISPLAYED_GROUND_HEIGHT
-    // });
-
     player = createPlayer(this, layers.groundTopY);
     this.physics.add.collider(player, layers.ground);
     registerPlayerControls(this, player);
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000000' });
-    levelText = this.add.text(16, 40, 'Level: 1', { fontSize: '20px', fill: '#000000' });
-    // gameOverText and restartText are already created in create(), just ensure they are hidden initially if not already.
-    gameOverText.setVisible(false);
-    restartText.setVisible(false);
-
-    // Clear any existing messages from a previous game session
-    messageDisplay.forEach(msg => {
-        if (msg && msg.scene) msg.destroy();
-    });
-    messageDisplay = [null, null];
-    messageTimers.forEach(timer => {
-        if (timer) timer.remove(false);
-    });
-    messageTimers = [null, null];
-    scene.displayGameMessage = displayGameMessage; // Make it accessible via scene
-
+    UIManager.createGameUI(); // Creates score, level, and hidden game over/restart texts
+    UIManager.resetUIForNewGame(); // Clears messages, resets texts to default
+    
+    // scene.displayGameMessage is no longer needed here, call UIManager.displayMessage directly.
 
     /* Level-up timer */
     levelTimer = this.time.addEvent({
@@ -283,12 +146,11 @@ function startGame() {
             if (level < MAX_LEVELS) {
                 level += 1;
                 this.sound.play('level_up', { volume: 1 });
-                levelText.setText('Level: ' + level);
+                UIManager.updateLevelText(level);
                 currentSpeedScale = 1 + (level - 1) * 0.2;
             } else if (level === MAX_LEVELS) {
                 // This is the transition from MAX_LEVELS to MAX_LEVELS + 1
                 level += 1; // Increment to MAX_LEVELS + 1 to trigger booth logic
-                // Do not update levelText to "Level: 6"
                 // currentSpeedScale remains at MAX_LEVELS rate
 
                 levelTimer.remove(false);
@@ -299,98 +161,12 @@ function startGame() {
         }
     });
 
-    const UI_PAD = 10;
+    // addUIButton function is now internal to UIManager.js
+    // Create the disarm button structure using UIManager
+    UIManager.createDisarmButton(this.deactivateNearestTrap);
+    scene.currentTargetableTrap = null; // Still managed by main.js
 
-    const startX = GAME_WIDTH - UI_PAD;
-    const startY = UI_PAD;
-
-    // addUIButton now creates a border and an initially invisible icon placeholder
-    const addUIButton = (xRight) => {
-        const border = scene.add.graphics().setScrollFactor(0); // Interaction managed dynamically
-        border.fillStyle(0x000000, 0.35);
-        border.fillRoundedRect(
-            xRight - BORDER_TOTAL,
-            startY,
-            BORDER_TOTAL, BORDER_TOTAL,
-            BORDER_RADIUS
-        );
-        border.lineStyle(BORDER_W, 0xffffff);
-        border.strokeRoundedRect(
-            xRight - BORDER_TOTAL,
-            startY,
-            BORDER_TOTAL, BORDER_TOTAL,
-            BORDER_RADIUS
-        );
-
-        // Icon is created, but initially invisible. Texture and visibility managed in update().
-        const icon = scene.add.image(
-            xRight - BORDER_TOTAL / 2,
-            startY + BORDER_TOTAL / 2,
-            'icon_brain' // Placeholder texture, will be hidden
-        )
-            .setOrigin(0.5)
-            .setDisplaySize(UI_SIZE, UI_SIZE) // Defines hit area
-            .setScrollFactor(0)
-            .setVisible(true) // Icon is always visible to the input system
-            .setAlpha(0)      // Start fully transparent (effectively "no icon" visually)
-            .setInteractive(); // Interactive to catch clicks
-
-        // Border also starts with 0.5 alpha for the disabled state
-        border.setAlpha(0.5);
-
-        /* ------------------------------------------------------------
-         * Make the entire button (border area) interactive so clicks
-         * inside the disabled button never reach the global pointer
-         * handler that triggers the player jump.
-         * ---------------------------------------------------------- */
-        border.setInteractive(
-            new Phaser.Geom.Rectangle(
-                xRight - BORDER_TOTAL,
-                startY,
-                BORDER_TOTAL,
-                BORDER_TOTAL
-            ),
-            Phaser.Geom.Rectangle.Contains
-        );
-
-        border.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();                // Block jump
-            if (scene.currentTargetableTrap) {
-                scene.deactivateNearestTrap();      // Only act if enabled
-            }
-        });
-
-        // Icon's pointerdown handler
-        icon.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation(); // Always stop propagation to prevent jump
-            // Only attempt to disarm if a trap is currently targetable (button is "enabled")
-            if (scene.currentTargetableTrap) {
-                scene.deactivateNearestTrap();
-            }
-        });
-
-        // Border handles the click, but only if the icon is visible (logic in handler)
-        // Border is purely visual, no interactivity.
-        return { border, icon };
-    };
-
-    // Create the disarm button structure
-    const buttonElements = addUIButton(startX);
-    this.disarmButtonBorder = buttonElements.border;
-    this.disarmButtonIcon = buttonElements.icon;
-    scene.disarmButtonBorder = this.disarmButtonBorder; // Make accessible via scene var if needed
-    scene.disarmButtonIcon = this.disarmButtonIcon;
-    scene.currentTargetableTrap = null;
-
-
-    this.uiButtons = [ // For game over handling
-        this.disarmButtonBorder,
-        this.disarmButtonIcon
-    ];
-    // Ensure button is rendered on top of other elements if necessary,
-    // though individual elements are added to scene's display list.
-    // If z-ordering becomes an issue, explicitly bringToTop this.disarmButtonBorder and this.disarmButtonIcon.
-    // For now, Phaser's default rendering order should suffice.
+    // this.uiButtons for game over handling is now managed internally by UIManager's uiButtonsCollection
 
     obstaclesGroup = this.physics.add.group();
     trapsGroup = this.physics.add.group();
@@ -417,17 +193,17 @@ function startGame() {
         loop: true
     });
 
-    scene.deactivateNearestTrap = () => {
-        // Ensure the target is still valid (exists in scene and is marked as 'active' by our game logic)
+    // Assign to this context for the UIManager callback
+    this.deactivateNearestTrap = () => {
+        // Ensure the target is still valid
         if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
             const trapToDeactivate = scene.currentTargetableTrap;
             trapToDeactivate.setFillStyle(0x888888); // Change color
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
-                trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down (half of current speed)
+                trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
             }
 
-            // --- Add disarm animation ---
             const trapTypeData = trapToDeactivate.getData('trapType');
             let iconKey = '';
             if (typeof trapTypeData === 'string') {
@@ -438,95 +214,28 @@ function startGame() {
             }
 
             if (iconKey) {
-                const iconDisplayHeight = 48; // Desired display size for the animation icon
-                const gap = 5; // Gap in pixels between trap top and icon bottom
-                const iconX = trapToDeactivate.x;
-                // Trap's origin is (0.5, 1), so trapToDeactivate.y is its bottom edge.
-                // trapToDeactivate.height is its actual height.
-                // Icon's origin is (0.5, 0.5) by default.
-                // Position icon's center iconDisplayHeight/2 + gap pixels above the trap's top edge.
-                const iconY = (trapToDeactivate.y - trapToDeactivate.height) - (iconDisplayHeight / 2) - gap;
-
-                const animIcon = scene.add.image(iconX, iconY, iconKey)
-                    .setDisplaySize(iconDisplayHeight, iconDisplayHeight)
-                    .setDepth(10); // Ensure icon is rendered on top of the trap
-
-                scene.physics.add.existing(animIcon);
-
-                if (animIcon.body) {
-                    animIcon.body.setAllowGravity(false);
-                    // Match the trap's (new, slower) horizontal velocity
-                    if (trapToDeactivate.body) {
-                        animIcon.body.setVelocityX(trapToDeactivate.body.velocity.x);
-                    } else {
-                        // Should not happen, but as a fallback, don't move horizontally
-                        animIcon.body.setVelocityX(0);
-                    }
-
-                    // Tween to fade out, move up, and then destroy
-                    scene.tweens.add({
-                        targets: animIcon,
-                        alpha: 0,
-                        y: animIcon.y - 20, // Move upwards by 20 pixels
-                        duration: 1500,      // Animation duration in ms
-                        ease: 'Power1',
-                        onComplete: () => {
-                            // Ensure icon still exists and is part of the scene before destroying
-                            if (animIcon && animIcon.scene) {
-                                animIcon.destroy();
-                            }
-                        }
-                    });
-                } else {
-                    // Fallback if physics body couldn't be added (e.g. scene shutting down)
-                    // Just fade out and destroy without physics-based movement
-                    scene.tweens.add({
-                        targets: animIcon,
-                        alpha: 0,
-                        duration: 1500,
-                        ease: 'Power1',
-                        onComplete: () => {
-                            if (animIcon && animIcon.scene) {
-                                animIcon.destroy();
-                            }
-                        }
-                    });
-                }
+                UIManager.playTrapDisarmAnimation(trapToDeactivate, iconKey);
             }
-            // --- End disarm animation ---
 
-            // Display message for disarming trap
             if (trapToDeactivate.getData('message_disarmed')) {
-                displayGameMessage(trapToDeactivate.getData('message_disarmed'));
+                UIManager.displayMessage(trapToDeactivate.getData('message_disarmed'));
             }
 
             score += 10;
-            scoreText.setText('Score: ' + score);
+            UIManager.updateScoreText(score);
 
-            // Reset button state immediately after deactivation to "disabled": icon transparent, semi-transparent border.
-            scene.currentTargetableTrap = null;
-            if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setAlpha(0); // Icon transparent
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
-            }
-            if (scene.disarmButtonBorder) {
-                scene.disarmButtonBorder.setAlpha(0.5);
-            }
+            scene.currentTargetableTrap = null; // Game logic state
+            UIManager.updateDisarmButtonState(null, false); // Update UI
         } else {
-            // If the target became invalid (e.g., destroyed, already deactivated, or no longer in scene)
-            // ensure the button is reset to "disabled" state: icon transparent, semi-transparent border.
-            if (scene.currentTargetableTrap) { // It was set, but now fails the validity check
-                scene.currentTargetableTrap = null; // Clear the potentially stale reference
+            // Target became invalid
+            if (scene.currentTargetableTrap) {
+                scene.currentTargetableTrap = null;
             }
-            if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setAlpha(0); // Icon transparent
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
-            }
-            if (scene.disarmButtonBorder) {
-                scene.disarmButtonBorder.setAlpha(0.5);
-            }
+            UIManager.updateDisarmButtonState(null, false); // Ensure button is reset
         }
     };
+    // Make deactivateNearestTrap available on the scene if UIManager's button was set up to call scene.deactivateNearestTrap
+    // This is already handled by passing `this.deactivateNearestTrap` to `UIManager.createDisarmButton`.
 
     this.physics.add.overlap(player, obstaclesGroup, hitObstacle, null, this);
 }
@@ -558,7 +267,7 @@ function update(time, delta) {
     trapSpawner.update(dt, player);
     if (gained) {
         score += gained;
-        scoreText.setText('Score: ' + score);
+        UIManager.updateScoreText(score);
     }
 
     /* Spawn the voting booth once the play-field is clear */
@@ -609,68 +318,41 @@ function update(time, delta) {
             else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
         }
 
-        if (iconKey && scene.disarmButtonIcon) {
-            scene.disarmButtonIcon.setTexture(iconKey).setAlpha(1); // Show icon
-            scene.disarmButtonIcon.setInteractive({ useHandCursor: true });
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.setAlpha(1);
+        // Update disarm button state via UIManager
+        if (iconKey) {
+            UIManager.updateDisarmButtonState(iconKey, true);
         } else {
-            // Fallback or if iconKey isn't determined (e.g. unknown trapType)
-            // This case implies nearestActiveTrapInRange was true, but iconKey failed.
-            // Treat as "disabled" state: icon transparent, semi-transparent border.
-            if (scene.disarmButtonIcon) {
-                scene.disarmButtonIcon.setAlpha(0); // Icon transparent
-                scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
-            }
-            if (scene.disarmButtonBorder) scene.disarmButtonBorder.setAlpha(0.5);
-            scene.currentTargetableTrap = null; // Ensure no trap is targeted
+            // Fallback or if iconKey isn't determined
+            UIManager.updateDisarmButtonState(null, false);
+            scene.currentTargetableTrap = null; // Ensure no trap is targeted if iconKey fails
         }
     } else {
-        // No trap in range, set to "disabled" state: icon transparent, semi-transparent border.
+        // No trap in range
         scene.currentTargetableTrap = null;
-        if (scene.disarmButtonIcon) {
-            scene.disarmButtonIcon.setAlpha(0); // Icon transparent
-            scene.disarmButtonIcon.setInteractive(); // No hand cursor, but catches click
-        }
-        if (scene.disarmButtonBorder) {
-            scene.disarmButtonBorder.setAlpha(0.5);
-        }
+        UIManager.updateDisarmButtonState(null, false);
     }
 }
 
 function hitObstacle(playerGO, obstacleGO) {
     if (gameOver) return;
 
-    // Display message for hitting enemy
+    // Display message for hitting enemy using UIManager
     if (obstacleGO.message_hit) {
-        displayGameMessage(obstacleGO.message_hit);
+        UIManager.displayMessage(obstacleGO.message_hit);
     }
 
     gameOver = true;
     scene.sound.play('game_over', { volume: 0.7 });
     scene.physics.pause();
 
-    // Clear any active game messages
-    messageDisplay.forEach(msg => {
-        if (msg && msg.scene) msg.destroy();
-    });
-    messageDisplay = [null, null];
-    messageTimers.forEach(timer => {
-        if (timer) timer.remove(false);
-    });
-    messageTimers = [null, null];
+    // UIManager handles clearing messages and showing game over screen
+    UIManager.showGameOverScreen();
 
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();
 
-    gameOverText.setVisible(true).setDepth(201); // Ensure above game messages
-    restartText.setVisible(true).setDepth(201); // Ensure above game messages
-
-    // Bring to top as well, though depth is usually sufficient
-    scene.children.bringToTop(gameOverText);
-    scene.children.bringToTop(restartText);
-
-    if (scene.uiButtons)
-        scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+    // UIManager handles hiding/disabling gameplay UI
+    UIManager.hideGameplayUIDuringEnd();
 
     if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
     if (levelTimer) levelTimer.remove(false);
@@ -705,23 +387,9 @@ function winGame(playerGO, boothGO) {
         scene.time.delayedCall(2000, () => {
             scene.physics.pause(); // Now pause all physics
 
-            // Clear any active game messages
-            messageDisplay.forEach(msg => {
-                if (msg && msg.scene) msg.destroy();
-            });
-            messageDisplay = [null, null];
-            messageTimers.forEach(timer => {
-                if (timer) timer.remove(false);
-            });
-            messageTimers = [null, null];
-
-            const winText = scene.add.text(
-                GAME_WIDTH / 2, GAME_HEIGHT / 2, 'You Win!',
-                { fontSize: '48px', fill: '#00AA00', fontStyle: 'bold' }
-            ).setOrigin(0.5).setDepth(201); // Ensure above game messages
-
-            if (scene.uiButtons)
-                scene.uiButtons.forEach(b => { b.disableInteractive().setVisible(false); });
+            // UIManager handles clearing messages and showing win screen
+            UIManager.showWinScreen();
+            UIManager.hideGameplayUIDuringEnd(); // Hide buttons etc.
 
             if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
             if (levelTimer) levelTimer.remove(false);
