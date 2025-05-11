@@ -365,6 +365,13 @@ function update(time, delta) {
     }
     if (votingBooth && votingBooth.body)       votingBooth.body.setVelocityX(-effectiveSpeed);
 
+    // Check if player jumped over the voting booth
+    if (votingBooth && votingBooth.body && player && player.body && !gameOver && !player.getData('isVoting')) {
+        if (player.getBounds().left > votingBooth.getBounds().right) {
+            handleJumpedOverBooth(player, votingBooth);
+        }
+    }
+
     const gained = enemySpawner.update(dt, player);
     trapSpawner.update(dt, player);
     if (gained) {
@@ -462,6 +469,27 @@ function hitEnemy(playerGO, enemyGO) {
     // trapSpawner.stop(); // No longer needed as timer is external
 }
 
+function handleJumpedOverBooth(playerGO, boothGO) {
+    if (gameOver) return; // Safeguard
+
+    gameOver = true;
+    scene.sound.play('game_over', { volume: 0.7 }); // Using standard game_over sound
+    scene.physics.pause();
+
+    UIManager.showJumpedOverBoothScreen("Prea mult elan, prea putin civism.\nAi sarit peste sansa de a schimba ceva.");
+
+    playerGO.setTint(0x808080);
+    if (playerGO.anims) playerGO.anims.stop();
+
+    UIManager.hideGameplayUIDuringEnd();
+
+    if (combinedSpawnerTimer) combinedSpawnerTimer.remove(false);
+    if (levelTimer) levelTimer.remove(false);
+
+    if (boothGO && boothGO.body) {
+        boothGO.body.setVelocityX(0); // Stop the booth
+    }
+}
 
 /* ---------------- WIN CONDITION ---------------- */
 function winGame(playerGO, boothGO) {

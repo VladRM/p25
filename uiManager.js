@@ -41,6 +41,7 @@ let messageDisplay = [null, null]; // [bottomText, topText]
 let messageTimers = [null, null]; // Timers for [bottomText, topText]
 let uiButtonsCollection = []; // To store buttons that need to be hidden/disabled on game over
 let progressBarBg, progressBarFg; // Graphics objects for the progress bar
+let jumpedOverBoothText, jumpedOverBoothTextBackground; // For the "jumped over booth" game over screen
 
 
 export function initUIManager(sceneContext) {
@@ -596,6 +597,15 @@ export function resetUIForNewGame() {
 
     // Reset cached button state for the next game
     disarmButtonState = { enabled: false, iconKey: null };
+
+    if (jumpedOverBoothTextBackground && jumpedOverBoothTextBackground.scene) {
+        jumpedOverBoothTextBackground.destroy();
+        jumpedOverBoothTextBackground = null;
+    }
+    if (jumpedOverBoothText && jumpedOverBoothText.scene) {
+        jumpedOverBoothText.destroy();
+        jumpedOverBoothText = null;
+    }
 }
 
 // --- Progress Bar Functions ---
@@ -650,4 +660,60 @@ export function updateProgressBar(progressPercent) { // progressPercent is a val
         progressBarFg.lineStyle(PROGRESS_BAR_BORDER_THICKNESS, 0x000000, 1); // Black border, 1px thick
         progressBarFg.strokeRect(PROGRESS_BAR_PADDING_X, barY, currentProgressWidth, PROGRESS_BAR_HEIGHT);
     }
+}
+
+export function showJumpedOverBoothScreen(message) {
+    const scene = getScene();
+    if (!scene) return;
+
+    clearAllMessages();
+
+    const textStyle = {
+        fontSize: '24px',
+        fill: '#FF0000', // Strong Red, similar to game over
+        fontStyle: 'bold',
+        align: 'center'
+    };
+
+    // Create text first to get its dimensions, initially invisible
+    if (jumpedOverBoothText && jumpedOverBoothText.scene) jumpedOverBoothText.destroy();
+    jumpedOverBoothText = scene.add.text(0, 0, message, textStyle)
+        .setOrigin(0.5)
+        .setDepth(201)
+        .setVisible(false);
+
+    const textPadding = 20;
+    const lineSpacing = 10; // Space between message and restart prompt
+    const requiredWidth = Math.max(jumpedOverBoothText.width, (restartText ? restartText.width : 0)) + 2 * textPadding; // Consider restart text width
+    const requiredHeight = jumpedOverBoothText.height + (restartText ? (lineSpacing + restartText.height) : 0) + 2 * textPadding;
+
+    const boxX = GAME_WIDTH / 2 - requiredWidth / 2;
+    const boxY = GAME_HEIGHT / 2 - requiredHeight / 2;
+
+    if (jumpedOverBoothTextBackground && jumpedOverBoothTextBackground.scene) {
+        jumpedOverBoothTextBackground.destroy();
+    }
+    jumpedOverBoothTextBackground = scene.add.graphics({ x: boxX, y: boxY });
+    jumpedOverBoothTextBackground.fillStyle(0xffffff, 0.8); // White background
+    jumpedOverBoothTextBackground.fillRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
+    jumpedOverBoothTextBackground.lineStyle(BORDER_W, 0x000000, 1); // Black border
+    jumpedOverBoothTextBackground.strokeRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
+    jumpedOverBoothTextBackground.setDepth(200);
+
+    const messageY = boxY + textPadding + jumpedOverBoothText.height / 2;
+    jumpedOverBoothText.setPosition(GAME_WIDTH / 2, messageY);
+    jumpedOverBoothText.setVisible(true);
+
+    if (restartText && restartText.scene) {
+        const restartMessageY = messageY + jumpedOverBoothText.height / 2 + lineSpacing + restartText.height / 2;
+        restartText.setText('Click / Tap to Restart'); // Ensure correct text
+        restartText.setPosition(GAME_WIDTH / 2, restartMessageY);
+        restartText.setVisible(true);
+        scene.children.bringToTop(restartText);
+    }
+    
+    scene.children.bringToTop(jumpedOverBoothTextBackground); // Redundant due to setDepth
+    scene.children.bringToTop(jumpedOverBoothText);
+
+    hideGameplayUIDuringEnd();
 }
