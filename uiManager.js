@@ -31,7 +31,7 @@ const MESSAGE_VISIBLE_DURATION = 3000;
 let sceneRef; // Reference to the main game scene
 
 // UI Element References
-let mainTitleText, subTitleText, startScreenText, startScreenOverlay, howToPlayTitleText, startScreenInstructionsText;
+let mainTitleText, subTitleText, startScreenText, startScreenOverlay, startScreenImage, howToPlayTitleText, startScreenInstructionsText;
 let scoreText, levelText;
 let gameOverText, restartText, gameOverTextBackground; // gameOverReasonText removed
 let winTextInternal, winTextBackground; // Added background for win text
@@ -65,21 +65,9 @@ export function createStartScreen() {
         .setOrigin(0, 0)
         .setDepth(50);
 
-    mainTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, 'La Vot!', {
-        fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(51);
-
-    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evită propaganda, eliberează votanți și mergi la vot!', {
-        fontSize: '24px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(51);
-
-    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 'Click / Tap pentru a începe jocul', {
-        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(51);
-
-    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 75, 'Click / Tap sau SPACE pentru a sări\n\nApasă butonul din dreapta sus pentru a elibera votanții din capcană.', {
-        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(51);
+    startScreenImage = scene.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'start_screen')
+        .setOrigin(0.5)
+        .setDepth(51);
 }
 
 export function destroyStartScreen() {
@@ -87,12 +75,14 @@ export function destroyStartScreen() {
     if (subTitleText) subTitleText.destroy();
     if (startScreenText) startScreenText.destroy();
     if (startScreenOverlay) startScreenOverlay.destroy();
+    if (startScreenImage) startScreenImage.destroy();
     if (howToPlayTitleText) howToPlayTitleText.destroy();
     if (startScreenInstructionsText) startScreenInstructionsText.destroy();
     mainTitleText = null;
     subTitleText = null;
     startScreenText = null;
     startScreenOverlay = null;
+    startScreenImage = null;
     howToPlayTitleText = null;
     startScreenInstructionsText = null;
 }

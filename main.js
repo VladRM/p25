@@ -86,6 +86,7 @@ function preload() {
     this.load.image('icon_brain', 'res/img/player/brain.png');
     this.load.image('voting_booth_img', 'res/img/voting-booth.png');
     this.load.image('ground_tile_top', 'res/img/terrain_grass_block_top.png');
+    this.load.image('start_screen', 'res/img/start-screen.png');
 
     // Enemy images
     this.load.image('enemy_1_a', 'res/img/enemies/1_a.png');
