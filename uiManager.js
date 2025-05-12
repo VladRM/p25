@@ -69,15 +69,15 @@ export function createStartScreen() {
         fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evita propaganda, elibereaza votanti si mergi la vot.', {
+    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evită propaganda, eliberează votanți și mergi la vot.', {
         fontSize: '24px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 'Click / Tap pentru a incepe jocul', {
+    startScreenText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 'Click / Tap pentru a începe jocul', {
         fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 75, 'Click / Tap sau SPACE pentru a sari\n\nApasa butonul din dreapta sus pentru a elibera votantii din capcana.', {
+    startScreenInstructionsText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 75, 'Click / Tap sau SPACE pentru a sări\n\nApasă butonul din dreapta sus pentru a elibera votanții din capcană.', {
         fontSize: '20px', fill: '#FFFFFF', fontStyle: 'normal', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 }
@@ -117,7 +117,7 @@ export function createGameUI() {
     createProgressBar(); // Initialize the progress bar
 
     // Initialize gameOverText and restartText (hidden by default)
-    gameOverText = scene.add.text(0, 0, 'Game Over!', { // Position will be set in showGameOverScreen
+    gameOverText = scene.add.text(0, 0, 'Joc Terminat!', { // Position will be set in showGameOverScreen
         fontSize: '48px',
         fill: '#FF0000', // Strong Red
         fontStyle: 'bold',
@@ -127,7 +127,7 @@ export function createGameUI() {
         align: 'center'
     }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
 
-    restartText = scene.add.text(0, 0, 'Click / Tap to Restart', { // Position will be set in showGameOverScreen
+    restartText = scene.add.text(0, 0, 'Click / Tap pentru Restart', { // Position will be set in showGameOverScreen
         fontSize: '24px',
         fill: '#000000', // Black for contrast on white background
         fontStyle: 'normal',
@@ -489,13 +489,13 @@ export function showWinScreen(freedCharactersCount = 0) { // Add parameter with 
     // Clear any active game messages first
     clearAllMessages();
 
-    let winMessageString = 'Felicitari, ai evitat propaganda si ajuns cu bine la vot!';
+    let winMessageString = 'Felicitări, ai evitat propaganda și ai ajuns cu bine la vot!';
     if (freedCharactersCount > 0) {
-        winMessageString += `\nAi eliberat ${freedCharactersCount} votanti din capcanele populismului si dezinformarii!`;
-        winMessageString += `\nCu ajutorul tau, democratia este mai puternica!`;
+        winMessageString += `\nAi eliberat ${freedCharactersCount} votanți din capcanele populismului și dezinformării!`;
+        winMessageString += `\nCu ajutorul tău, democrația este mai puternică!`;
     } else {
-        winMessageString += `\nDin pacate nu ai eliberat niciun votant din capcanele propagandei`;
-        winMessageString += `\nData viitoare i-ai si pe ei cu tine!`;
+        winMessageString += `\nDin păcate nu ai eliberat niciun votant din capcanele propagandei`;
+        winMessageString += `\nData viitoare ia-i și pe ei cu tine!`;
     }
 
     const textStyle = {
@@ -738,7 +738,7 @@ export function showJumpedOverBoothScreen(message) {
 
     if (restartText && restartText.scene) {
         const restartMessageY = messageY + jumpedOverBoothText.height / 2 + lineSpacing + restartText.height / 2;
-        restartText.setText('Click / Tap to Restart'); // Ensure correct text
+        restartText.setText('Click / Tap pentru Restart'); // Ensure correct text
         restartText.setPosition(GAME_WIDTH / 2, restartMessageY);
         restartText.setVisible(true);
         scene.children.bringToTop(restartText);

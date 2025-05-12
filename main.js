@@ -453,7 +453,7 @@ function hitEnemy(playerGO, enemyGO) {
     scene.physics.pause();
 
     // UIManager handles clearing messages and showing game over screen
-    UIManager.showGameOverScreen(enemyGO.message_hit ? enemyGO.message_hit : "Ai fost prins de propaganda!"); // Pass the message_hit or a default
+    UIManager.showGameOverScreen(enemyGO.message_hit ? enemyGO.message_hit : "Ai fost prins de propagandă!"); // Pass the message_hit or a default
 
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();
@@ -474,7 +474,7 @@ function handleJumpedOverBooth(playerGO, boothGO) {
     scene.sound.play('game_over', { volume: 0.7 }); // Using standard game_over sound
     scene.physics.pause();
 
-    UIManager.showJumpedOverBoothScreen("Prea mult elan, prea putin civism.\nAi sarit peste sansa de a schimba ceva.");
+    UIManager.showJumpedOverBoothScreen("Prea mult elan, prea puțin civism.\nAi sărit peste șansa de a schimba ceva.");
 
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();
