@@ -446,16 +446,14 @@ function hitEnemy(playerGO, enemyGO) {
     if (gameOver) return;
 
     // Display message for hitting enemy using UIManager
-    if (enemyGO.message_hit) {
-        UIManager.displayMessage(enemyGO.message_hit);
-    }
+    // UIManager.displayMessage(enemyGO.message_hit); // This will now be part of the game over screen
 
     gameOver = true;
     scene.sound.play('game_over', { volume: 0.7 });
     scene.physics.pause();
 
     // UIManager handles clearing messages and showing game over screen
-    UIManager.showGameOverScreen();
+    UIManager.showGameOverScreen(enemyGO.message_hit ? enemyGO.message_hit : "Ai fost prins de propaganda!"); // Pass the message_hit or a default
 
     playerGO.setTint(0x808080);
     if (playerGO.anims) playerGO.anims.stop();

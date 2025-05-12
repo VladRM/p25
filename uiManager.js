@@ -33,7 +33,7 @@ let sceneRef; // Reference to the main game scene
 // UI Element References
 let mainTitleText, subTitleText, startScreenText, startScreenOverlay, howToPlayTitleText, startScreenInstructionsText;
 let scoreText, levelText;
-let gameOverText, restartText, gameOverTextBackground;
+let gameOverText, gameOverReasonText, restartText, gameOverTextBackground; // Added gameOverReasonText
 let winTextInternal, winTextBackground; // Added background for win text
 let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween, disarmButtonTransitionTween; // Added disarmButtonTransitionTween
 let disarmButtonState = { enabled: false, iconKey: null }; // Track current state to avoid restarting tween every frame
@@ -411,46 +411,74 @@ export function displayMessage(text) {
     });
 }
 
-export function showGameOverScreen() {
+export function showGameOverScreen(reason = null) { // Added reason parameter
     const scene = getScene();
     if (!scene || !gameOverText || !restartText) return;
 
     clearAllMessages();
 
-    // Ensure texts are visible to get correct dimensions if not already set by style
-    // (though dimensions are primarily from font style)
+    // Ensure texts are visible to get correct dimensions
     gameOverText.setVisible(true);
     restartText.setVisible(true);
 
-    const textPadding = 20; // Padding around the text inside the box
-    const lineSpacing = 10; // Space between "Game Over!" and "Restart"
+    // Create or update reason text if provided
+    if (reason) {
+        if (gameOverReasonText && gameOverReasonText.scene) gameOverReasonText.destroy();
+        gameOverReasonText = scene.add.text(0, 0, reason, {
+            fontSize: '18px', // Smaller font for the reason
+            fill: '#333333', // Dark grey, less prominent than "Game Over!"
+            fontStyle: 'normal',
+            align: 'center',
+            wordWrap: { width: GAME_WIDTH * 0.6, useAdvancedWrap: true } // Wrap text
+        }).setOrigin(0.5).setVisible(true).setDepth(201);
+    } else {
+        if (gameOverReasonText && gameOverReasonText.scene) {
+            gameOverReasonText.destroy();
+            gameOverReasonText = null;
+        }
+    }
 
-    const requiredWidth = Math.max(gameOverText.width, restartText.width) + 2 * textPadding;
-    const requiredHeight = gameOverText.height + restartText.height + lineSpacing + 2 * textPadding;
+    const textPadding = 20;
+    const lineSpacing = 10;
+    let reasonTextHeight = 0;
+    let reasonTextWidth = 0;
+
+    if (gameOverReasonText) {
+        reasonTextHeight = gameOverReasonText.height + lineSpacing;
+        reasonTextWidth = gameOverReasonText.width;
+    }
+
+    const requiredWidth = Math.max(gameOverText.width, restartText.width, reasonTextWidth) + 2 * textPadding;
+    const requiredHeight = gameOverText.height + reasonTextHeight + restartText.height + lineSpacing + 2 * textPadding;
 
     const boxX = GAME_WIDTH / 2 - requiredWidth / 2;
     const boxY = GAME_HEIGHT / 2 - requiredHeight / 2;
 
-    if (gameOverTextBackground) {
-        gameOverTextBackground.destroy(); // Destroy if already exists
+    if (gameOverTextBackground && gameOverTextBackground.scene) {
+        gameOverTextBackground.destroy();
     }
     gameOverTextBackground = scene.add.graphics({ x: boxX, y: boxY });
-    gameOverTextBackground.fillStyle(0xffffff, 0.8); // White background with 80% opacity
+    gameOverTextBackground.fillStyle(0xffffff, 0.8);
     gameOverTextBackground.fillRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
-    gameOverTextBackground.lineStyle(BORDER_W, 0x000000, 1); // Black border
+    gameOverTextBackground.lineStyle(BORDER_W, 0x000000, 1);
     gameOverTextBackground.strokeRoundedRect(0, 0, requiredWidth, requiredHeight, BORDER_RADIUS);
-    gameOverTextBackground.setDepth(200); // Background behind text
+    gameOverTextBackground.setDepth(200);
 
-    // Position texts within the box
-    const gameOverY = boxY + textPadding + gameOverText.height / 2;
-    const restartY = gameOverY + gameOverText.height / 2 + lineSpacing + restartText.height / 2;
+    let currentY = boxY + textPadding;
 
-    gameOverText.setPosition(GAME_WIDTH / 2, gameOverY);
-    restartText.setPosition(GAME_WIDTH / 2, restartY);
+    gameOverText.setPosition(GAME_WIDTH / 2, currentY + gameOverText.height / 2);
+    currentY += gameOverText.height + lineSpacing;
 
-    // Ensure texts are on top of the new background
-    scene.children.bringToTop(gameOverTextBackground); // Should be redundant due to setDepth
+    if (gameOverReasonText) {
+        gameOverReasonText.setPosition(GAME_WIDTH / 2, currentY + gameOverReasonText.height / 2);
+        currentY += gameOverReasonText.height + lineSpacing;
+    }
+
+    restartText.setPosition(GAME_WIDTH / 2, currentY + restartText.height / 2);
+
+    scene.children.bringToTop(gameOverTextBackground);
     scene.children.bringToTop(gameOverText);
+    if (gameOverReasonText) scene.children.bringToTop(gameOverReasonText);
     scene.children.bringToTop(restartText);
 }
 
@@ -552,6 +580,10 @@ export function resetUIForNewGame() {
         gameOverTextBackground = null;
     }
     if (gameOverText) gameOverText.setVisible(false);
+    if (gameOverReasonText && gameOverReasonText.scene) { // Clear reason text
+        gameOverReasonText.destroy();
+        gameOverReasonText = null;
+    }
     if (restartText) restartText.setVisible(false);
 
     if (winTextBackground && winTextBackground.scene) {
