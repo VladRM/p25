@@ -6,7 +6,7 @@ import { displayMessage } from './uiManager.js';
 const ENEMY_TYPES = [
     // IMPORTANT: Replace animMaxUnscaledWidth/Height with actual max dimensions from your art assets
     { type: 'enemy_1',  textureKey: 'enemy_1_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 350, message_avoided: 'Ai mirosit propaganda mascată în tricolor. Bravo!', message_hit: 'Te-au vrăjit cu patriotismul fals!' },
-    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320, message_avoided: 'Nu privim în urmă. Mergem spre urnă!', message_hit: 'Nu te lăsa păcălit! “Numitorul comun este legea!' },
+    { type: 'enemy_2',  textureKey: 'enemy_2_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 320, message_avoided: 'Nu privim în urmă. Mergem spre urnă!', message_hit: 'Nu te lăsa păcălit! "Numitorul comun este legea!"' },
     { type: 'enemy_3',  textureKey: 'enemy_3_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: 'N-ai mușcat din "marketing". Bun reflex!', message_hit: 'Te-a vrăjit "marketingul" caselor ieftine!' },
     { type: 'enemy_4',  textureKey: 'enemy_4_a', baseFrame: null, animMaxUnscaledWidth: 256, animMaxUnscaledHeight: 256, message_avoided: 'Nu alimentăm minciunile! Cu viteză la vot!', message_hit: 'Ai vrut benzină la 1 leu? O să plătim scump!' }
 ];
