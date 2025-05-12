@@ -344,9 +344,15 @@ export function playTrapDisarmAnimation(trap, iconKey) {
     }
 }
 
-export function displayMessage(text) {
+export function displayMessage(text, type = 'normal') { // Added type parameter, default to 'normal'
     const scene = getScene();
     if (!scene) return;
+
+    // Determine text color based on type
+    let textColor = '#FFFFFF'; // Default white
+    if (type === 'passed_by') {
+        textColor = '#FFFF00'; // Yellow for 'passed_by' messages
+    }
 
     // Clear existing timers
     if (messageTimers[1]) messageTimers[1].remove(false);
