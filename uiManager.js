@@ -389,7 +389,7 @@ export function displayMessage(text) {
 
     // Create and display new message
     const newMessage = scene.add.text(MESSAGE_X_CENTER, MESSAGE_Y_BOTTOM, text, {
-        fontSize: '20px', fill: '#FFFFFF', fontStyle: 'bold', // Increased fontSize
+        fontSize: '20px', fill: textColor, fontStyle: 'bold', // Use determined textColor
         stroke: '#000000', strokeThickness: 4, align: 'center'
     }).setOrigin(0.5, 0.5).setAlpha(0).setDepth(200);
     messageDisplay[0] = newMessage;
