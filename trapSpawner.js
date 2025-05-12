@@ -140,7 +140,7 @@ export class TrapSpawner {
                 // Consider trap passed if player's center is beyond trap's center
                 if (player.x > trap.x + trap.width / 2) {
                     if (trap.getData('message_passed_by')) {
-                        displayMessage(trap.getData('message_passed_by'));
+                        displayMessage(trap.getData('message_passed_by'), 'passed_by');
                     }
                     trap.setData('passed_by_message_shown', true); // Prevent multiple messages
                 }
