@@ -33,7 +33,7 @@ let sceneRef; // Reference to the main game scene
 // UI Element References
 let mainTitleText, subTitleText, startScreenText, startScreenOverlay, howToPlayTitleText, startScreenInstructionsText;
 let scoreText, levelText;
-let gameOverText, gameOverReasonText, restartText, gameOverTextBackground; // Added gameOverReasonText
+let gameOverText, restartText, gameOverTextBackground; // gameOverReasonText removed
 let winTextInternal, winTextBackground; // Added background for win text
 let disarmButtonBorder, disarmButtonIcon, disarmButtonFlashTween, disarmButtonTransitionTween; // Added disarmButtonTransitionTween
 let disarmButtonState = { enabled: false, iconKey: null }; // Track current state to avoid restarting tween every frame
@@ -417,39 +417,27 @@ export function showGameOverScreen(reason = null) { // Added reason parameter
 
     clearAllMessages();
 
+    // Set the main game over message text to the provided reason or a default.
+    gameOverText.setText(reason || 'Joc Terminat!');
+    // Apply word wrap for potentially long enemy messages.
+    // The original style for gameOverText in createGameUI does not include wordWrap.
+    const wrapWidth = GAME_WIDTH * 0.8; // Adjusted width for larger font
+    gameOverText.setWordWrapWidth(wrapWidth, true); // true for useAdvancedWrap
+    gameOverText.updateText(); // Crucial to update dimensions after text and wrap width change
+
     // Ensure texts are visible to get correct dimensions
     gameOverText.setVisible(true);
     restartText.setVisible(true);
 
-    // Create or update reason text if provided
-    if (reason) {
-        if (gameOverReasonText && gameOverReasonText.scene) gameOverReasonText.destroy();
-        gameOverReasonText = scene.add.text(0, 0, reason, {
-            fontSize: '18px', // Smaller font for the reason
-            fill: '#333333', // Dark grey, less prominent than "Game Over!"
-            fontStyle: 'normal',
-            align: 'center',
-            wordWrap: { width: GAME_WIDTH * 0.6, useAdvancedWrap: true } // Wrap text
-        }).setOrigin(0.5).setVisible(true).setDepth(201);
-    } else {
-        if (gameOverReasonText && gameOverReasonText.scene) {
-            gameOverReasonText.destroy();
-            gameOverReasonText = null;
-        }
-    }
+    // gameOverReasonText is no longer used.
 
     const textPadding = 20;
     const lineSpacing = 10;
-    let reasonTextHeight = 0;
-    let reasonTextWidth = 0;
+    // reasonTextHeight and reasonTextWidth are no longer needed.
 
-    if (gameOverReasonText) {
-        reasonTextHeight = gameOverReasonText.height + lineSpacing;
-        reasonTextWidth = gameOverReasonText.width;
-    }
-
-    const requiredWidth = Math.max(gameOverText.width, restartText.width, reasonTextWidth) + 2 * textPadding;
-    const requiredHeight = gameOverText.height + reasonTextHeight + restartText.height + lineSpacing + 2 * textPadding;
+    // Recalculate dimensions based on gameOverText (now containing the reason/dynamic message) and restartText
+    const requiredWidth = Math.max(gameOverText.width, restartText.width) + 2 * textPadding;
+    const requiredHeight = gameOverText.height + restartText.height + lineSpacing + 2 * textPadding; // Only two lines of text
 
     const boxX = GAME_WIDTH / 2 - requiredWidth / 2;
     const boxY = GAME_HEIGHT / 2 - requiredHeight / 2;
@@ -466,19 +454,18 @@ export function showGameOverScreen(reason = null) { // Added reason parameter
 
     let currentY = boxY + textPadding;
 
+    // Position gameOverText (which now contains the dynamic message)
     gameOverText.setPosition(GAME_WIDTH / 2, currentY + gameOverText.height / 2);
     currentY += gameOverText.height + lineSpacing;
 
-    if (gameOverReasonText) {
-        gameOverReasonText.setPosition(GAME_WIDTH / 2, currentY + gameOverReasonText.height / 2);
-        currentY += gameOverReasonText.height + lineSpacing;
-    }
+    // No positioning for gameOverReasonText as it's removed.
 
+    // Position restartText
     restartText.setPosition(GAME_WIDTH / 2, currentY + restartText.height / 2);
 
     scene.children.bringToTop(gameOverTextBackground);
     scene.children.bringToTop(gameOverText);
-    if (gameOverReasonText) scene.children.bringToTop(gameOverReasonText);
+    // No bringToTop for gameOverReasonText.
     scene.children.bringToTop(restartText);
 }
 
@@ -580,10 +567,7 @@ export function resetUIForNewGame() {
         gameOverTextBackground = null;
     }
     if (gameOverText) gameOverText.setVisible(false);
-    if (gameOverReasonText && gameOverReasonText.scene) { // Clear reason text
-        gameOverReasonText.destroy();
-        gameOverReasonText = null;
-    }
+    // gameOverReasonText cleanup is no longer needed here as the variable and its object are removed.
     if (restartText) restartText.setVisible(false);
 
     if (winTextBackground && winTextBackground.scene) {
