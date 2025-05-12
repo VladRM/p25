@@ -118,7 +118,7 @@ export function createGameUI() {
 
     // Initialize gameOverText and restartText (hidden by default)
     gameOverText = scene.add.text(0, 0, 'Joc Terminat!', { // Position will be set in showGameOverScreen
-        fontSize: '48px',
+        fontSize: '40px',
         fill: '#FF0000', // Strong Red
         fontStyle: 'bold',
         // stroke: '#FFFFFF', // Removed for flat style
