@@ -30,6 +30,11 @@ const config = {
     },
     scene: { preload, create, update }
 };
+function sendGAEvent(eventName, params = {}) {
+    if (typeof gtag === 'function') {
+        gtag('event', eventName, params);
+    }
+}
 
 let scene;
 let player;
@@ -203,6 +208,7 @@ function startGame() {
             const charactersInTrap = trapToDeactivate.getData('characters');
             if (charactersInTrap && Array.isArray(charactersInTrap)) {
                 freedCharactersCount += charactersInTrap.length; // Increment count here
+                    sendGAEvent('voters_freed', { count: charactersInTrap.length, total: freedCharactersCount });
                 charactersInTrap.forEach(charData => {
                     if (charData.sprite) {
                         charData.sprite.clearTint();
@@ -257,6 +263,7 @@ function startGame() {
                 level += 1;
                 this.sound.play('level_up', { volume: 1 });
                 UIManager.updateLevelText(level);
+                if (level >= 2) sendGAEvent('level_reached', { level });
                 currentSpeedScale = 1 + (level - 1) * 0.2;
             } else if (level === MAX_LEVELS) {
                 // This is the transition from MAX_LEVELS to MAX_LEVELS + 1
@@ -323,6 +330,7 @@ function startGame() {
     this.physics.add.overlap(player, enemiesGroup, hitEnemy, null, this);
 
     gameStarted = true; // Game is officially started only after all initializations
+    sendGAEvent('game_start');
 }
 
 
@@ -449,6 +457,7 @@ function hitEnemy(playerGO, enemyGO) {
     // UIManager.displayMessage(enemyGO.message_hit); // This will now be part of the game over screen
 
     gameOver = true;
+    sendGAEvent('game_loss', { score, level, freed_characters: freedCharactersCount });
     scene.sound.play('game_over', { volume: 0.7 });
     scene.physics.pause();
 
@@ -471,6 +480,7 @@ function handleJumpedOverBooth(playerGO, boothGO) {
     if (gameOver) return; // Safeguard
 
     gameOver = true;
+    sendGAEvent('game_loss', { score, level, freed_characters: freedCharactersCount, reason: 'jumped_booth' });
     scene.sound.play('game_over', { volume: 0.7 }); // Using standard game_over sound
     scene.physics.pause();
 
@@ -498,6 +508,7 @@ function winGame(playerGO, boothGO) {
         playerGO.setData('isVoting', true); // Flag to prevent re-triggering
         scene.sound.play('game_win', { volume: 0.7 }); // Play win sound on first contact
         gameOver = true; // Set gameOver early to stop other updates
+        sendGAEvent('game_win', { score, level, freed_characters: freedCharactersCount });
 
         playerGO.setVisible(false);
         if (playerGO.anims) playerGO.anims.stop();
