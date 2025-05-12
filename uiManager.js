@@ -69,7 +69,7 @@ export function createStartScreen() {
         fontSize: '48px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
-    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evită propaganda, eliberează votanți și mergi la vot.', {
+    subTitleText = scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, 'Evită propaganda, eliberează votanți și mergi la vot!', {
         fontSize: '24px', fill: '#FFFFFF', fontStyle: 'bold', align: 'center', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
@@ -127,7 +127,7 @@ export function createGameUI() {
         align: 'center'
     }).setOrigin(0.5).setVisible(false).setDepth(201); // Depth relative to its background
 
-    restartText = scene.add.text(0, 0, 'Click / Tap pentru Restart', { // Position will be set in showGameOverScreen
+    restartText = scene.add.text(0, 0, 'Mai incerci o dată? Click / Tap', {
         fontSize: '24px',
         fill: '#000000', // Black for contrast on white background
         fontStyle: 'normal',
