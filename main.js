@@ -255,10 +255,11 @@ function startGame() {
             // Determine icon for UI animation (remains the same)
             let iconKey = '';
             if (typeof trapType === 'string') {
-                const lowerTrapType = trapTypeData.toLowerCase();
+                const lowerTrapType = trapType.toLowerCase(); // Use trapType directly here
                 if (lowerTrapType === 'populist') iconKey = 'icon_brain';
                 else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
                 else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+                else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
             }
 
             if (iconKey) {
@@ -464,6 +465,7 @@ function update(time, delta) {
             if (lowerTrapType === 'populist') iconKey = 'icon_brain';
             else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
             else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+            else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
         }
 
         // Update disarm button state via UIManager
