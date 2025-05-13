@@ -68,7 +68,8 @@ export function createStartScreen() {
     startScreenImage = scene.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'start_screen')
         .setOrigin(0.5)
         .setDisplaySize(GAME_WIDTH, GAME_HEIGHT) // Scale image to fit canvas
-        .setDepth(51);
+        .setDepth(51)
+        .setInteractive({ useHandCursor: true }); // Make interactive and show hand cursor
 }
 
 export function destroyStartScreen() {
