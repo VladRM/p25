@@ -84,6 +84,7 @@ function preload() {
     this.load.image('icon_flashlight', 'res/img/player/flashlight.png');
     this.load.image('icon_compass', 'res/img/player/compass.png');
     this.load.image('icon_brain', 'res/img/player/brain.png');
+    this.load.image('icon_vision', 'res/img/player/vision.png');
     this.load.image('voting_booth_img', 'res/img/voting-booth.png');
     this.load.image('ground_tile_top', 'res/img/terrain_grass_block_top.png');
     this.load.image('start_screen', 'res/img/start-screen.png');
@@ -318,7 +319,7 @@ function startGame() {
                 const lowerTrapType = trapType.toLowerCase(); // Use trapType directly here
                 if (lowerTrapType === 'manipulated') iconKey = 'icon_brain';
                 else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
-                else if (lowerTrapType === 'blind') iconKey = 'icon_flashlight';
+                else if (lowerTrapType === 'blind') iconKey = 'icon_vision';
                 else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
             }
 
@@ -524,7 +525,7 @@ function update(time, delta) {
             const lowerTrapType = trapTypeData.toLowerCase();
             if (lowerTrapType === 'manipulated') iconKey = 'icon_brain';
             else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
-            else if (lowerTrapType === 'blind') iconKey = 'icon_flashlight';
+            else if (lowerTrapType === 'blind') iconKey = 'icon_vision';
             else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
         }
 
