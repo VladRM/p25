@@ -99,9 +99,9 @@ function preload() {
     this.load.image('enemy_4_b', 'res/img/enemies/4_b.png');
 
     // Trap images
-    this.load.image('trap_3_a', 'res/img/traps/3_a.png');
-    this.load.image('trap_3_b', 'res/img/traps/3_b.png');
-    this.load.image('trap_3_c', 'res/img/traps/3_c.png');
+    this.load.image('trap_4_a', 'res/img/traps/4_a.png');
+    this.load.image('trap_4_b', 'res/img/traps/4_b.png');
+    this.load.image('trap_4_c', 'res/img/traps/4_c.png');
 
     // Character images
     this.load.image('adventurer_hurt', 'res/img/characters/adventurer_hurt.png');
@@ -170,8 +170,8 @@ function create() {
         this.anims.create({
             key: 'groupthink_freed_anim',
             frames: [
-                { key: 'trap_3_b' },
-                { key: 'trap_3_c' }
+                { key: 'trap_4_b' },
+                { key: 'trap_4_c' }
             ],
             frameRate: 5,
             repeat: -1 // Loop the freed animation
