@@ -296,7 +296,22 @@ export function playTrapDisarmAnimation(trap, iconKey) {
     const iconDisplayHeight = 48;
     const gap = 5;
     const iconX = trap.x;
-    const iconY = (trap.y - trap.height) - (iconDisplayHeight / 2) - gap;
+    let iconY;
+
+    const trapType = trap.getData('trapType');
+
+    if (trapType === 'groupthink') {
+        // For 'groupthink' (sprite, origin 0.5,1), trap.y is its bottom.
+        // trap.displayHeight is its scaled visual height.
+        iconY = (trap.y - trap.displayHeight) - (iconDisplayHeight / 2) - gap;
+    } else {
+        // Original calculation for other (rectangle) traps.
+        // For rectangle traps (origin 0.5,0.5), trap.y is center, trap.height is full height.
+        // This original calculation might place the icon lower than intended for rectangles (trap.y - trap.height is below the trap).
+        // However, the request is specific to 'groupthink'.
+        // A more correct general calculation for rectangle traps might be (trap.y - trap.height / 2) - (iconDisplayHeight / 2) - gap.
+        iconY = (trap.y - trap.height) - (iconDisplayHeight / 2) - gap;
+    }
 
     const animIcon = scene.add.image(iconX, iconY, iconKey)
         .setDisplaySize(iconDisplayHeight, iconDisplayHeight)
