@@ -256,7 +256,7 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
                     .setAlpha(0)                                             // start invisible
                     .setScale(1);                                            // keep size, fade-in centered
                 if (disarmButtonBorder.input) {
-                    disarmButtonBorder.input.cursor = 'hand';
+                    disarmButtonBorder.input.cursor = 'pointer'; // Use 'pointer' for broader compatibility
                 }
             }
 
