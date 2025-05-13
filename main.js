@@ -202,6 +202,7 @@ function startGame() {
     elapsedGameTime = 0;
 
     player = createPlayer(this, layers.groundTopY);
+    player.setDepth(11); // Ensure player is above traps (9) and trapped characters (10)
     this.physics.add.collider(player, layers.ground);
     registerPlayerControls(this, player);
 

@@ -31,7 +31,7 @@ export class TrapSpawner {
                 .setOrigin(0.5, 1) // Origin at bottom-center
                 .setDepth(9)
                 .setName(trapId)
-                .setScale(0.5); // Resize to 50%
+                .setScale(0.4); // Resize to 40%
             // No characters needed for sprite traps
 
         } else {
