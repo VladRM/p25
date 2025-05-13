@@ -243,14 +243,28 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
     if (disarmButtonIcon) {
         // Handle interactivity and cursor based on isEnabled
         if (isEnabled) {
+            // Icon & border are clickable, show hand cursor
             disarmButtonIcon.setInteractive({ useHandCursor: true });
-            if (disarmButtonBorder && disarmButtonBorder.input) {
+
+            if (disarmButtonBorder) {
+                // Re-enable interactivity in case it was disabled
+                disarmButtonBorder.setInteractive(
+                    new Phaser.Geom.Rectangle(
+                        GAME_WIDTH - UI_PAD - BORDER_TOTAL,
+                        UI_PAD,
+                        BORDER_TOTAL,
+                        BORDER_TOTAL
+                    ),
+                    Phaser.Geom.Rectangle.Contains
+                );
                 disarmButtonBorder.input.cursor = 'pointer';
             }
         } else { // not isEnabled
-            disarmButtonIcon.setInteractive(); // Remove hand cursor
+            // Disable the hand cursor completely but keep intercepting clicks
+            disarmButtonIcon.disableInteractive();            // No hand cursor on icon
+
             if (disarmButtonBorder && disarmButtonBorder.input) {
-                disarmButtonBorder.input.cursor = ''; // Reset cursor
+                disarmButtonBorder.input.cursor = 'default';  // Normal arrow
             }
         }
 
