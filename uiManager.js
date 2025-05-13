@@ -241,6 +241,19 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
     }
 
     if (disarmButtonIcon) {
+        // Handle interactivity and cursor based on isEnabled
+        if (isEnabled) {
+            disarmButtonIcon.setInteractive({ useHandCursor: true });
+            if (disarmButtonBorder && disarmButtonBorder.input) {
+                disarmButtonBorder.input.cursor = 'pointer';
+            }
+        } else { // not isEnabled
+            disarmButtonIcon.setInteractive(); // Remove hand cursor
+            if (disarmButtonBorder && disarmButtonBorder.input) {
+                disarmButtonBorder.input.cursor = ''; // Reset cursor
+            }
+        }
+
         if (isEnabled && iconKey) {
             const BORDER_POP_SCALE_START = 0.9;                               // start slightly smaller
             /* ---------- prepare icon ---------- */
@@ -248,16 +261,12 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
                              .setDisplaySize(UI_SIZE + 10, UI_SIZE + 10)      // enlarge by 5 px per side
                              .setAlpha(0)                                     // start invisible
                              .setScale(BORDER_POP_SCALE_START);               // pop-in effect – grow to 1
-            disarmButtonIcon.setInteractive({ useHandCursor: true });
 
             /* ---------- prepare border ---------- */
             if (disarmButtonBorder) {
                 disarmButtonBorder
                     .setAlpha(0)                                             // start invisible
                     .setScale(1);                                            // keep size, fade-in centered
-                if (disarmButtonBorder.input) {
-                    disarmButtonBorder.input.cursor = 'pointer'; // Use 'pointer' for broader compatibility
-                }
             }
 
             /* ---------- fade-in & grow ---------- */
@@ -276,15 +285,11 @@ export function updateDisarmButtonState(iconKey, isEnabled) {
             // Any active transition tween (e.g., fade-in) would have been stopped above.
             disarmButtonIcon.setAlpha(0)                        // hide icon
                             .setDisplaySize(UI_SIZE, UI_SIZE);  // restore default size
-            disarmButtonIcon.setInteractive();                  // Remove hand cursor
 
             if (disarmButtonBorder) {
                 disarmButtonBorder
                     .setAlpha(0.5)                               // disabled look
                     .setScale(1);                                // restore default size
-                if (disarmButtonBorder.input) {                  // Reset cursor for inactive border
-                    disarmButtonBorder.input.cursor = '';
-                }
             }
         }
     }
