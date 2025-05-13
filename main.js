@@ -98,6 +98,11 @@ function preload() {
     this.load.image('enemy_4_a', 'res/img/enemies/4_a.png');
     this.load.image('enemy_4_b', 'res/img/enemies/4_b.png');
 
+    // Trap images
+    this.load.image('trap_3_a', 'res/img/traps/3_a.png');
+    this.load.image('trap_3_b', 'res/img/traps/3_b.png');
+    this.load.image('trap_3_c', 'res/img/traps/3_c.png');
+
     // Character images
     this.load.image('adventurer_hurt', 'res/img/characters/adventurer_hurt.png');
     this.load.image('adventurer_cheer1', 'res/img/characters/adventurer_cheer1.png');
@@ -161,6 +166,17 @@ function create() {
             repeat: -1
         });
     }
+    if (!this.anims.exists('groupthink_freed_anim')) {
+        this.anims.create({
+            key: 'groupthink_freed_anim',
+            frames: [
+                { key: 'trap_3_b' },
+                { key: 'trap_3_c' }
+            ],
+            frameRate: 5,
+            repeat: -1 // Loop the freed animation
+        });
+    }
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
@@ -200,31 +216,45 @@ function startGame() {
         // Ensure the target is still valid
         if (scene.currentTargetableTrap && scene.currentTargetableTrap.scene && scene.currentTargetableTrap.getData('active')) {
             const trapToDeactivate = scene.currentTargetableTrap;
-            // trapToDeactivate.setFillStyle(0x888888); // Change color - REMOVED
+            const trapType = trapToDeactivate.getData('trapType');
+            const trapVisualType = trapToDeactivate.getData('trapVisualType');
+
             trapToDeactivate.setData('active', false); // Mark as inactive
             if (trapToDeactivate.body) {
                 trapToDeactivate.body.setVelocityX(-GAME_SPEED * currentSpeedScale / 2); // Slow down
             }
 
-            const charactersInTrap = trapToDeactivate.getData('characters');
-            if (charactersInTrap && Array.isArray(charactersInTrap)) {
-                freedCharactersCount += charactersInTrap.length; // Increment count here
-                    sendGAEvent('voters_freed', { count: charactersInTrap.length, total: freedCharactersCount });
-                charactersInTrap.forEach(charData => {
-                    if (charData.sprite) {
-                        charData.sprite.clearTint();
-                        if (charData.charTypeKey === 'adventurer_hurt') {
-                            charData.sprite.play('adventurer_cheer_anim');
-                        } else if (charData.charTypeKey === 'female_hurt') {
-                            charData.sprite.play('female_cheer_anim');
+            // Handle freeing based on trap type
+            if (trapVisualType === 'sprite' && trapType === 'groupthink') {
+                // Play the freed animation on the trap sprite itself
+                trapToDeactivate.play('groupthink_freed_anim');
+                // Increment freed count (assuming groupthink represents 4 people)
+                const groupSize = 4;
+                freedCharactersCount += groupSize;
+                sendGAEvent('voters_freed', { count: groupSize, total: freedCharactersCount, type: 'groupthink' });
+
+            } else if (trapVisualType === 'rectangle') {
+                // Original logic for rectangle traps with characters
+                const charactersInTrap = trapToDeactivate.getData('characters');
+                if (charactersInTrap && Array.isArray(charactersInTrap)) {
+                    freedCharactersCount += charactersInTrap.length;
+                    sendGAEvent('voters_freed', { count: charactersInTrap.length, total: freedCharactersCount, type: trapType });
+                    charactersInTrap.forEach(charData => {
+                        if (charData.sprite) {
+                            charData.sprite.clearTint();
+                            if (charData.charTypeKey === 'adventurer_hurt') {
+                                charData.sprite.play('adventurer_cheer_anim');
+                            } else if (charData.charTypeKey === 'female_hurt') {
+                                charData.sprite.play('female_cheer_anim');
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
-            const trapTypeData = trapToDeactivate.getData('trapType');
+            // Determine icon for UI animation (remains the same)
             let iconKey = '';
-            if (typeof trapTypeData === 'string') {
+            if (typeof trapType === 'string') {
                 const lowerTrapType = trapTypeData.toLowerCase();
                 if (lowerTrapType === 'populist') iconKey = 'icon_brain';
                 else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';

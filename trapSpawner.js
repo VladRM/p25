@@ -10,85 +10,97 @@ export class TrapSpawner {
 
     spawnTrap() {
         const TRAP_TYPES = [
-            { name: 'populist', color: 0xff69b4, message_disarmed: "Ai folosit gândirea critică!", message_passed_by: "Nu trece nepăsător pe lângă cei nehotărâți!" }, // Pink
-            { name: 'obedience', color: 0x1e90ff, message_disarmed: "Bravo, le-ai arătat direcția!", message_passed_by: "Ajută-i pe cei dezorientați să găsească calea!" }, // Blue
-            { name: 'darkweb', color: 0xffd700, message_disarmed: "Felicitări! Ai făcut lumină și s-au decis!", message_passed_by: "Nu-i lăsa pe apropiați în întuneric!" }  // Yellow (Dark Web of Lies)
+            { name: 'populist', type: 'rectangle', color: 0xff69b4, message_disarmed: "Ai folosit gândirea critică!", message_passed_by: "Nu trece nepăsător pe lângă cei nehotărâți!" }, // Pink
+            { name: 'obedience', type: 'rectangle', color: 0x1e90ff, message_disarmed: "Bravo, le-ai arătat direcția!", message_passed_by: "Ajută-i pe cei dezorientați să găsească calea!" }, // Blue
+            { name: 'darkweb', type: 'rectangle', color: 0xffd700, message_disarmed: "Felicitări! Ai făcut lumină și s-au decis!", message_passed_by: "Nu-i lăsa pe apropiați în întuneric!" }, // Yellow (Dark Web of Lies)
+            { name: 'groupthink', type: 'sprite', textureKey: 'trap_3_a', message_disarmed: "Excelent! I-ai scos din turma digitală!", message_passed_by: "Fii vocea rațiunii pentru cei prinși în grup!" } // Sprite-based
         ];
         let selectedTrapType;
         do {
             selectedTrapType = Phaser.Utils.Array.GetRandom(TRAP_TYPES);
         } while (selectedTrapType.name === this.lastTrapType && TRAP_TYPES.length > 1);
-        const color = selectedTrapType.color;
 
-        const width = 120;
-        const height = 40;
-        const x = this.scene.cameras.main.width + width;
-        const y = this.groundTopY - height / 2;
-
+        let trap;
         const trapId = `trap_${Date.now()}_${Phaser.Math.Between(1000,9999)}`;
-        const trap = this.scene.add.rectangle(x, y, width, height, color, 0) // Set fillAlpha to 0 to make it invisible
-            .setOrigin(0.5)
-            .setDepth(9) // Set depth similar to enemies, but slightly less to be distinct if needed
-            .setName(trapId); // Give it a unique name for logging
+        const initialX = this.scene.cameras.main.width + 150; // Start further off-screen
 
-        // Add to the group first. The group will ensure a physics body is created/enabled.
-        this.group.add(trap);
-        this.lastTrapType = selectedTrapType.name; // Remember last trap type
+        if (selectedTrapType.type === 'sprite') {
+            // Create a sprite-based trap
+            const y = this.groundTopY; // Align bottom of sprite with ground
+            trap = this.scene.add.sprite(initialX, y, selectedTrapType.textureKey)
+                .setOrigin(0.5, 1) // Origin at bottom-center
+                .setDepth(9)
+                .setName(trapId);
+            // Scale if necessary, e.g., trap.setScale(0.8);
+            // No characters needed for sprite traps
+
+        } else {
+            // Create a rectangle-based trap (original logic)
+            const color = selectedTrapType.color;
+            const width = 120;
+            const height = 40;
+            const y = this.groundTopY - height / 2; // Center rectangle vertically
+
+            trap = this.scene.add.rectangle(initialX, y, width, height, color, 0) // Invisible fill
+                .setOrigin(0.5)
+                .setDepth(9)
+                .setName(trapId);
+
+            // Add characters inside the rectangle trap
+            const numCharacters = Phaser.Math.Between(1, 4);
+            const charactersInTrap = [];
+            const charTypes = ['adventurer_hurt', 'female_hurt'];
+            const charScale = 0.5;
+            const trapRectangleHeight = height;
+
+            let xOffsets = [];
+            switch (numCharacters) {
+                case 1: xOffsets = [0]; break;
+                case 2: xOffsets = [-25, 25]; break;
+                case 3: xOffsets = [-35, 0, 35]; break;
+                case 4: xOffsets = [-45, -15, 15, 45]; break;
+            }
+
+            for (let i = 0; i < numCharacters; i++) {
+                const charTypeKey = charTypes[i % charTypes.length];
+                const xPosOffset = xOffsets[i];
+
+                const charSprite = this.scene.add.sprite(trap.x + xPosOffset, trap.y, charTypeKey)
+                    .setScale(charScale)
+                    .setTint(0xaaaaaa)
+                    .setDepth(trap.depth + 1);
+
+                const charYPosOffset = (trapRectangleHeight / 2) - (charSprite.displayHeight / 2);
+                charSprite.y = trap.y + charYPosOffset;
+
+                charactersInTrap.push({
+                    sprite: charSprite,
+                    xOffset: xPosOffset,
+                    yOffset: charYPosOffset,
+                    charTypeKey: charTypeKey
+                });
+            }
+            trap.setData('characters', charactersInTrap);
+        }
+
+        // Common setup for all trap types
+        this.group.add(trap); // Add to group AFTER creation and potential character setup
+        this.lastTrapType = selectedTrapType.name;
         trap.setData('active', true);
-        trap.setData('trapType', selectedTrapType.name); // Store the trap type
-        trap.setData('message_disarmed', selectedTrapType.message_disarmed); // Store disarmed message
-        trap.setData('message_passed_by', selectedTrapType.message_passed_by); // Store passed by message
+        trap.setData('trapType', selectedTrapType.name);
+        trap.setData('message_disarmed', selectedTrapType.message_disarmed);
+        trap.setData('message_passed_by', selectedTrapType.message_passed_by);
+        trap.setData('trapVisualType', selectedTrapType.type); // Store 'sprite' or 'rectangle'
 
-        // Add characters inside the trap
-        const numCharacters = Phaser.Math.Between(1, 4);
-        const charactersInTrap = [];
-        const charTypes = ['adventurer_hurt', 'female_hurt'];
-        const charScale = 0.5;
-        const trapRectangleHeight = height; // Height of the invisible trap rectangle
-
-        let xOffsets = [];
-        switch (numCharacters) {
-            case 1:
-                xOffsets = [0];
-                break;
-            case 2:
-                xOffsets = [-25, 25]; // Original spacing for two characters
-                break;
-            case 3:
-                xOffsets = [-35, 0, 35]; // Spaced for three characters
-                break;
-            case 4:
-                xOffsets = [-45, -15, 15, 45]; // Spaced for four characters
-                break;
-        }
-
-        for (let i = 0; i < numCharacters; i++) {
-            const charTypeKey = charTypes[i % charTypes.length]; // Alternate character types
-            const xPosOffset = xOffsets[i];
-
-            const charSprite = this.scene.add.sprite(trap.x + xPosOffset, trap.y, charTypeKey)
-                .setScale(charScale)
-                .setTint(0xaaaaaa)
-                .setDepth(trap.depth + 1);
-
-            // Calculate Y offset for the character to place its feet on the ground.
-            // Origin is (0.5, 0.5). trap.y is the center of the trap rectangle.
-            // trapRectangleHeight / 2 is distance from trap center to its edge (ground).
-            // charSprite.displayHeight / 2 is distance from char sprite center to its feet.
-            const charYPosOffset = (trapRectangleHeight / 2) - (charSprite.displayHeight / 2);
-            charSprite.y = trap.y + charYPosOffset; // Apply the calculated Y position
-
-            charactersInTrap.push({
-                sprite: charSprite,
-                xOffset: xPosOffset,    // Store original xOffset relative to trap center
-                yOffset: charYPosOffset, // Store yOffset relative to trap center (for vertical alignment)
-                charTypeKey: charTypeKey // Store the original character type key
-            });
-        }
-        trap.setData('characters', charactersInTrap);
-        
         if (trap.body) {
             trap.body.setAllowGravity(false);
+            // Adjust hitbox if necessary, especially for sprites
+            if (selectedTrapType.type === 'sprite') {
+                 // Example: Make hitbox slightly smaller than the visual sprite
+                 trap.body.setSize(trap.width * 0.8, trap.height * 0.9);
+                 // Adjust offset if origin is not 0.5, 0.5 or if needed
+                 // trap.body.setOffset(trap.width * 0.1, trap.height * 0.05);
+            }
             // Explicitly set debug flags, though global debug should cover this
             trap.body.debugShowBody = true;
             trap.body.debugShowVelocity = true;
@@ -101,10 +113,12 @@ export class TrapSpawner {
 
     update(dt, player) {
         this.group.getChildren().forEach(trap => {
-            const charactersInTrap = trap.getData('characters');
+            const trapVisualType = trap.getData('trapVisualType'); // 'sprite' or 'rectangle'
+            const charactersInTrap = trap.getData('characters'); // Only exists for 'rectangle' type
 
             if (!trap.body) { // If trap somehow lost its body, remove it
-                if (charactersInTrap) {
+                // Destroy associated characters if it's a rectangle type
+                if (trapVisualType === 'rectangle' && charactersInTrap) {
                     charactersInTrap.forEach(charData => {
                         if (charData.sprite) charData.sprite.destroy();
                     });
@@ -113,12 +127,11 @@ export class TrapSpawner {
                 return;
             }
 
-            // Update character positions to follow the trap
-            if (charactersInTrap) {
+            // Update character positions ONLY for rectangle traps
+            if (trapVisualType === 'rectangle' && charactersInTrap) {
                 charactersInTrap.forEach(charData => {
                     if (charData.sprite) {
                         charData.sprite.x = trap.x + charData.xOffset;
-                        // charData.yOffset was calculated to align sprite's feet with ground relative to trap.y
                         charData.sprite.y = trap.y + charData.yOffset;
                     }
                 });
@@ -126,7 +139,8 @@ export class TrapSpawner {
 
             // Check if trap is off-screen to the left
             if (trap.getBounds().right < 0) {
-                if (charactersInTrap) {
+                // Destroy associated characters if it's a rectangle type
+                if (trapVisualType === 'rectangle' && charactersInTrap) {
                     charactersInTrap.forEach(charData => {
                         if (charData.sprite) charData.sprite.destroy();
                     });
