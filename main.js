@@ -99,6 +99,9 @@ function preload() {
     this.load.image('enemy_4_b', 'res/img/enemies/4_b.png');
 
     // Trap images
+    this.load.image('trap_1_a', 'res/img/traps/1_a.png');
+    this.load.image('trap_1_b', 'res/img/traps/1_b.png');
+    this.load.image('trap_1_c', 'res/img/traps/1_c.png');
     this.load.image('trap_4_a', 'res/img/traps/4_a.png');
     this.load.image('trap_4_b', 'res/img/traps/4_b.png');
     this.load.image('trap_4_c', 'res/img/traps/4_c.png');
@@ -177,6 +180,17 @@ function create() {
             repeat: -1 // Loop the freed animation
         });
     }
+    if (!this.anims.exists('direction_freed_anim')) {
+        this.anims.create({
+            key: 'direction_freed_anim',
+            frames: [
+                { key: 'trap_1_b' },
+                { key: 'trap_1_c' }
+            ],
+            frameRate: 5,
+            repeat: -1 // Loop the freed animation
+        });
+    }
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
@@ -228,11 +242,18 @@ function startGame() {
             // Handle freeing based on trap type
             if (trapVisualType === 'sprite' && trapType === 'groupthink') {
                 // Play the freed animation on the trap sprite itself
-                trapToDeactivate.play('groupthink_freed_anim');
-                // Increment freed count (assuming groupthink represents 4 people)
-                const groupSize = 4;
-                freedCharactersCount += groupSize;
-                sendGAEvent('voters_freed', { count: groupSize, total: freedCharactersCount, type: 'groupthink' });
+                if (trapType === 'groupthink') {
+                    trapToDeactivate.play('groupthink_freed_anim');
+                    // Increment freed count (assuming groupthink represents 4 people)
+                    const groupSize = 4;
+                    freedCharactersCount += groupSize;
+                    sendGAEvent('voters_freed', { count: groupSize, total: freedCharactersCount, type: 'groupthink' });
+                } else if (trapType === 'direction') {
+                    trapToDeactivate.play('direction_freed_anim');
+                    const singleVoter = 1;
+                    freedCharactersCount += singleVoter;
+                    sendGAEvent('voters_freed', { count: singleVoter, total: freedCharactersCount, type: 'direction' });
+                }
 
             } else if (trapVisualType === 'rectangle') {
                 // Original logic for rectangle traps with characters
@@ -258,7 +279,7 @@ function startGame() {
             if (typeof trapType === 'string') {
                 const lowerTrapType = trapType.toLowerCase(); // Use trapType directly here
                 if (lowerTrapType === 'populist') iconKey = 'icon_brain';
-                else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
+                else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
                 else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
                 else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
             }
@@ -464,7 +485,7 @@ function update(time, delta) {
         if (typeof trapTypeData === 'string') {
             const lowerTrapType = trapTypeData.toLowerCase();
             if (lowerTrapType === 'populist') iconKey = 'icon_brain';
-            else if (lowerTrapType === 'obedience') iconKey = 'icon_compass';
+            else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
             else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
             else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
         }

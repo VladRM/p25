@@ -11,7 +11,7 @@ export class TrapSpawner {
     spawnTrap() {
         const TRAP_TYPES = [
             { name: 'populist', type: 'rectangle', color: 0xff69b4, message_disarmed: "Ai folosit gândirea critică!", message_passed_by: "Nu trece nepăsător pe lângă cei nehotărâți!" }, // Pink
-            { name: 'obedience', type: 'rectangle', color: 0x1e90ff, message_disarmed: "Bravo, le-ai arătat direcția!", message_passed_by: "Ajută-i pe cei dezorientați să găsească calea!" }, // Blue
+            { name: 'direction', type: 'sprite', textureKey: 'trap_1_a', message_disarmed: "Bravo, le-ai arătat direcția!", message_passed_by: "Ajută-i pe cei dezorientați să găsească calea!" }, // Sprite-based
             { name: 'darkweb', type: 'rectangle', color: 0xffd700, message_disarmed: "Felicitări! Ai făcut lumină și s-au decis!", message_passed_by: "Nu-i lăsa pe apropiați în întuneric!" }, // Yellow (Dark Web of Lies)
             { name: 'groupthink', type: 'sprite', textureKey: 'trap_4_a', message_disarmed: "Felicitări! Ai făcut lumină și s-au decis!", message_passed_by: "Nu-i lăsa pe apropiați în întuneric!" } // Sprite-based, uses darkweb messages
         ];

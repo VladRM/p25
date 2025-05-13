@@ -299,13 +299,14 @@ export function playTrapDisarmAnimation(trap, iconKey) {
     let iconY;
 
     const trapType = trap.getData('trapType');
+    const trapVisualType = trap.getData('trapVisualType'); // Added to check if it's a sprite
 
-    if (trapType === 'groupthink') {
-        // For 'groupthink' (sprite, origin 0.5,1), trap.y is its bottom.
+    if (trapVisualType === 'sprite') { // Check if it's any sprite-based trap (like groupthink or direction)
+        // For sprites with origin 0.5,1 (like 'groupthink', 'direction'), trap.y is its bottom.
         // trap.displayHeight is its scaled visual height.
         iconY = (trap.y - trap.displayHeight) - (iconDisplayHeight / 2) - gap;
     } else {
-        // Original calculation for other (rectangle) traps.
+        // Original calculation for rectangle traps.
         // For rectangle traps (origin 0.5,0.5), trap.y is center, trap.height is full height.
         // This original calculation might place the icon lower than intended for rectangles (trap.y - trap.height is below the trap).
         // However, the request is specific to 'groupthink'.
