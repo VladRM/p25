@@ -240,7 +240,7 @@ function startGame() {
             }
 
             // Handle freeing based on trap type
-            if (trapVisualType === 'sprite' && trapType === 'groupthink') {
+            if (trapVisualType === 'sprite') {
                 // Play the freed animation on the trap sprite itself
                 if (trapType === 'groupthink') {
                     trapToDeactivate.play('groupthink_freed_anim');
