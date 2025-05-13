@@ -102,6 +102,12 @@ function preload() {
     this.load.image('trap_1_a', 'res/img/traps/1_a.png');
     this.load.image('trap_1_b', 'res/img/traps/1_b.png');
     this.load.image('trap_1_c', 'res/img/traps/1_c.png');
+    this.load.image('trap_2_a', 'res/img/traps/2_a.png');
+    this.load.image('trap_2_b', 'res/img/traps/2_b.png');
+    this.load.image('trap_2_c', 'res/img/traps/2_c.png');
+    this.load.image('trap_3_a', 'res/img/traps/3_a.png');
+    this.load.image('trap_3_b', 'res/img/traps/3_b.png');
+    this.load.image('trap_3_c', 'res/img/traps/3_c.png');
     this.load.image('trap_4_a', 'res/img/traps/4_a.png');
     this.load.image('trap_4_b', 'res/img/traps/4_b.png');
     this.load.image('trap_4_c', 'res/img/traps/4_c.png');
@@ -191,6 +197,28 @@ function create() {
             repeat: -1 // Loop the freed animation
         });
     }
+    if (!this.anims.exists('manipulated_freed_anim')) {
+        this.anims.create({
+            key: 'manipulated_freed_anim',
+            frames: [
+                { key: 'trap_2_b' },
+                { key: 'trap_2_c' }
+            ],
+            frameRate: 5,
+            repeat: -1 // Loop the freed animation
+        });
+    }
+    if (!this.anims.exists('blind_freed_anim')) {
+        this.anims.create({
+            key: 'blind_freed_anim',
+            frames: [
+                { key: 'trap_3_b' },
+                { key: 'trap_3_c' }
+            ],
+            frameRate: 5,
+            repeat: -1 // Loop the freed animation
+        });
+    }
 
     // Setup restart handlers. They only act if gameOver is true.
     this.input.keyboard.on('keydown-R', () => { if (gameOver) this.scene.restart(); });
@@ -253,6 +281,16 @@ function startGame() {
                     const singleVoter = 1;
                     freedCharactersCount += singleVoter;
                     sendGAEvent('voters_freed', { count: singleVoter, total: freedCharactersCount, type: 'direction' });
+                } else if (trapType === 'manipulated') {
+                    trapToDeactivate.play('manipulated_freed_anim');
+                    const twoVoters = 2;
+                    freedCharactersCount += twoVoters;
+                    sendGAEvent('voters_freed', { count: twoVoters, total: freedCharactersCount, type: 'manipulated' });
+                } else if (trapType === 'blind') {
+                    trapToDeactivate.play('blind_freed_anim');
+                    const threeVoters = 3;
+                    freedCharactersCount += threeVoters;
+                    sendGAEvent('voters_freed', { count: threeVoters, total: freedCharactersCount, type: 'blind' });
                 }
 
             } else if (trapVisualType === 'rectangle') {
@@ -278,9 +316,9 @@ function startGame() {
             let iconKey = '';
             if (typeof trapType === 'string') {
                 const lowerTrapType = trapType.toLowerCase(); // Use trapType directly here
-                if (lowerTrapType === 'populist') iconKey = 'icon_brain';
+                if (lowerTrapType === 'manipulated') iconKey = 'icon_brain';
                 else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
-                else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+                else if (lowerTrapType === 'blind') iconKey = 'icon_flashlight';
                 else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
             }
 
@@ -484,9 +522,9 @@ function update(time, delta) {
 
         if (typeof trapTypeData === 'string') {
             const lowerTrapType = trapTypeData.toLowerCase();
-            if (lowerTrapType === 'populist') iconKey = 'icon_brain';
+            if (lowerTrapType === 'manipulated') iconKey = 'icon_brain';
             else if (lowerTrapType === 'direction') iconKey = 'icon_compass';
-            else if (lowerTrapType === 'darkweb') iconKey = 'icon_flashlight';
+            else if (lowerTrapType === 'blind') iconKey = 'icon_flashlight';
             else if (lowerTrapType === 'groupthink') iconKey = 'icon_flashlight'; // Use flashlight for groupthink
         }
 
