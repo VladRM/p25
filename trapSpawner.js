@@ -30,8 +30,8 @@ export class TrapSpawner {
             trap = this.scene.add.sprite(initialX, y, selectedTrapType.textureKey)
                 .setOrigin(0.5, 1) // Origin at bottom-center
                 .setDepth(9)
-                .setName(trapId);
-            // Scale if necessary, e.g., trap.setScale(0.8);
+                .setName(trapId)
+                .setScale(0.5); // Resize to 50%
             // No characters needed for sprite traps
 
         } else {
